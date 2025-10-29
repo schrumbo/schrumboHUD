@@ -27,10 +27,10 @@ public class ClickGuiScreen extends Screen {
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
-    private int panelX = 50;
-    private int panelY = 50;
-    private static final int PANEL_WIDTH = 500;
-    private static final int PANEL_HEIGHT = 400;
+    private int panelX = 0;
+    private int panelY = 0;
+    private static final int PANEL_WIDTH = 1000; //default 500
+    private static final int PANEL_HEIGHT = 600; // default 400
     private static final int TITLE_BAR_HEIGHT = 25;
 
     private boolean draggingPanel = false;
@@ -62,14 +62,19 @@ public class ClickGuiScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.panelX = (this.width - PANEL_WIDTH) / 2;
-        this.panelY = (this.height - PANEL_HEIGHT) / 2;
+
+        //center
+        centerPosX();
+        centerPosY();
 
         initializeCategories();
     }
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {}
+
+    @Override
+    public void resize(MinecraftClient client, int width, int height) {}
 
     /**
      * Calculates and sets positions for all categories.
@@ -88,11 +93,12 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+
         super.render(context, mouseX, mouseY, delta);
 
-        context.fillGradient(0, 0, this.width, this.height, 0x80000000, 0x80000000);
-
         float scale = config.configScale;
+        calcScale();
+
         float scaledMouseX = (float) mouseX / scale;
         float scaledMouseY = (float) mouseY / scale;
 
@@ -143,6 +149,36 @@ public class ClickGuiScreen extends Screen {
     }
 
     /**
+     * calculates the gui scale based on the GuiScale setting
+     */
+    public void calcScale(){
+        int guiScale = client.options.getGuiScale().getValue();
+
+        if(guiScale == 0) {
+            guiScale = (int) client.getWindow().getScaleFactor();
+        }
+        //if not 1.0f / guiScale centering will not work
+        config.configScale = 1.0f / guiScale;
+
+    }
+
+    /**
+     * centers x pos
+     */
+    public void centerPosX(){
+        int windowWidth = (int)(client.getWindow().getFramebufferWidth());
+        panelX = (int)(windowWidth / 2 - PANEL_WIDTH / 2);
+    }
+
+    /**
+     * centers y pos
+     */
+    public void centerPosY(){
+        int windowHeight = (int)(client.getWindow().getFramebufferHeight());
+        panelY = (int)(windowHeight / 2 - PANEL_HEIGHT / 2);
+    }
+
+    /**
      * Renders the main panel background and title bar.
      */
     private void renderPanel(DrawContext context) {
@@ -183,6 +219,8 @@ public class ClickGuiScreen extends Screen {
             RenderUtils.fillRoundedRect(context, scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
         }
     }
+
+
 
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {

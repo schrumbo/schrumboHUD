@@ -42,9 +42,9 @@ public class GeneralCategory extends Category {
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
         widgets.add(new SliderWidget(
                 startX, currentY, width, "ClickGUI Scale",
-                0.75f, 1.25f, "x",
-                () -> config.configScale,
-                val -> config.configScale = val
+                0.5f, 2.0f, "x",
+                () -> config.scaleFactor,
+                val -> config.scaleFactor = val
         ));
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
         widgets.add(new ColorPickerWidget(
