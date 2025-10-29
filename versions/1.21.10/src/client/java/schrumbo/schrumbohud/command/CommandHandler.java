@@ -1,4 +1,4 @@
-package schrumbo.schrumbohud.clickgui.command;
+package schrumbo.schrumbohud.command;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;

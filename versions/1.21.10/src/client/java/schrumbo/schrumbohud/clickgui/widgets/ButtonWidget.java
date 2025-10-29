@@ -3,6 +3,7 @@ package schrumbo.schrumbohud.clickgui.widgets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.HudConfig;
@@ -24,21 +25,20 @@ public class ButtonWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        var config = SchrumboHUDClient.config;
         boolean hovered = isHovered(mouseX, mouseY);
         int bgColor;
         if (isPressed) {
-            bgColor = config.cgcolors.widgetBackgroundClicked;
+            bgColor = config.guicolors.widgetBackgroundClicked;
         } else if (hovered) {
-            bgColor = config.cgcolors.widgetBackgroundHovered;
+            bgColor = config.guicolors.widgetBackgroundHovered;
         } else {
-            bgColor = config.cgcolors.widgetBackground;
+            bgColor = config.guicolors.widgetBackground;
         }
 
         RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, bgColor);
 
         if (hovered) {
-            RenderUtils.drawRoundedRectWithOutline(context, x, y, width, height, 0.0f, 1, config.cgcolors.border);
+            RenderUtils.drawRoundedRectWithOutline(context, x, y, width, height, 0.0f, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetBorderOpacity));
         }
 
 
@@ -46,8 +46,8 @@ public class ButtonWidget extends Widget {
         int labelX = x + (width - labelWidth) / 2;
         int labelY = y + (height - client.textRenderer.fontHeight) / 2;
 
-        int textColor = hovered ? config.cgcolors.hoveredText : config.cgcolors.text;
-        context.drawText(textRenderer, net.minecraft.text.Text.literal(label), labelX, labelY, textColor, true);
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+        context.drawText(textRenderer, Text.literal(label), labelX, labelY, textColor, true);
     }
 
     @Override

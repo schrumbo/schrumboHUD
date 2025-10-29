@@ -4,7 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import schrumbo.schrumbohud.clickgui.command.CommandHandler;
+import schrumbo.schrumbohud.command.CommandHandler;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 import schrumbo.schrumbohud.hud.InventoryRenderer;

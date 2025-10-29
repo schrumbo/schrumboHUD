@@ -50,7 +50,7 @@ public class GeneralCategory extends Category {
         widgets.add(new ColorPickerWidget(
                 startX, currentY, width,
                 "ClickGUI Accent Color",
-                () -> config.cgcolors.accent,
+                () -> config.guicolors.accent,
                 (color) -> config.setAccentColor(color)
         ));
 
@@ -61,19 +61,19 @@ public class GeneralCategory extends Category {
 
         boolean hovered = isHeaderHovered(mouseX, mouseY);
 
-        int bgColor = hovered ? config.cgcolors.widgetBackground : config.cgcolors.widgetBackgroundHovered;
+        int bgColor = hovered ? config.guicolors.widgetBackground : config.guicolors.widgetBackgroundHovered;
         RenderUtils.fillRoundedRect(context, x, y, width, HEADER_HEIGHT, 0.0f, bgColor);
 
 
-        RenderUtils.fillRoundedRect(context, x, y, width, 3, 0.0f, config.cgcolors.accent80);
+        RenderUtils.fillRoundedRect(context, x, y, width, 3, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
 
         int textY = y + (HEADER_HEIGHT - 8) / 2;
         context.drawText(client.textRenderer, Text.literal(name),
-                x + PADDING, textY, config.cgcolors.text, true);
+                x + PADDING, textY, config.guicolors.text, true);
 
         String indicator = collapsed ? "▶" : "▼";
         int indicatorX = x + width - PADDING - client.textRenderer.getWidth(indicator);
         context.drawText(client.textRenderer, Text.literal(indicator),
-                indicatorX, textY, config.cgcolors.accent80, false);
+                indicatorX, textY, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity), false);
     }
 }

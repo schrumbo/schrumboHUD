@@ -147,16 +147,16 @@ public class ClickGuiScreen extends Screen {
      */
     private void renderPanel(DrawContext context) {
 
-        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, config.cgcolors.panelBackground);
+        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, config.guicolors.panelBackground);
 
-        RenderUtils.drawRoundedRectWithOutline(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, 2, config.cgcolors.panelBorder);
+        RenderUtils.drawRoundedRectWithOutline(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, 2, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelBorderOpacity));
 
-        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, TITLE_BAR_HEIGHT, 0.0f, config.cgcolors.panelTitleBar);
+        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, TITLE_BAR_HEIGHT, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelTitleBarOpacity));
 
         String title = "SchrumboHUD";
         int titleX = panelX + (PANEL_WIDTH - client.textRenderer.getWidth(title)) / 2;
         int titleY = panelY + (TITLE_BAR_HEIGHT - 8) / 2;
-        context.drawText(textRenderer, title, titleX, titleY, config.cgcolors.text, true);
+        context.drawText(textRenderer, title, titleX, titleY, config.guicolors.text, true);
 
     }
 
@@ -170,7 +170,7 @@ public class ClickGuiScreen extends Screen {
         int scrollbarY = panelY + TITLE_BAR_HEIGHT + 10;
         int scrollbarHeight = PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20;
 
-        int trackColor = config.getColorWithAlpha(0x000000, 0.3f);
+        int trackColor = config.colorWithAlpha(0x000000, 0.3f);
         context.fill(scrollbarX, scrollbarY, scrollbarX + scrollbarWidth, scrollbarY + scrollbarHeight, trackColor);
 
         int maxScroll = Math.max(0, contentHeight - (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20));
@@ -180,7 +180,7 @@ public class ClickGuiScreen extends Screen {
             int thumbY = scrollbarY + (int) ((float) scrollOffset / maxScroll * (scrollbarHeight - thumbHeight));
 
             //SCROLLBAR THUMB
-            RenderUtils.fillRoundedRect(context, scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2.0f, config.cgcolors.accent80);
+            RenderUtils.fillRoundedRect(context, scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
         }
     }
 

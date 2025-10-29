@@ -10,8 +10,6 @@ import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.HudConfig;
 
-import static schrumbo.schrumbohud.Utils.RenderUtils.drawBorder;
-
 public class InventoryRenderer implements HudRenderCallback {
     HudConfig config = SchrumboHUDClient.config;
 
@@ -99,7 +97,7 @@ public class InventoryRenderer implements HudRenderCallback {
      */
     private void drawBackground(DrawContext context, int width, int height, HudConfig config){
         if(config.backgroundEnabled){
-            int backgroundColor = config.getColorWithAlpha(config.colors.background, config.backgroundOpacity);
+            int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity);
             if(config.roundedCorners){
                 RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.2f, backgroundColor);
             }else{
@@ -109,7 +107,7 @@ public class InventoryRenderer implements HudRenderCallback {
         }
 
         if(config.outlineEnabled){
-            int borderColor = config.getColorWithAlpha(config.colors.border, config.outlineOpacity);
+            int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity);
             if(config.roundedCorners){
                 RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.2f, 1, borderColor);
             }else{
@@ -134,7 +132,7 @@ public class InventoryRenderer implements HudRenderCallback {
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + (row * SLOT_SIZE) + 1;
                 if(config.slotBackgroundEnabled){
-                    int slotColor = config.getColorWithAlpha(config.colors.slots, config.slotBackgroundOpacity);
+                    int slotColor = config.colorWithAlpha(config.colors.slots, config.slotBackgroundOpacity);
                     if (config.roundedCorners){
                         RenderUtils.drawRectWithCutCorners(context, slotX, slotY,SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor );
                     }else{
@@ -177,7 +175,7 @@ public class InventoryRenderer implements HudRenderCallback {
      */
     private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, HudConfig config){
         String count = String.valueOf(stack.getCount());
-        int textColor = config.getColorWithAlpha(config.colors.text, 1.0f);
+        int textColor = config.colorWithAlpha(config.colors.text, 1.0f);
 
         var textRenderer = MinecraftClient.getInstance().textRenderer;
 

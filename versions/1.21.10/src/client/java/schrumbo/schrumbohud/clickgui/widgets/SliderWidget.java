@@ -43,14 +43,14 @@ public class SliderWidget extends Widget {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 
-        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.cgcolors.widgetBackground);
+        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, Text.literal(label), x + 7, y + 6, config.cgcolors.text, true);
+        context.drawText(client.textRenderer, Text.literal(label), x + 7, y + 6, config.guicolors.text, true);
 
         float currentValue = getter.get();
         String valueText = formatValue(currentValue);
         int valueWidth = client.textRenderer.getWidth(valueText);
-        context.drawText(client.textRenderer, Text.literal(valueText), x + width - 8 - valueWidth, y + 6, config.cgcolors.hoveredText, true);
+        context.drawText(client.textRenderer, Text.literal(valueText), x + width - 8 - valueWidth, y + 6, config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity), true);
 
         renderTrack(context, config, currentValue, mouseX, mouseY);
     }
@@ -72,14 +72,14 @@ public class SliderWidget extends Widget {
         int trackY = y + height - TRACK_PADDING - TRACK_HEIGHT - 4;
         int trackWidth = width - TRACK_PADDING * 2;
 
-        int trackColor = config.getColorWithAlpha(0x333333, 0.5f);
+        int trackColor = config.colorWithAlpha(0x333333, 0.5f);
         RenderUtils.fillRoundedRect(context, trackX, trackY, trackWidth, TRACK_HEIGHT, 2.0f, trackColor);
 
         float percentage = (currentValue - min) / (max - min);
         int fillWidth = (int) (trackWidth * percentage);
 
         if (fillWidth > 0) {
-            RenderUtils.fillRoundedRect(context, trackX, trackY, fillWidth, TRACK_HEIGHT, 2.0f, config.cgcolors.accent80);
+            RenderUtils.fillRoundedRect(context, trackX, trackY, fillWidth, TRACK_HEIGHT, 2.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
         }
 
         int handleX = trackX + fillWidth - HANDLE_WIDTH / 2;
@@ -87,7 +87,7 @@ public class SliderWidget extends Widget {
 
         boolean hovered = isHovered(mouseX, mouseY);
 
-        int handleColor = hovered || isDragging ? config.cgcolors.sliderHandleHovered : config.cgcolors.sliderHandle;
+        int handleColor = hovered || isDragging ? config.guicolors.sliderHandleHovered : config.guicolors.sliderHandle;
 
         RenderUtils.fillRoundedRect(context, handleX, handleY, HANDLE_WIDTH, HANDLE_HEIGHT, 3.0f, handleColor);
     }
