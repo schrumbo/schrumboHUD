@@ -73,8 +73,7 @@ public class ClickGuiScreen extends Screen {
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {}
 
-    @Override
-    public void resize(MinecraftClient client, int width, int height) {}
+
 
     /**
      * Calculates and sets positions for all categories.
@@ -159,14 +158,14 @@ public class ClickGuiScreen extends Screen {
         }
         //if not 1.0f / guiScale centering will not work
         config.configScale = 1.0f / guiScale;
-
+        config.configScale *= config.scaleFactor;
     }
 
     /**
      * centers x pos
      */
     public void centerPosX(){
-        int windowWidth = (int)(client.getWindow().getFramebufferWidth());
+        int windowWidth = (int)(client.getWindow().getWidth());
         panelX = (int)(windowWidth / 2 - PANEL_WIDTH / 2);
     }
 
@@ -174,7 +173,7 @@ public class ClickGuiScreen extends Screen {
      * centers y pos
      */
     public void centerPosY(){
-        int windowHeight = (int)(client.getWindow().getFramebufferHeight());
+        int windowHeight = (int)(client.getWindow().getHeight());
         panelY = (int)(windowHeight / 2 - PANEL_HEIGHT / 2);
     }
 
