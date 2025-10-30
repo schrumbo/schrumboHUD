@@ -118,6 +118,22 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
+     * centers x pos
+     */
+    public void centerPosX(){
+        int windowWidth = (int)(client.getWindow().getFramebufferWidth());
+        popupX = (int)(windowWidth / 2 - POPUP_WIDTH / 2);
+    }
+
+    /**
+     * centers y pos
+     */
+    public void centerPosY(){
+        int windowHeight = (int)(client.getWindow().getFramebufferHeight());
+        popupY = (int)(windowHeight / 2 - POPUP_HEIGHT / 2);
+    }
+
+    /**
      * Renders the main content of the color picker popup.
      */
     private void renderPopupContent(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -126,8 +142,10 @@ public class ColorPickerWidget extends Widget {
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-        popupX = (screenWidth - POPUP_WIDTH) / 2;
-        popupY = (screenHeight - POPUP_HEIGHT) / 2;
+        //popupX = (screenWidth - POPUP_WIDTH) / 2;
+        //popupY = (screenHeight - POPUP_HEIGHT) / 2;
+        centerPosX();
+        centerPosY();
 
         closeButtonX = popupX + POPUP_WIDTH - CLOSE_BUTTON_SIZE - CLOSE_BUTTON_PADDING;
         closeButtonY = popupY + CLOSE_BUTTON_PADDING;

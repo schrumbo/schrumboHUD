@@ -6,10 +6,11 @@
 - **fixed clickgui colors on 1.21.10**
 
 # TODO / Known Bugs
-- **fix clickGUI scaling on 1.21.10**
+- **rewrite scaling logic**
 - **polish theming on 1.21.10**
+- **fixColorPicker on 1.21.10**
+- **adjust ColorPicker colors**
 - **fix scroll bar out of panel -> easy scissor?**
-- **scaling is weird on lower resoultions especially with bigger gui scale**
 
 # Next
 - **add support for 1.21.8 and 1.21.9 (aswell as 1.21.11 probably)**
