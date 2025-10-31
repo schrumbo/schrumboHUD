@@ -38,7 +38,7 @@ public class RenderUtils {
      */
     public static void drawRoundedRectWithOutline(DrawContext context, int x, int y, int width, int height, float radius, int thickness, int color) {
         if (radius <= 0) {
-            context.drawBorder(x, y, width, height, color);
+            drawBorder(context, x, y, width, height, color);
             return;
         }
 
@@ -171,6 +171,17 @@ public class RenderUtils {
                 }
             }
         }
+    }
+
+
+    /**
+     * draws a border around a rectangle
+     */
+    public static void drawBorder(DrawContext context, int x, int y, int width, int height, int color){
+        context.fill(x, y, x + width, y + 1, color);
+        context.fill(x, y + height - 1, x + width, y + height, color);
+        context.fill(x, y, x + 1, y + height, color);
+        context.fill(x + width - 1, y, x + width, y + height, color);
     }
 
 }

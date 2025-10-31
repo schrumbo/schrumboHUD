@@ -15,6 +15,8 @@ import schrumbo.schrumbohud.config.ConfigManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import static schrumbo.schrumbohud.SchrumboHUDClient.config;
+
 /**
  * Main ClickGUI screen for configuration.
  * Handles rendering input and category management
@@ -23,8 +25,8 @@ public class ClickGuiScreen extends Screen {
     private MinecraftClient client = MinecraftClient.getInstance();
     private int panelX = 50;
     private int panelY = 50;
-    private static final int PANEL_WIDTH = 500;
-    private static final int PANEL_HEIGHT = 400;
+    private static final int PANEL_WIDTH = 1000;
+    private static final int PANEL_HEIGHT = 600;
     private static final int TITLE_BAR_HEIGHT = 25;
 
     private boolean draggingPanel = false;
@@ -57,8 +59,9 @@ public class ClickGuiScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.panelX = (this.width - PANEL_WIDTH) / 2;
-        this.panelY = (this.height - PANEL_HEIGHT) / 2;
+        calcScale();
+        centerPosY();
+        centerPosX();
 
         initializeCategories();
     }
@@ -82,13 +85,40 @@ public class ClickGuiScreen extends Screen {
         contentHeight = currentY;
     }
 
+    public void calcScale(){
+        int guiScale = client.options.getGuiScale().getValue();
+
+        if(guiScale == 0) {
+            guiScale = (int) client.getWindow().getScaleFactor();
+        }
+        //if not 1.0f / guiScale centering will not work
+        config.configScale = 1.0f / guiScale;
+
+    }
+
+    /**
+     * centers x pos
+     */
+    public void centerPosX(){
+        int windowWidth = (int)(client.getWindow().getFramebufferWidth());
+        panelX = (int)(windowWidth / 2 - PANEL_WIDTH / 2);
+    }
+
+    /**
+     * centers y pos
+     */
+    public void centerPosY(){
+        int windowHeight = (int)(client.getWindow().getFramebufferHeight());
+        panelY = (int)(windowHeight / 2 - PANEL_HEIGHT / 2);
+    }
+
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
         context.fillGradient(0, 0, this.width, this.height, 0x80000000, 0x80000000);
 
-        float scale = SchrumboHUDClient.config.configScale;
+        float scale = config.configScale;
         float scaledMouseX = (float) mouseX / scale;
         float scaledMouseY = (float) mouseY / scale;
 
@@ -188,7 +218,7 @@ public class ClickGuiScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button != 0) return super.mouseClicked(mouseX, mouseY, button);
 
-        float scale = SchrumboHUDClient.config.configScale;
+        float scale = config.configScale;
         double scaledMouseX = mouseX / scale;
         double scaledMouseY = mouseY / scale;
 
@@ -226,7 +256,7 @@ public class ClickGuiScreen extends Screen {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (button != 0) return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 
-        float scale = SchrumboHUDClient.config.configScale;
+        float scale = config.configScale;
         double scaledMouseX = mouseX / scale;
         double scaledMouseY = mouseY / scale;
         double scaledDeltaX = deltaX / scale;
@@ -265,7 +295,7 @@ public class ClickGuiScreen extends Screen {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (button != 0) return super.mouseReleased(mouseX, mouseY, button);
 
-        float scale = SchrumboHUDClient.config.configScale;
+        float scale = config.configScale;
         double scaledMouseX = mouseX / scale;
         double scaledMouseY = mouseY / scale;
 
@@ -298,7 +328,7 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        float scale = SchrumboHUDClient.config.configScale;
+        float scale = config.configScale;
         double scaledMouseX = mouseX / scale;
         double scaledMouseY = mouseY / scale;
 

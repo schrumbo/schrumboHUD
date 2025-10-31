@@ -37,14 +37,6 @@ public class PositionCategory extends Category {
         ));
 
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new SliderWidget(
-                startX, currentY, width, "HUD Scale",
-                0.1f, 5.0f, "scale",
-                () -> config.scale,
-                val -> config.scale = val
-        ));
-
-        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
         widgets.add(new ButtonWidget(
                 startX, currentY, width,
                 "Change Position",

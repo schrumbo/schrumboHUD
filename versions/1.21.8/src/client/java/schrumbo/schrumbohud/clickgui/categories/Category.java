@@ -2,7 +2,6 @@ package schrumbo.schrumbohud.clickgui.categories;
 
 import net.minecraft.client.gui.DrawContext;
 import schrumbo.schrumbohud.Utils.Utils;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.Widget;
 
@@ -19,7 +18,7 @@ public abstract class Category {
     protected int width;
 
     protected static final int HEADER_HEIGHT = 30;
-    protected static final int PADDING = 10;
+    protected static final int PADDING = 5;
     protected static final int WIDGET_SPACING = 5;
 
     public Category(String name) {
@@ -169,7 +168,7 @@ public abstract class Category {
 
         int startX = x + PADDING;
         int startY = y + HEADER_HEIGHT + PADDING;
-        int contentWidth = width - PADDING * 2;
+        int contentWidth = width - PADDING ;
 
         if (!widgetsInitialized) {
             initializeWidgets(startX, startY, contentWidth);

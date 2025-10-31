@@ -15,6 +15,10 @@ public class HudConfig {
     @SerializedName("colors")
     public Colors colors = new Colors();
 
+    @SerializedName("guicolors")
+    public ClickGUIColors guicolors = new ClickGUIColors();
+
+
     public static class Anchor {
         @SerializedName("horizontal")
         public HorizontalAnchor horizontal = HorizontalAnchor.LEFT;
@@ -41,7 +45,7 @@ public class HudConfig {
     }
 
     public static class Colors {
-
+        //HUD
         @SerializedName("background")
         public int background = 0x5955D9;
 
@@ -51,12 +55,66 @@ public class HudConfig {
         @SerializedName("text")
         public int text = 0xFFFFFF;
 
-        @SerializedName("accent")
-        public int accent = 0x927392;
 
         @SerializedName("slots")
         public int slots = 0x000000;
+
+
+
     }
+    //ClickGuiColors
+    public class ClickGUIColors{
+        //GENERAL ACCENT
+        @SerializedName("accent")
+        public int accent = 0x927392;
+
+        //WIDGETS
+        @SerializedName("text")
+        public int text = 0xFFFFFFFF;
+
+        @SerializedName("hoveredTextOpacity")
+        public float hoveredTextOpacity =  1.0f;
+
+        @SerializedName("widgetBorderOpacity")
+        public float widgetBorderOpacity =  0.6f;
+
+        @SerializedName("panelBorderOpacity")
+        public float panelBorderOpacity = 1.0f;
+
+        @SerializedName("panelTitleBarOpacity")
+        public float panelTitleBarOpacity = 0.3f;
+
+        @SerializedName("widgetAccentOpacity")
+        public float widgetAccentOpacity = 0.8f;
+
+        @SerializedName("widgetBackground")
+        public int widgetBackground = colorWithAlpha(0x2a2a2a, 0.5f);
+
+        @SerializedName("widgetBackgroundHovered")
+        public int widgetBackgroundHovered = colorWithAlpha(0x3a3a3a, 0.9f);
+
+        @SerializedName("widgetBackgroundClicked")
+        public int widgetBackgroundClicked = colorWithAlpha(0x1a1a1a, 0.90f);
+
+        @SerializedName("sliderHandle")
+        public int sliderHandle = colorWithAlpha(0xCCCCCC, 1.0f);
+
+        @SerializedName("sliderHandleHovered")
+        public int sliderHandleHovered = colorWithAlpha(0xFFFFFF, 1.0f);
+
+        //PANEL
+        @SerializedName("panelBackground")
+        public int panelBackground = colorWithAlpha(0x1a1a1a, 0.95f);
+
+
+
+
+    }
+
+    public void initColors(){
+
+    }
+
 
 
     public float scale = 1.0f;
@@ -73,7 +131,7 @@ public class HudConfig {
     public float slotBackgroundOpacity = 0.3f;
 
 
-    public int getColorWithAlpha(int color, float opacity){
+    public int colorWithAlpha(int color, float opacity){
         int alpha = (int) (opacity * 255);
         return (alpha << 24) | (color & 0x00FFFFFF);
     }
@@ -175,7 +233,7 @@ public class HudConfig {
     }
 
     public void setAccentColor(int color) {
-        colors.accent = color;
+        guicolors.accent = color;
     }
 
     public void setSlotColor(int color){

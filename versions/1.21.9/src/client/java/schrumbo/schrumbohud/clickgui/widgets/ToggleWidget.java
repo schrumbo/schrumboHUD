@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
+import schrumbo.schrumbohud.config.HudConfig;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -16,6 +17,9 @@ public class ToggleWidget extends Widget {
     private static final int TOGGLE_HEIGHT = 20;
     private static final int KNOB_SIZE = 16;
 
+    private final HudConfig config = SchrumboHUDClient.config;
+    private final MinecraftClient client = MinecraftClient.getInstance();
+
     public ToggleWidget(int x, int y, int width, String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
         super(x, y, width, 25, label);
         this.getter = getter;
@@ -24,34 +28,32 @@ public class ToggleWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        var config = SchrumboHUDClient.config;
-        var client = MinecraftClient.getInstance();
+
 
         hovered = isHovered(mouseX, mouseY);
         boolean enabled = getter.get();
 
-        int bgColor = config.getColorWithAlpha(0x1a1a1a, 0.8f);
-        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, bgColor);
+        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, label, x, y + 7, 0xFFFFFF, false);
+        context.drawText(client.textRenderer, label, x + 7, y + 6, config.guicolors.text, false);
 
         int toggleX = x + width - TOGGLE_WIDTH;
         int toggleY = y + 2;
 
-        int buttonBgColor = enabled ? config.getColorWithAlpha(config.colors.accent, 0.5f) : config.getColorWithAlpha(0x404040, 0.8f);
-        RenderUtils.fillRoundedRect(context, toggleX, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
+        int buttonBgColor = enabled ? config.colorWithAlpha(config.guicolors.accent, 0.5f) : config.colorWithAlpha(0x404040, 0.7f);
+        RenderUtils.fillRoundedRect(context, toggleX - 7, toggleY + 1, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
 
         int knobX = enabled ? toggleX + TOGGLE_WIDTH - KNOB_SIZE - 2 : toggleX + 2;
         int knobY = toggleY + 2;
 
-        int knobColor = enabled ? config.getColorWithAlpha(config.colors.accent, 1.0f) : config.getColorWithAlpha(0x808080, 1.0f);
+        int knobColor = enabled ? config.colorWithAlpha(config.guicolors.accent, 1.0f) : config.colorWithAlpha(0x808080, 1.0f);
 
-        RenderUtils.fillRoundedRect(context, knobX, knobY, KNOB_SIZE, KNOB_SIZE, 0.5f, knobColor);
 
         if (hovered) {
-            int hoverColor = config.getColorWithAlpha(0xFFFFFF, 0.1f);
-            RenderUtils.fillRoundedRect(context, toggleX, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, hoverColor);
+            RenderUtils.fillRoundedRect(context, toggleX - 7, toggleY + 1, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, config.colorWithAlpha(0x404040, 0.8f));
         }
+
+        RenderUtils.fillRoundedRect(context, knobX - 7, knobY + 1, KNOB_SIZE, KNOB_SIZE, 0.5f, knobColor);
     }
 
     @Override

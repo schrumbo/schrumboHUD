@@ -1,8 +1,11 @@
 package schrumbo.schrumbohud.clickgui;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import schrumbo.schrumbohud.SchrumboHUDClient;
@@ -11,6 +14,7 @@ import schrumbo.schrumbohud.clickgui.categories.*;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.Widget;
 import schrumbo.schrumbohud.config.ConfigManager;
+import schrumbo.schrumbohud.config.HudConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +24,13 @@ import java.util.List;
  * Handles rendering input and category management
  */
 public class ClickGuiScreen extends Screen {
-    private MinecraftClient client = MinecraftClient.getInstance();
-    private int panelX = 50;
-    private int panelY = 50;
-    private static final int PANEL_WIDTH = 500;
-    private static final int PANEL_HEIGHT = 400;
+    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final TextRenderer textRenderer = client.textRenderer;
+    private final HudConfig config = SchrumboHUDClient.config;
+    private int panelX = 0;
+    private int panelY = 0;
+    private static final int PANEL_WIDTH = 1000; //default 500
+    private static final int PANEL_HEIGHT = 600; // default 400
     private static final int TITLE_BAR_HEIGHT = 25;
 
     private boolean draggingPanel = false;
@@ -56,11 +62,19 @@ public class ClickGuiScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.panelX = (this.width - PANEL_WIDTH) / 2;
-        this.panelY = (this.height - PANEL_HEIGHT) / 2;
+
+        //center
+        centerPosX();
+        centerPosY();
 
         initializeCategories();
     }
+
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {}
+
+    @Override
+    public void resize(MinecraftClient client, int width, int height) {}
 
     /**
      * Calculates and sets positions for all categories.
@@ -70,11 +84,7 @@ public class ClickGuiScreen extends Screen {
         int currentY = 0;
 
         for (Category category : categories) {
-            category.setPosition(
-                    panelX + 10,
-                    panelY + TITLE_BAR_HEIGHT + 10 + currentY - scrollOffset,
-                    contentWidth
-            );
+            category.setPosition(panelX + 10, panelY + TITLE_BAR_HEIGHT + 10 + currentY - scrollOffset, contentWidth);
             currentY += category.getTotalHeight() + 10;
         }
 
@@ -83,21 +93,22 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+
         super.render(context, mouseX, mouseY, delta);
 
-        context.fillGradient(0, 0, this.width, this.height, 0x80000000, 0x80000000);
+        float scale = config.configScale;
+        calcScale();
 
-        float scale = SchrumboHUDClient.config.configScale;
         float scaledMouseX = (float) mouseX / scale;
         float scaledMouseY = (float) mouseY / scale;
 
         var matrices = context.getMatrices();
 
-        matrices.push();
-        matrices.scale(scale, scale, 1.0f);
+        matrices.pushMatrix();
+        matrices.scale(scale, scale);
         renderPanel(context);
         renderScrollbar(context);
-        matrices.pop();
+        matrices.popMatrix();
 
         int contentX = panelX + 10;
         int contentY = panelY + TITLE_BAR_HEIGHT + 10;
@@ -111,18 +122,18 @@ public class ClickGuiScreen extends Screen {
 
         context.enableScissor(scissorX, scissorY, scissorX2, scissorY2);
 
-        matrices.push();
-        matrices.scale(scale, scale, 1.0f);
+        matrices.pushMatrix();
+        matrices.scale(scale, scale);
 
         for (Category category : categories) {
             category.render(context, (int) scaledMouseX, (int) scaledMouseY, delta);
         }
 
-        matrices.pop();
+        matrices.popMatrix();
         context.disableScissor();
 
-        matrices.push();
-        matrices.scale(scale, scale, 2.0f);
+        matrices.pushMatrix();
+        matrices.scale(scale, scale);
 
         for (Category category : categories) {
             if (!category.isCollapsed()) {
@@ -134,42 +145,68 @@ public class ClickGuiScreen extends Screen {
             }
         }
 
-        matrices.pop();
+        matrices.popMatrix();
+    }
+
+    /**
+     * calculates the gui scale based on the GuiScale setting
+     */
+    public void calcScale(){
+        int guiScale = client.options.getGuiScale().getValue();
+
+        if(guiScale == 0) {
+            guiScale = (int) client.getWindow().getScaleFactor();
+        }
+        //if not 1.0f / guiScale centering will not work
+        config.configScale = 1.0f / guiScale;
+
+    }
+
+    /**
+     * centers x pos
+     */
+    public void centerPosX(){
+        int windowWidth = (int)(client.getWindow().getFramebufferWidth());
+        panelX = (int)(windowWidth / 2 - PANEL_WIDTH / 2);
+    }
+
+    /**
+     * centers y pos
+     */
+    public void centerPosY(){
+        int windowHeight = (int)(client.getWindow().getFramebufferHeight());
+        panelY = (int)(windowHeight / 2 - PANEL_HEIGHT / 2);
     }
 
     /**
      * Renders the main panel background and title bar.
      */
     private void renderPanel(DrawContext context) {
-        var config = SchrumboHUDClient.config;
 
-        int bgColor = config.getColorWithAlpha(0x1a1a1a, 0.95f);
-        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, bgColor);
+        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, config.guicolors.panelBackground);
 
-        int outlineColor = config.getColorWithAlpha(config.colors.accent, 1.0f);
-        RenderUtils.drawRoundedRectWithOutline(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, 2, outlineColor);
+        RenderUtils.drawRoundedRectWithOutline(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, 2, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelBorderOpacity));
 
-        int titleBgColor = config.getColorWithAlpha(config.colors.accent, 0.3f);
-        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, TITLE_BAR_HEIGHT, 0.0f, titleBgColor);
+        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, TITLE_BAR_HEIGHT, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelTitleBarOpacity));
 
         String title = "SchrumboHUD";
         int titleX = panelX + (PANEL_WIDTH - client.textRenderer.getWidth(title)) / 2;
         int titleY = panelY + (TITLE_BAR_HEIGHT - 8) / 2;
-        context.drawText(client.textRenderer, Text.literal(title), titleX, titleY, 0xFFFFFF, true);
+        context.drawText(textRenderer, title, titleX, titleY, config.guicolors.text, true);
+
     }
 
     /**
      * Renders the scrollbar based on content height.
      */
     private void renderScrollbar(DrawContext context) {
-        var config = SchrumboHUDClient.config;
 
         int scrollbarWidth = 4;
         int scrollbarX = panelX + PANEL_WIDTH - scrollbarWidth - 3;
         int scrollbarY = panelY + TITLE_BAR_HEIGHT + 10;
         int scrollbarHeight = PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20;
 
-        int trackColor = config.getColorWithAlpha(0x000000, 0.3f);
+        int trackColor = config.colorWithAlpha(0x000000, 0.3f);
         context.fill(scrollbarX, scrollbarY, scrollbarX + scrollbarWidth, scrollbarY + scrollbarHeight, trackColor);
 
         int maxScroll = Math.max(0, contentHeight - (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20));
@@ -178,25 +215,27 @@ public class ClickGuiScreen extends Screen {
             int thumbHeight = Math.max(20, (int) (scrollbarHeight * thumbHeightRatio));
             int thumbY = scrollbarY + (int) ((float) scrollOffset / maxScroll * (scrollbarHeight - thumbHeight));
 
-            int thumbColor = config.getColorWithAlpha(config.colors.accent, 0.8f);
-            RenderUtils.fillRoundedRect(context, scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2.0f, thumbColor);
+            //SCROLLBAR THUMB
+            RenderUtils.fillRoundedRect(context, scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
         }
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button != 0) return super.mouseClicked(mouseX, mouseY, button);
 
-        float scale = SchrumboHUDClient.config.configScale;
-        double scaledMouseX = mouseX / scale;
-        double scaledMouseY = mouseY / scale;
+
+    @Override
+    public boolean mouseClicked(Click click, boolean doubled) {
+        if (click.button() != 0) return super.mouseClicked(click, doubled);
+
+        float scale = config.configScale;
+        double scaledMouseX = click.x() / scale;
+        double scaledMouseY = click.y() / scale;
 
         for (Category category : categories) {
             if (!category.isCollapsed()) {
                 for (Widget widget : category.widgets) {
                     if (widget instanceof ColorPickerWidget colorPicker) {
                         if (colorPicker.isPopupOpen()) {
-                            boolean handled = colorPicker.mouseClicked(scaledMouseX, scaledMouseY, button);
+                            boolean handled = colorPicker.mouseClicked(scaledMouseX, scaledMouseY, click.button());
                             if (handled) return true;
                         }
                     }
@@ -212,31 +251,31 @@ public class ClickGuiScreen extends Screen {
         }
 
         for (Category category : categories) {
-            if (category.mouseClicked(scaledMouseX, scaledMouseY, button)) {
+            if (category.mouseClicked(scaledMouseX, scaledMouseY, click.button())) {
                 initializeCategories();
                 return true;
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (button != 0) return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+        if (click.button() != 0) return super.mouseDragged(click, offsetX, offsetY);
 
-        float scale = SchrumboHUDClient.config.configScale;
-        double scaledMouseX = mouseX / scale;
-        double scaledMouseY = mouseY / scale;
-        double scaledDeltaX = deltaX / scale;
-        double scaledDeltaY = deltaY / scale;
+        float scale = config.configScale;
+        double scaledMouseX = click.x() / scale;
+        double scaledMouseY = click.y() / scale;
+        double scaledOffsetX = offsetX / scale;
+        double scaledOffsetY = offsetY / scale;
 
         for (Category category : categories) {
             if (!category.isCollapsed()) {
                 for (Widget widget : category.widgets) {
                     if (widget instanceof ColorPickerWidget colorPicker) {
                         if (colorPicker.isPopupOpen()) {
-                            boolean handled = colorPicker.mouseDragged(scaledMouseX, scaledMouseY, button, scaledDeltaX, scaledDeltaY);
+                            boolean handled = colorPicker.mouseDragged(scaledMouseX, scaledMouseY, click.button(), scaledOffsetX, scaledOffsetY);
                             if (handled) return true;
                         }
                     }
@@ -245,7 +284,7 @@ public class ClickGuiScreen extends Screen {
         }
 
         for (Category category : categories) {
-            if (category.mouseDragged(scaledMouseX, scaledMouseY, button, scaledDeltaX, scaledDeltaY)) {
+            if (category.mouseDragged(scaledMouseX, scaledMouseY, click.button(), scaledOffsetX, scaledOffsetY)) {
                 return true;
             }
         }
@@ -257,23 +296,23 @@ public class ClickGuiScreen extends Screen {
             return true;
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(click, offsetX, offsetY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button != 0) return super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(Click click) {
+        if (click.button() != 0) return super.mouseReleased(click);
 
-        float scale = SchrumboHUDClient.config.configScale;
-        double scaledMouseX = mouseX / scale;
-        double scaledMouseY = mouseY / scale;
+        float scale = config.configScale;
+        double scaledMouseX = click.x() / scale;
+        double scaledMouseY = click.y() / scale;
 
         for (Category category : categories) {
             if (!category.isCollapsed()) {
                 for (Widget widget : category.widgets) {
                     if (widget instanceof ColorPickerWidget colorPicker) {
                         if (colorPicker.isPopupOpen()) {
-                            boolean handled = colorPicker.mouseReleased(scaledMouseX, scaledMouseY, button);
+                            boolean handled = colorPicker.mouseReleased(scaledMouseX, scaledMouseY, click.button());
                             if (handled) return true;
                         }
                     }
@@ -282,7 +321,7 @@ public class ClickGuiScreen extends Screen {
         }
 
         for (Category category : categories) {
-            if (category.mouseReleased(scaledMouseX, scaledMouseY, button)) {
+            if (category.mouseReleased(scaledMouseX, scaledMouseY, click.button())) {
                 return true;
             }
         }
@@ -292,7 +331,7 @@ public class ClickGuiScreen extends Screen {
             return true;
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(click);
     }
 
     @Override
@@ -319,8 +358,8 @@ public class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+    public boolean keyPressed(KeyInput input) {
+        if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
             for (Category category : categories) {
                 if (!category.isCollapsed()) {
                     for (Widget widget : category.widgets) {
@@ -338,12 +377,11 @@ public class ClickGuiScreen extends Screen {
             this.close();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
 
     @Override
     public boolean shouldPause() {
         return false;
     }
-
 }

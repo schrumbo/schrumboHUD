@@ -1,18 +1,20 @@
 package schrumbo.schrumbohud.clickgui.categories;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.clickgui.widgets.ButtonWidget;
-import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
-import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
-import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.ConfigManager;
-import schrumbo.schrumbohud.hud.HudEditorScreen;
+import schrumbo.schrumbohud.config.HudConfig;
 
 public class PresetsCategory extends Category {
+
+    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final TextRenderer textRenderer = client.textRenderer;
+    private final HudConfig config = SchrumboHUDClient.config;
 
     public PresetsCategory() {
         super("Presets");
@@ -20,7 +22,6 @@ public class PresetsCategory extends Category {
 
     @Override
     public void initializeWidgets(int startX, int startY, int width) {
-        var config = SchrumboHUDClient.config;
 
         int currentY = startY;
 
@@ -78,27 +79,20 @@ public class PresetsCategory extends Category {
 
     @Override
     protected void renderHeader(DrawContext context, int mouseX, int mouseY) {
-        var config = SchrumboHUDClient.config;
-        var client = MinecraftClient.getInstance();
 
         boolean hovered = isHeaderHovered(mouseX, mouseY);
 
-        int bgColor = config.getColorWithAlpha(
-                hovered ? 0x2a2a2a : 0x1f1f1f,
-                0.9f
-        );
+        int bgColor = hovered ? config.guicolors.widgetBackground : config.guicolors.widgetBackgroundHovered;
         RenderUtils.fillRoundedRect(context, x, y, width, HEADER_HEIGHT, 0.0f, bgColor);
 
-        int accentColor = config.getColorWithAlpha(config.colors.accent, 0.8f);
-        RenderUtils.fillRoundedRect(context, x, y, width, 3, 0.0f, accentColor);
+        RenderUtils.fillRoundedRect(context, x, y, width, 3, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
 
         int textY = y + (HEADER_HEIGHT - 8) / 2;
         context.drawText(client.textRenderer, Text.literal(name),
-                x + PADDING, textY, 0xFFFFFF, true);
+                x + PADDING, textY, config.guicolors.text, true);
 
         String indicator = collapsed ? "▶" : "▼";
         int indicatorX = x + width - PADDING - client.textRenderer.getWidth(indicator);
-        context.drawText(client.textRenderer, Text.literal(indicator),
-                indicatorX, textY, accentColor, false);
+        context.drawText(client.textRenderer, Text.literal(indicator), indicatorX, textY, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity), false);
     }
 }

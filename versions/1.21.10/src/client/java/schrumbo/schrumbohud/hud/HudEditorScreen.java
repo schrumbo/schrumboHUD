@@ -54,19 +54,14 @@ public class HudEditorScreen extends Screen {
         int centerY = this.height / 2;
         int guideColor = 0x80FFFFFF;
 
-        context.fill(centerX, 0, centerX + 1, this.height, guideColor);
+        context.fill(centerX, 0, centerX - 1, this.height, guideColor);
         context.fill(0, centerY, this.width, centerY + 1, guideColor);
 
-        context.fill(0, 0, 2, this.height, 0x40FFFFFF);
-        context.fill(0, 0, this.width, 2, 0x40FFFFFF);
-        context.fill(this.width - 2, 0, this.width, this.height, 0x40FFFFFF);
-        context.fill(0, this.height - 2, this.width, this.height, 0x40FFFFFF);
     }
 
     private void renderInstructions(DrawContext context) {
         String[] instructions = {
                 "§e[Drag]§r Move HUD",
-                "§e[Scroll]§r Resize (0.1x - 5.0x)",
                 "§e[R]§r Reset Position",
                 "§e[ESC]§r Save & Exit"
         };

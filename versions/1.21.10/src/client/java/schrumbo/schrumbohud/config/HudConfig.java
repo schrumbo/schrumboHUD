@@ -118,7 +118,6 @@ public class HudConfig {
 
 
     public float scale = 1.0f;
-    public float scaleFactor = 1.0f;
     public float configScale = 1.0f;
     public boolean roundedCorners = true;
     public boolean backgroundEnabled = true;

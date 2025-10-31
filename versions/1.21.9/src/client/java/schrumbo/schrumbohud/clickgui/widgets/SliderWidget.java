@@ -27,6 +27,9 @@ public class SliderWidget extends Widget {
     private static final int TRACK_PADDING = 8;
     private static final int TRACK_HEIGHT = 4;
 
+    private final HudConfig config = SchrumboHUDClient.config;
+    private final MinecraftClient client = MinecraftClient.getInstance();
+
     public SliderWidget(int x, int y, int width, String label, float min, float max, String suffix, Supplier<Float> getter, Consumer<Float> setter) {
         super(x, y, width, SLIDER_HEIGHT, label);
         this.label = label;
@@ -39,18 +42,15 @@ public class SliderWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        var config = SchrumboHUDClient.config;
-        var client = MinecraftClient.getInstance();
 
-        int bgColor = config.getColorWithAlpha(0x1a1a1a, 0.8f);
-        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, bgColor);
+        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, Text.literal(label), x, y + 6, 0xFFFFFF, true);
+        context.drawText(client.textRenderer, Text.literal(label), x + 7, y + 6, config.guicolors.text, true);
 
         float currentValue = getter.get();
         String valueText = formatValue(currentValue);
         int valueWidth = client.textRenderer.getWidth(valueText);
-        context.drawText(client.textRenderer, Text.literal(valueText), x + width - 8 - valueWidth, y + 6, config.colors.accent, true);
+        context.drawText(client.textRenderer, Text.literal(valueText), x + width - 8 - valueWidth, y + 6, config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity), true);
 
         renderTrack(context, config, currentValue, mouseX, mouseY);
     }
@@ -72,15 +72,14 @@ public class SliderWidget extends Widget {
         int trackY = y + height - TRACK_PADDING - TRACK_HEIGHT - 4;
         int trackWidth = width - TRACK_PADDING * 2;
 
-        int trackColor = config.getColorWithAlpha(0x333333, 0.5f);
+        int trackColor = config.colorWithAlpha(0x333333, 0.5f);
         RenderUtils.fillRoundedRect(context, trackX, trackY, trackWidth, TRACK_HEIGHT, 2.0f, trackColor);
 
         float percentage = (currentValue - min) / (max - min);
         int fillWidth = (int) (trackWidth * percentage);
 
         if (fillWidth > 0) {
-            int fillColor = config.getColorWithAlpha(config.colors.accent, 0.8f);
-            RenderUtils.fillRoundedRect(context, trackX, trackY, fillWidth, TRACK_HEIGHT, 2.0f, fillColor);
+            RenderUtils.fillRoundedRect(context, trackX, trackY, fillWidth, TRACK_HEIGHT, 2.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
         }
 
         int handleX = trackX + fillWidth - HANDLE_WIDTH / 2;
@@ -88,7 +87,7 @@ public class SliderWidget extends Widget {
 
         boolean hovered = isHovered(mouseX, mouseY);
 
-        int handleColor = config.getColorWithAlpha(hovered || isDragging ? 0xFFFFFF : 0xCCCCCC, 1.0f);
+        int handleColor = hovered || isDragging ? config.guicolors.sliderHandleHovered : config.guicolors.sliderHandle;
 
         RenderUtils.fillRoundedRect(context, handleX, handleY, HANDLE_WIDTH, HANDLE_HEIGHT, 3.0f, handleColor);
     }

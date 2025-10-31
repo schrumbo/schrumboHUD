@@ -1,14 +1,22 @@
 package schrumbo.schrumbohud.clickgui.widgets;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
+import schrumbo.schrumbohud.config.HudConfig;
 
 public class ButtonWidget extends Widget {
     private final Runnable onClick;
     private boolean isPressed = false;
     private long lastClickTime = 0;
-    private static final long CLICK_COOLDOWN_MS = 150; // Anti-spam
+    private static final long CLICK_COOLDOWN_MS = 150;
+    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final TextRenderer textRenderer = client.textRenderer;
+    private final HudConfig config = SchrumboHUDClient.config;
+
 
     public ButtonWidget(int x, int y, int width, String label, Runnable onClick) {
         super(x, y, width, 25, label);
@@ -17,35 +25,29 @@ public class ButtonWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        var config = SchrumboHUDClient.config;
         boolean hovered = isHovered(mouseX, mouseY);
-
         int bgColor;
         if (isPressed) {
-            bgColor = config.getColorWithAlpha(0x1a1a1a, 0.95f);
+            bgColor = config.guicolors.widgetBackgroundClicked;
         } else if (hovered) {
-            bgColor = config.getColorWithAlpha(0x3a3a3a, 0.9f);
+            bgColor = config.guicolors.widgetBackgroundHovered;
         } else {
-            bgColor = config.getColorWithAlpha(0x2a2a2a, 0.85f);
+            bgColor = config.guicolors.widgetBackground;
         }
 
         RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, bgColor);
 
         if (hovered) {
-            int borderColor = config.getColorWithAlpha(config.colors.accent, 0.6f);
-            RenderUtils.drawRoundedRectWithOutline(context, x, y, width, height, 0.0f, 1, borderColor);
+            RenderUtils.drawRoundedRectWithOutline(context, x, y, width, height, 0.0f, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetBorderOpacity));
         }
 
-        var client = net.minecraft.client.MinecraftClient.getInstance();
+
         int labelWidth = client.textRenderer.getWidth(label);
         int labelX = x + (width - labelWidth) / 2;
         int labelY = y + (height - client.textRenderer.fontHeight) / 2;
 
-        int textColor = hovered ? config.colors.accent : 0xFFFFFF;
-        context.drawText(client.textRenderer,
-                net.minecraft.text.Text.literal(label),
-                labelX, labelY,
-                textColor, true);
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+        context.drawText(textRenderer, Text.literal(label), labelX, labelY, textColor, true);
     }
 
     @Override
