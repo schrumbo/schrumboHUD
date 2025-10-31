@@ -1,4 +1,4 @@
-# SchrumboHUD v1.0.1
+# SchrumboHUD v1.0.2
 - **added support for 1.21.8, 1.21.9 and 1.21.10**
 - **fixed clickgui scaling issues**
 - **did some refactoring**

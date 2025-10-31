@@ -17,10 +17,6 @@ This mod was created because other inventory HUD mods lack sufficient customizat
 - **Accent**
 - **Slots**
 
-### Scaling
-- **HUD Scale**
-- **Config Menu Scale**
-
 ### Toggleable Features
 - **InventoryHUD**
 - **Rounded Corners**
