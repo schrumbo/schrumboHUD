@@ -1,13 +1,17 @@
 package schrumbo.schrumbohud.clickgui.categories;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
+import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.Utils.Utils;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static schrumbo.schrumbohud.SchrumboHUDClient.config;
 
 public abstract class Category {
     protected String name;
@@ -18,8 +22,10 @@ public abstract class Category {
     protected int x, y;
     protected int width;
 
-    protected static final int HEADER_HEIGHT = 30;
-    protected static final int PADDING = 10;
+    protected MinecraftClient client = MinecraftClient.getInstance();
+
+    protected static final int HEADER_HEIGHT = 60;
+    protected static final int PADDING = 7;
     protected static final int WIDGET_SPACING = 5;
 
     public Category(String name) {
@@ -59,7 +65,37 @@ public abstract class Category {
     }
 
 
-    protected abstract void renderHeader(DrawContext context, int mouseX, int mouseY);
+    protected void renderHeader(DrawContext context, int mouseX, int mouseY) {
+
+        boolean hovered = isHeaderHovered(mouseX, mouseY);
+
+        int bgColor = hovered ? config.guicolors.widgetBackground : config.guicolors.widgetBackgroundHovered;
+        RenderUtils.fillRoundedRect(context, x, y, width, HEADER_HEIGHT, 0.0f, bgColor);
+
+        RenderUtils.fillRoundedRect(context, x, y, width, 3, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
+
+
+        int labelX = x + PADDING + 13;
+        int labelY = y + (HEADER_HEIGHT - client.textRenderer.fontHeight) / 2;
+
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+
+        var matrices = context.getMatrices();
+        matrices.push();
+        matrices.translate(labelX, labelY, 1);
+        matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize, 1);
+        context.drawText(client.textRenderer, Text.literal(name), 0, 0, textColor, true);
+        matrices.pop();
+
+
+        String indicator = collapsed ? "▶" : "▼";
+        int indicatorX = x + width - PADDING - client.textRenderer.getWidth(indicator) -13;
+        matrices.push();
+        matrices.translate(indicatorX, labelY, 1);
+        matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize, 1);
+        context.drawText(client.textRenderer, Text.literal(indicator), 0, 0, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity), false);
+        matrices.pop();
+    }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!collapsed) {
@@ -169,7 +205,7 @@ public abstract class Category {
 
         int startX = x + PADDING;
         int startY = y + HEADER_HEIGHT + PADDING;
-        int contentWidth = width - PADDING * 2;
+        int contentWidth = width - PADDING ;
 
         if (!widgetsInitialized) {
             initializeWidgets(startX, startY, contentWidth);

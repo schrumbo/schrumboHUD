@@ -55,36 +55,22 @@ public class InventoryRenderer implements HudRenderCallback {
     }
 
     /**
-     * calculates the x Position of the hud
-     * @param config
-     * @param screenWidth
-     * @param hudWidth
-     * @return x position of the hud
+     * Calculates X position from relative offset
      */
-    private int calcX(HudConfig config, int screenWidth, int hudWidth){
-        int offset = config.position.x;
-
-        return switch(config.anchor.horizontal){
-            case LEFT -> offset;
-            case RIGHT -> (screenWidth / 2) - (hudWidth / 2) + offset;
-            case CENTER -> screenWidth - hudWidth - offset;
+    private int calcX(HudConfig config, int screenWidth, int hudWidth) {
+        return switch (config.anchor.horizontal) {
+            case LEFT -> config.position.x;
+            case RIGHT -> screenWidth - hudWidth - config.position.x;
         };
     }
 
     /**
-     * calculates the y Position of the hud
-     * @param config
-     * @param screenHeight
-     * @param hudHeight
-     * @return y position of the hud
+     * Calculates Y position from relative offset
      */
-    private int calcY(HudConfig config, int screenHeight, int hudHeight){
-        int offset = config.position.y;
-
-        return switch(config.anchor.vertical){
-            case TOP -> offset;
-            case BOTTOM -> (screenHeight / 2) - (hudHeight / 2) + offset;
-            case CENTER ->screenHeight - hudHeight - offset;
+    private int calcY(HudConfig config, int screenHeight, int hudHeight) {
+        return switch (config.anchor.vertical) {
+            case TOP -> config.position.y;
+            case BOTTOM -> screenHeight - hudHeight - config.position.y;
         };
     }
 
@@ -97,7 +83,7 @@ public class InventoryRenderer implements HudRenderCallback {
      */
     private void drawBackground(DrawContext context, int width, int height, HudConfig config){
         if(config.backgroundEnabled){
-            int backgroundColor = config.getColorWithAlpha(config.colors.background, config.backgroundOpacity);
+            int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity);
             if(config.roundedCorners){
                 RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.2f, backgroundColor);
             }else{
@@ -107,7 +93,7 @@ public class InventoryRenderer implements HudRenderCallback {
         }
 
         if(config.outlineEnabled){
-            int borderColor = config.getColorWithAlpha(config.colors.border, config.outlineOpacity);
+            int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity);
             if(config.roundedCorners){
                 RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.2f, 1, borderColor);
             }else{
@@ -132,7 +118,7 @@ public class InventoryRenderer implements HudRenderCallback {
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + (row * SLOT_SIZE) + 1;
                 if(config.slotBackgroundEnabled){
-                    int slotColor = config.getColorWithAlpha(config.colors.slots, config.slotBackgroundOpacity);
+                    int slotColor = config.colorWithAlpha(config.colors.slots, config.slotBackgroundOpacity);
                     if (config.roundedCorners){
                         RenderUtils.drawRectWithCutCorners(context, slotX, slotY,SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor );
                     }else{
@@ -175,7 +161,7 @@ public class InventoryRenderer implements HudRenderCallback {
      */
     private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, HudConfig config){
         String count = String.valueOf(stack.getCount());
-        int textColor = config.getColorWithAlpha(config.colors.text, 1.0f);
+        int textColor = config.colorWithAlpha(config.colors.text, 1.0f);
 
         var textRenderer = MinecraftClient.getInstance().textRenderer;
 

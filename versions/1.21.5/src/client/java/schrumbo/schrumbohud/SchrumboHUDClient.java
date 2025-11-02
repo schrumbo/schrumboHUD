@@ -4,11 +4,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import schrumbo.schrumbohud.clickgui.command.CommandHandler;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 import schrumbo.schrumbohud.hud.InventoryRenderer;
 import schrumbo.schrumbohud.keybind.KeybindHandler;
+import schrumbo.schrumbohud.misc.FirstJoin;
 
 public class SchrumboHUDClient implements ClientModInitializer {
 	public static final String MOD_ID = "schrumbohud";
@@ -26,8 +26,8 @@ public class SchrumboHUDClient implements ClientModInitializer {
 		config = configManager.load();
 
 		KeybindHandler.register();
+		FirstJoin.register();
 		InventoryRenderer.register();
-		CommandHandler.register();
 
 		initTime = Util.getMeasuringTimeMs() - initTime;
 		LOGGER.info("SchrumboHUD initialized in " + initTime + "ms");

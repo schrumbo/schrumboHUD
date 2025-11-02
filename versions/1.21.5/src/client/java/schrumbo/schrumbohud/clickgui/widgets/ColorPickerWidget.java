@@ -27,9 +27,9 @@ public class ColorPickerWidget extends Widget {
     private float saturation = 1;
     private float value = 1;
 
-    private static final int WIDGET_HEIGHT = 40;
-    private static final int POPUP_WIDTH = 240;
-    private static final int POPUP_HEIGHT = 215;
+    private static final int WIDGET_HEIGHT = 50;
+    private static final int POPUP_WIDTH = 220;
+    private static final int POPUP_HEIGHT = 200;
     private static final int TITLE_BAR_HEIGHT = 30;
 
     private static final int PICKER_SIZE = 140;
@@ -57,6 +57,9 @@ public class ColorPickerWidget extends Widget {
     private int panelWidth;
     private int panelHeight;
 
+    private final HudConfig config = SchrumboHUDClient.config;
+    private final MinecraftClient client = MinecraftClient.getInstance();
+
     /**
      * Creates a new color picker widget.
      *
@@ -81,19 +84,31 @@ public class ColorPickerWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        var config = SchrumboHUDClient.config;
+        hovered = isHovered(mouseX, mouseY);
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+        RenderUtils.fillRoundedRect(context, x, y, width, WIDGET_HEIGHT, 0.0f, config.guicolors.widgetBackground);
 
-        int bgColor = config.getColorWithAlpha(0x1a1a1a, 0.8f);
-        RenderUtils.fillRoundedRect(context, x, y, width, WIDGET_HEIGHT, 0.0f, bgColor);
+        float textScale = config.guicolors.textSize;
+        int labelHeight = client.textRenderer.fontHeight;
 
-        context.drawText(MinecraftClient.getInstance().textRenderer, Text.literal(label), x, y + 6, 0xFFFFFF, true);
+        int scaledHeight = (int)(labelHeight * textScale);
+
+        int labelX = x + 7;
+        int labelY = y + (WIDGET_HEIGHT - scaledHeight) / 2;
+
+        var matrices = context.getMatrices();
+        matrices.push();
+        matrices.translate(labelX, labelY, 1);
+        matrices.scale(textScale, textScale, 1);
+        context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
+        matrices.pop();
 
         int previewSize = 20;
         int previewX = x + width - 8 - previewSize;
         int previewY = y + (WIDGET_HEIGHT - previewSize) / 2;
 
         int previewColor = colorGetter.get();
-        int borderColor = config.getColorWithAlpha(0x404040, 0.8f);
+        int borderColor = config.colorWithAlpha(0x404040, 0.8f);
         RenderUtils.drawRectWithCutCorners(context, previewX - 2, previewY - 2, previewSize + 4, previewSize + 4, 1, borderColor);
         RenderUtils.fillRoundedRect(context, previewX, previewY, previewSize, previewSize, 0.0f, 0xFF000000 | previewColor);
         if (popupOpen) {
@@ -105,49 +120,60 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the color picker popup on a separate layer.
+     * Renders the color picker popup on a separate layer
      */
     public void renderPopupLayered(DrawContext context, int mouseX, int mouseY, float delta) {
         if (!popupOpen) return;
 
         var matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(0, 0, Z_LAYER_OFFSET);
         renderPopupContent(context, mouseX, mouseY, delta);
         matrices.pop();
     }
 
     /**
-     * Renders the main content of the color picker popup.
+     * centers x pos
+     */
+    public void centerPosX(){
+        int windowWidth = (int)(client.getWindow().getFramebufferWidth());
+        popupX = (int)(windowWidth / 2 - POPUP_WIDTH / 2);
+    }
+
+    /**
+     * centers y pos
+     */
+    public void centerPosY(){
+        int windowHeight = (int)(client.getWindow().getFramebufferHeight());
+        popupY = (int)(windowHeight / 2 - POPUP_HEIGHT / 2);
+    }
+
+    /**
+     * Renders the main content of the color picker popup
      */
     private void renderPopupContent(DrawContext context, int mouseX, int mouseY, float delta) {
-        var config = SchrumboHUDClient.config;
-        var client = MinecraftClient.getInstance();
+
 
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-        popupX = (screenWidth - POPUP_WIDTH) / 2;
-        popupY = (screenHeight - POPUP_HEIGHT) / 2;
+        centerPosX();
+        centerPosY();
 
         closeButtonX = popupX + POPUP_WIDTH - CLOSE_BUTTON_SIZE - CLOSE_BUTTON_PADDING;
         closeButtonY = popupY + CLOSE_BUTTON_PADDING;
 
-        int shadowColor = config.getColorWithAlpha(0x000000, 0.4f);
+        int shadowColor = config.colorWithAlpha(0x000000, 0.4f);
         RenderUtils.fillRoundedRect(context, popupX + 2, popupY + 2, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, shadowColor);
 
-        int bgColor = config.getColorWithAlpha(0x1a1a1a, 0.95f);
-        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, bgColor);
+        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, config.guicolors.panelBackground);
 
-        int outlineColor = config.getColorWithAlpha(config.colors.accent, 1.0f);
-        RenderUtils.drawRoundedRectWithOutline(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, 2, outlineColor);
+        RenderUtils.drawRoundedRectWithOutline(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, 2, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelBorderOpacity));
 
-        int titleBgColor = config.getColorWithAlpha(config.colors.accent, 0.3f);
-        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, TITLE_BAR_HEIGHT, 0.0f, titleBgColor);
+        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, TITLE_BAR_HEIGHT, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelTitleBarOpacity));
 
         String title = "Color Picker";
         int titleWidth = client.textRenderer.getWidth(title);
-        context.drawText(client.textRenderer, Text.literal(title), popupX + (POPUP_WIDTH - titleWidth) / 2, popupY + 11, 0xFFFFFF, true);
+        context.drawText(client.textRenderer, Text.literal(title), popupX + (POPUP_WIDTH - titleWidth) / 2, popupY + 11, config.guicolors.text, true);
 
         renderCloseButton(context, mouseX, mouseY, config);
 
@@ -160,7 +186,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the close/save button for the color picker popup.
+     * Renders the close/save button for the color picker popup
      */
     private void renderCloseButton(DrawContext context, int mouseX, int mouseY, HudConfig config) {
         boolean isHovered = isMouseOverCloseButton(mouseX, mouseY);
@@ -176,10 +202,7 @@ public class ColorPickerWidget extends Widget {
         closeButtonY = popupY + CLOSE_BUTTON_PADDING;
 
 
-        int borderColor = config.getColorWithAlpha(config.colors.accent, 0.6f);
-
-        RenderUtils.drawRoundedRectWithOutline(context, closeButtonX, closeButtonY,
-                buttonWidth, buttonHeight, 0.2f, 1, borderColor);
+        RenderUtils.drawRoundedRectWithOutline(context, closeButtonX, closeButtonY, buttonWidth, buttonHeight, 0.2f, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetBorderOpacity));
 
         int textColor = isHovered ? 0xFFFF4444 : 0xFFFFFFFF;
         int textX = closeButtonX + 6;
@@ -189,7 +212,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Checks if the mouse is over the close button.
+     * Checks if the mouse is over the close button
      */
     private boolean isMouseOverCloseButton(double mouseX, double mouseY) {
         var client = MinecraftClient.getInstance();
@@ -205,7 +228,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the saturation-value picker.
+     * Renders the saturation-value picker
      */
     private void renderSVPicker(DrawContext context, int px, int py, int mouseX, int mouseY) {
         var matrices = context.getMatrices();
@@ -234,12 +257,12 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the hue slider.
+     * Renders the hue slider
      */
     private void renderHueSlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
         var config = SchrumboHUDClient.config;
 
-        int trackBgColor = config.getColorWithAlpha(0x000000, 0.3f);
+        int trackBgColor = config.colorWithAlpha(0x000000, 0.3f);
         RenderUtils.fillRoundedRect(context, sx, sy, SLIDER_WIDTH, PICKER_SIZE, 0.15f, trackBgColor);
 
         for (int i = 0; i < PICKER_SIZE; i++) {
@@ -248,7 +271,7 @@ public class ColorPickerWidget extends Widget {
             context.fill(sx, sy + i, sx + SLIDER_WIDTH, sy + i + 1, color);
         }
 
-        int outlineColor = config.getColorWithAlpha(0xFFFFFF, 0.2f);
+        int outlineColor = config.colorWithAlpha(0xFFFFFF, 0.2f);
         RenderUtils.drawRoundedRectWithOutline(context, sx, sy, SLIDER_WIDTH, PICKER_SIZE, 0.15f, 1, outlineColor);
 
         int handleY = sy + (int) (hue * PICKER_SIZE) - HANDLE_HEIGHT / 2;
@@ -258,7 +281,7 @@ public class ColorPickerWidget extends Widget {
         boolean hovered = mouseX >= sx - 5 && mouseX <= sx + SLIDER_WIDTH + 5 &&
                 mouseY >= handleY && mouseY <= handleY + HANDLE_HEIGHT;
 
-        int handleColor = config.getColorWithAlpha(hovered || draggingHue ? 0xFFFFFF : 0xCCCCCC, 1.0f);
+        int handleColor =hovered || draggingHue ? config.guicolors.sliderHandleHovered : config.guicolors.sliderHandle;
         RenderUtils.drawRectWithCutCorners(context, handleX, handleY, HANDLE_WIDTH, HANDLE_HEIGHT, 2, handleColor);
     }
 
@@ -294,7 +317,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Handles mouse clicks within the popup area.
+     * Handles mouse clicks within the popup area
      */
     private boolean handlePopupClick(double mouseX, double mouseY) {
         int contentY = popupY + TITLE_BAR_HEIGHT + 15;
@@ -352,7 +375,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Updates saturation and value based on mouse position.
+     * Updates saturation and value based on mouse position
      */
     private void updateSVFromMouse(double mouseX, double mouseY, int pickerX, int contentY) {
         saturation = Math.max(0, Math.min(1, (float) (mouseX - pickerX) / PICKER_SIZE));
@@ -363,7 +386,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Updates hue based on mouse position.
+     * Updates hue based on mouse position
      */
     private void updateHueFromMouse(double mouseY, int contentY) {
         hue = Math.max(0, Math.min(1, (float) (mouseY - contentY) / PICKER_SIZE));
@@ -373,7 +396,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Linearly interpolates between two colors.
+     * Linearly interpolates between two colors
      */
     private int lerpColor(int from, int to, float t) {
         int aFrom = (from >> 24) & 0xFF;
@@ -395,7 +418,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Converts RGB color to HSV color space.
+     * Converts RGB color to HSV color space
      */
     private static float[] rgbToHsv(int rgb) {
         float r = ((rgb >> 16) & 0xFF) / 255.0f;
@@ -422,7 +445,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Converts HSV color to RGB color space.
+     * Converts HSV color to RGB color space
      */
     private static int hsvToRgb(float h, float s, float v) {
         int i = (int) (h * 6);
@@ -450,14 +473,14 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Checks if the popup is currently open.
+     * Checks if the popup is currently open
      */
     public boolean isPopupOpen() {
         return popupOpen;
     }
 
     /**
-     * Closes the color picker popup.
+     * Closes the color picker popup
      */
     public void closePopup() {
         this.popupOpen = false;
