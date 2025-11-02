@@ -2,6 +2,7 @@ package schrumbo.schrumbohud.clickgui.widgets;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.HudConfig;
@@ -21,7 +22,7 @@ public class ToggleWidget extends Widget {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     public ToggleWidget(int x, int y, int width, String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        super(x, y, width, 25, label);
+        super(x, y, width, 50, label);
         this.getter = getter;
         this.setter = setter;
     }
@@ -35,13 +36,23 @@ public class ToggleWidget extends Widget {
 
         RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, label, x + 7, y + 6, config.guicolors.text, false);
+        int labelX = x + 7;
+        int labelY = y + (height - client.textRenderer.fontHeight) / 2;
+
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(labelX, labelY);
+        matrices.scale(config.guicolors.textSize, config.guicolors.textSize);
+        context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
+        matrices.popMatrix();
 
         int toggleX = x + width - TOGGLE_WIDTH;
-        int toggleY = y + 2;
+        int toggleY = y + TOGGLE_HEIGHT / 2;
 
         int buttonBgColor = enabled ? config.colorWithAlpha(config.guicolors.accent, 0.5f) : config.colorWithAlpha(0x404040, 0.7f);
-        RenderUtils.fillRoundedRect(context, toggleX - 7, toggleY + 1, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
+        RenderUtils.fillRoundedRect(context, toggleX - 7, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
 
         int knobX = enabled ? toggleX + TOGGLE_WIDTH - KNOB_SIZE - 2 : toggleX + 2;
         int knobY = toggleY + 2;
@@ -50,10 +61,10 @@ public class ToggleWidget extends Widget {
 
 
         if (hovered) {
-            RenderUtils.fillRoundedRect(context, toggleX - 7, toggleY + 1, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, config.colorWithAlpha(0x404040, 0.8f));
+            RenderUtils.fillRoundedRect(context, toggleX - 7, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, config.colorWithAlpha(0x404040, 0.8f));
         }
 
-        RenderUtils.fillRoundedRect(context, knobX - 7, knobY + 1, KNOB_SIZE, KNOB_SIZE, 0.5f, knobColor);
+        RenderUtils.fillRoundedRect(context, knobX - 7, knobY, KNOB_SIZE, KNOB_SIZE, 0.5f, knobColor);
     }
 
     @Override

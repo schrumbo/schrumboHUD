@@ -21,7 +21,7 @@ public class SliderWidget extends Widget {
 
     private boolean isDragging = false;
 
-    private static final int SLIDER_HEIGHT = 40;
+    private static final int SLIDER_HEIGHT = 50;
     private static final int HANDLE_WIDTH = 8;
     private static final int HANDLE_HEIGHT = 16;
     private static final int TRACK_PADDING = 8;
@@ -42,10 +42,21 @@ public class SliderWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        hovered = isHovered(mouseX, mouseY);
 
         RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, Text.literal(label), x + 7, y + 6, config.guicolors.text, true);
+        int labelX = x + 7;
+        int labelY = y + 7;
+
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(labelX, labelY);
+        matrices.scale(config.guicolors.textSize, config.guicolors.textSize);
+        context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
+        matrices.popMatrix();
 
         float currentValue = getter.get();
         String valueText = formatValue(currentValue);
@@ -123,6 +134,7 @@ public class SliderWidget extends Widget {
         }
         return false;
     }
+
 
     private void updateValueFromMouse(double mouseX) {
         int trackX = x + TRACK_PADDING;

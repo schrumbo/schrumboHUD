@@ -3,9 +3,11 @@ package schrumbo.schrumbohud.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import schrumbo.schrumbohud.SchrumboHUD;
+import schrumbo.schrumbohud.Utils.ChatUtils;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,6 +21,7 @@ public class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Logger LOGGER =  LoggerFactory.getLogger(SchrumboHUD.class.getName());
     private static HudConfig config = new HudConfig();
+    private final MinecraftClient client = MinecraftClient.getInstance();
 
     private static final File CONFIG_FILE = new File(
             FabricLoader.getInstance().getConfigDir().toFile(),
@@ -54,6 +57,8 @@ public class ConfigManager {
             LOGGER.info("failed to write changes to config" + e);
         }
     }
+
+
 
     /**
      * simply reloads config

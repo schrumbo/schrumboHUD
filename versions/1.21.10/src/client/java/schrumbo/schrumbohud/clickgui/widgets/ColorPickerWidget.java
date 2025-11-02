@@ -27,9 +27,9 @@ public class ColorPickerWidget extends Widget {
     private float saturation = 1;
     private float value = 1;
 
-    private static final int WIDGET_HEIGHT = 40;
-    private static final int POPUP_WIDTH = 240;
-    private static final int POPUP_HEIGHT = 215;
+    private static final int WIDGET_HEIGHT = 50;
+    private static final int POPUP_WIDTH = 220;
+    private static final int POPUP_HEIGHT = 200;
     private static final int TITLE_BAR_HEIGHT = 30;
 
     private static final int PICKER_SIZE = 140;
@@ -84,10 +84,24 @@ public class ColorPickerWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-
+        hovered = isHovered(mouseX, mouseY);
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
         RenderUtils.fillRoundedRect(context, x, y, width, WIDGET_HEIGHT, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, Text.literal(label), x + 7, y + 15, config.guicolors.text, true);
+        float textScale = config.guicolors.textSize;
+        int labelHeight = client.textRenderer.fontHeight;
+
+        int scaledHeight = (int)(labelHeight * textScale);
+
+        int labelX = x + 7;
+        int labelY = y + (WIDGET_HEIGHT - scaledHeight) / 2;
+
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(labelX, labelY);
+        matrices.scale(textScale, textScale);
+        context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
+        matrices.popMatrix();
 
         int previewSize = 20;
         int previewX = x + width - 8 - previewSize;
@@ -142,8 +156,6 @@ public class ColorPickerWidget extends Widget {
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-        //popupX = (screenWidth - POPUP_WIDTH) / 2;
-        //popupY = (screenHeight - POPUP_HEIGHT) / 2;
         centerPosX();
         centerPosY();
 
@@ -153,7 +165,7 @@ public class ColorPickerWidget extends Widget {
         int shadowColor = config.colorWithAlpha(0x000000, 0.4f);
         RenderUtils.fillRoundedRect(context, popupX + 2, popupY + 2, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, shadowColor);
 
-        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, config.guicolors.widgetBackground);
+        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, config.guicolors.panelBackground);
 
         RenderUtils.drawRoundedRectWithOutline(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, 2, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelBorderOpacity));
 
