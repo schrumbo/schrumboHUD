@@ -120,7 +120,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the color picker popup on a separate layer.
+     * Renders the color picker popup on a separate layer
      */
     public void renderPopupLayered(DrawContext context, int mouseX, int mouseY, float delta) {
         if (!popupOpen) return;
@@ -148,7 +148,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the main content of the color picker popup.
+     * Renders the main content of the color picker popup
      */
     private void renderPopupContent(DrawContext context, int mouseX, int mouseY, float delta) {
 
@@ -186,7 +186,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the close/save button for the color picker popup.
+     * Renders the close/save button for the color picker popup
      */
     private void renderCloseButton(DrawContext context, int mouseX, int mouseY, HudConfig config) {
         boolean isHovered = isMouseOverCloseButton(mouseX, mouseY);
@@ -212,7 +212,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Checks if the mouse is over the close button.
+     * Checks if the mouse is over the close button
      */
     private boolean isMouseOverCloseButton(double mouseX, double mouseY) {
         var client = MinecraftClient.getInstance();
@@ -228,7 +228,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the saturation-value picker.
+     * Renders the saturation-value picker
      */
     private void renderSVPicker(DrawContext context, int px, int py, int mouseX, int mouseY) {
         var matrices = context.getMatrices();
@@ -257,7 +257,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the hue slider.
+     * Renders the hue slider
      */
     private void renderHueSlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
         var config = SchrumboHUDClient.config;
@@ -317,7 +317,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Handles mouse clicks within the popup area.
+     * Handles mouse clicks within the popup area
      */
     private boolean handlePopupClick(double mouseX, double mouseY) {
         int contentY = popupY + TITLE_BAR_HEIGHT + 15;
@@ -375,7 +375,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Updates saturation and value based on mouse position.
+     * Updates saturation and value based on mouse position
      */
     private void updateSVFromMouse(double mouseX, double mouseY, int pickerX, int contentY) {
         saturation = Math.max(0, Math.min(1, (float) (mouseX - pickerX) / PICKER_SIZE));
@@ -386,7 +386,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Updates hue based on mouse position.
+     * Updates hue based on mouse position
      */
     private void updateHueFromMouse(double mouseY, int contentY) {
         hue = Math.max(0, Math.min(1, (float) (mouseY - contentY) / PICKER_SIZE));
@@ -396,7 +396,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Linearly interpolates between two colors.
+     * Linearly interpolates between two colors
      */
     private int lerpColor(int from, int to, float t) {
         int aFrom = (from >> 24) & 0xFF;
@@ -418,7 +418,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Converts RGB color to HSV color space.
+     * Converts RGB color to HSV color space
      */
     private static float[] rgbToHsv(int rgb) {
         float r = ((rgb >> 16) & 0xFF) / 255.0f;
@@ -445,7 +445,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Converts HSV color to RGB color space.
+     * Converts HSV color to RGB color space
      */
     private static int hsvToRgb(float h, float s, float v) {
         int i = (int) (h * 6);
@@ -473,14 +473,14 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Checks if the popup is currently open.
+     * Checks if the popup is currently open
      */
     public boolean isPopupOpen() {
         return popupOpen;
     }
 
     /**
-     * Closes the color picker popup.
+     * Closes the color picker popup
      */
     public void closePopup() {
         this.popupOpen = false;

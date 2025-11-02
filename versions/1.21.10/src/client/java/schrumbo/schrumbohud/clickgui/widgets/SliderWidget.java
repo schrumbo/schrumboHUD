@@ -26,6 +26,7 @@ public class SliderWidget extends Widget {
     private static final int HANDLE_HEIGHT = 16;
     private static final int TRACK_PADDING = 8;
     private static final int TRACK_HEIGHT = 4;
+    private static final int PADDING = 7;
 
     private final HudConfig config = SchrumboHUDClient.config;
     private final MinecraftClient client = MinecraftClient.getInstance();
@@ -46,8 +47,8 @@ public class SliderWidget extends Widget {
 
         RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
-        int labelX = x + 7;
-        int labelY = y + 7;
+        int labelX = x + PADDING;
+        int labelY = y + PADDING;
 
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
 
@@ -59,10 +60,15 @@ public class SliderWidget extends Widget {
         matrices.popMatrix();
 
         float currentValue = getter.get();
+        float valueTextSize = 1.5f;
         String valueText = formatValue(currentValue);
-        int valueWidth = client.textRenderer.getWidth(valueText);
-        context.drawText(client.textRenderer, Text.literal(valueText), x + width - 8 - valueWidth, y + 6, config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity), true);
+        int valueWidth = (int) (client.textRenderer.getWidth(valueText) * valueTextSize);
+        matrices.pushMatrix();
+        matrices.translate(x+ width - PADDING - valueWidth, y + PADDING);
+        matrices.scale(valueTextSize, valueTextSize);
 
+        context.drawText(client.textRenderer, Text.literal(valueText), 0, 0, config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity), true);
+        matrices.popMatrix();
         renderTrack(context, config, currentValue, mouseX, mouseY);
     }
 
