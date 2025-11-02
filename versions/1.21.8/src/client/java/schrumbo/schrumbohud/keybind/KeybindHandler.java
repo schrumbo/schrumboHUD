@@ -50,7 +50,7 @@ public class KeybindHandler {
             if(configKey.wasPressed()){
                 client.setScreen(new ClickGuiScreen());
             }
-            });
+        });
 
 
     }

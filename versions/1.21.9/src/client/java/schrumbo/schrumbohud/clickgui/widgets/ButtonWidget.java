@@ -19,7 +19,7 @@ public class ButtonWidget extends Widget {
 
 
     public ButtonWidget(int x, int y, int width, String label, Runnable onClick) {
-        super(x, y, width, 25, label);
+        super(x, y, width, 50, label);
         this.onClick = onClick;
     }
 
@@ -42,12 +42,18 @@ public class ButtonWidget extends Widget {
         }
 
 
-        int labelWidth = client.textRenderer.getWidth(label);
+        int labelWidth = (int) (client.textRenderer.getWidth(label) * config.guicolors.textSize);
         int labelX = x + (width - labelWidth) / 2;
         int labelY = y + (height - client.textRenderer.fontHeight) / 2;
 
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
-        context.drawText(textRenderer, Text.literal(label), labelX, labelY, textColor, true);
+
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(labelX, labelY);
+        matrices.scale(config.guicolors.textSize, config.guicolors.textSize);
+        context.drawText(textRenderer, Text.literal(label), 0, 0, textColor, true);
+        matrices.popMatrix();
     }
 
     @Override

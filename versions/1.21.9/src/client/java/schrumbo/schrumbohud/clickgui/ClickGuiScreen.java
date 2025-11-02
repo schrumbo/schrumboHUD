@@ -189,7 +189,7 @@ public class ClickGuiScreen extends Screen {
 
         RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, TITLE_BAR_HEIGHT, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelTitleBarOpacity));
 
-        String title = "SchrumboHUD";
+        String title = "";
         int titleX = panelX + (PANEL_WIDTH - client.textRenderer.getWidth(title)) / 2;
         int titleY = panelY + (TITLE_BAR_HEIGHT - 8) / 2;
         context.drawText(textRenderer, title, titleX, titleY, config.guicolors.text, true);

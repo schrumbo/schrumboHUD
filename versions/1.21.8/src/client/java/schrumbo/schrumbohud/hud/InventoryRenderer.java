@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
+import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class InventoryRenderer implements HudElement {
@@ -43,24 +44,22 @@ public class InventoryRenderer implements HudElement {
         if (!config.enabled || client == null || client.player == null) return;
 
         PlayerInventory inventory = client.player.getInventory();
-        float scale = 1.0f;
 
         int hudWidth = ROW_SLOTS * SLOT_SIZE + PADDING * 2;
         int hudHeight = ROWS * SLOT_SIZE + PADDING * 2;
 
-        int scaledWidth = (int) (hudWidth * scale);
-        int scaledHeight = (int) (hudHeight * scale);
 
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-        int x = calcX(config, screenWidth, scaledWidth);
-        int y = calcY(config, screenHeight, scaledHeight);
+
+
+        int x = calcX(config, screenWidth, hudWidth);
+        int y = calcY(config, screenHeight, hudHeight);
 
         var matrices = context.getMatrices();
         matrices.pushMatrix();
         matrices.translate(x, y);
-        matrices.scale(scale, scale);
 
         drawBackground(context, hudWidth, hudHeight, config);
         renderInventory(context, inventory, config);
@@ -68,29 +67,24 @@ public class InventoryRenderer implements HudElement {
         matrices.popMatrix();
     }
 
+
     /**
-     * Calculates X position based on anchor and offset
+     * Calculates X position from relative offset
      */
     private int calcX(HudConfig config, int screenWidth, int hudWidth) {
-        int offset = config.position.x;
-
         return switch (config.anchor.horizontal) {
-            case LEFT -> offset;
-            case CENTER -> (screenWidth / 2) - (hudWidth / 2) + offset;
-            case RIGHT -> screenWidth - hudWidth - offset;
+            case LEFT -> config.position.x;
+            case RIGHT -> screenWidth - hudWidth - config.position.x;
         };
     }
 
     /**
-     * Calculates Y position based on anchor and offset
+     * Calculates Y position from relative offset
      */
     private int calcY(HudConfig config, int screenHeight, int hudHeight) {
-        int offset = config.position.y;
-
         return switch (config.anchor.vertical) {
-            case TOP -> offset;
-            case CENTER -> (screenHeight / 2) - (hudHeight / 2) + offset;
-            case BOTTOM -> screenHeight - hudHeight - offset;
+            case TOP -> config.position.y;
+            case BOTTOM -> screenHeight - hudHeight - config.position.y;
         };
     }
 

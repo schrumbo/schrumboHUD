@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class HudConfig {
 
     public boolean enabled = true;
+    public boolean firstJoin = true;
 
     @SerializedName("anchor")
     public Anchor anchor = new Anchor();
@@ -29,13 +30,11 @@ public class HudConfig {
 
     public enum HorizontalAnchor {
         LEFT,
-        CENTER,
         RIGHT
     }
 
     public enum VerticalAnchor {
         TOP,
-        CENTER,
         BOTTOM
     }
 
@@ -47,45 +46,49 @@ public class HudConfig {
     public static class Colors {
         //HUD
         @SerializedName("background")
-        public int background = 0x5955D9;
+        public int background = 0x1E1E2E;
 
         @SerializedName("border")
-        public int border = 0x000000;
+        public int border = 0x89B4FA;
 
         @SerializedName("text")
-        public int text = 0xFFFFFF;
+        public int text = 0xCDD6F4;
 
 
         @SerializedName("slots")
-        public int slots = 0x000000;
-
-
+        public int slots = 0x313244;
 
     }
     //ClickGuiColors
     public class ClickGUIColors{
         //GENERAL ACCENT
         @SerializedName("accent")
-        public int accent = 0x927392;
+        public int accent = 0x5DADE2;
 
         //WIDGETS
         @SerializedName("text")
         public int text = 0xFFFFFFFF;
 
+        @SerializedName("textSize")
+        public final float textSize = 2.0f;
+
+        @SerializedName("headingSize")
+        public final float headingSize = 3f;
+
         @SerializedName("hoveredTextOpacity")
-        public float hoveredTextOpacity =  1.0f;
+        public final float hoveredTextOpacity =  1.0f;
 
         @SerializedName("widgetBorderOpacity")
-        public float widgetBorderOpacity =  0.6f;
+        public final float widgetBorderOpacity =  0.6f;
 
         @SerializedName("panelBorderOpacity")
-        public float panelBorderOpacity = 1.0f;
+        public final float panelBorderOpacity = 1.0f;
 
         @SerializedName("panelTitleBarOpacity")
-        public float panelTitleBarOpacity = 0.3f;
+        public final float panelTitleBarOpacity = 0.3f;
 
         @SerializedName("widgetAccentOpacity")
-        public float widgetAccentOpacity = 0.8f;
+        public final float widgetAccentOpacity = 0.8f;
 
         @SerializedName("widgetBackground")
         public int widgetBackground = colorWithAlpha(0x2a2a2a, 0.5f);
@@ -106,9 +109,6 @@ public class HudConfig {
         @SerializedName("panelBackground")
         public int panelBackground = colorWithAlpha(0x1a1a1a, 0.95f);
 
-
-
-
     }
 
     public void initColors(){
@@ -125,10 +125,11 @@ public class HudConfig {
     public boolean textShadowEnabled = true;
     public boolean slotBackgroundEnabled = true;
 
-    public float backgroundOpacity = 0.14f;
-    public float outlineOpacity = 0.5f;
-    public float textShadowOpacity = 1.0f;
-    public float slotBackgroundOpacity = 0.3f;
+    public float backgroundOpacity = 0.9f;
+    public float outlineOpacity = 1.0f;
+    public float textShadowOpacity = 0.8f;
+    public float slotBackgroundOpacity = 0.7f;
+
 
 
     public int colorWithAlpha(int color, float opacity){

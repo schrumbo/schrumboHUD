@@ -21,11 +21,12 @@ public class SliderWidget extends Widget {
 
     private boolean isDragging = false;
 
-    private static final int SLIDER_HEIGHT = 40;
+    private static final int SLIDER_HEIGHT = 50;
     private static final int HANDLE_WIDTH = 8;
     private static final int HANDLE_HEIGHT = 16;
     private static final int TRACK_PADDING = 8;
     private static final int TRACK_HEIGHT = 4;
+    private static final int PADDING = 7;
 
     private final HudConfig config = SchrumboHUDClient.config;
     private final MinecraftClient client = MinecraftClient.getInstance();
@@ -42,16 +43,32 @@ public class SliderWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        hovered = isHovered(mouseX, mouseY);
 
         RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, Text.literal(label), x + 7, y + 6, config.guicolors.text, true);
+        int labelX = x + PADDING;
+        int labelY = y + PADDING;
+
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(labelX, labelY);
+        matrices.scale(config.guicolors.textSize, config.guicolors.textSize);
+        context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
+        matrices.popMatrix();
 
         float currentValue = getter.get();
+        float valueTextSize = 1.5f;
         String valueText = formatValue(currentValue);
-        int valueWidth = client.textRenderer.getWidth(valueText);
-        context.drawText(client.textRenderer, Text.literal(valueText), x + width - 8 - valueWidth, y + 6, config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity), true);
+        int valueWidth = (int) (client.textRenderer.getWidth(valueText) * valueTextSize);
+        matrices.pushMatrix();
+        matrices.translate(x+ width - PADDING - valueWidth, y + PADDING);
+        matrices.scale(valueTextSize, valueTextSize);
 
+        context.drawText(client.textRenderer, Text.literal(valueText), 0, 0, config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity), true);
+        matrices.popMatrix();
         renderTrack(context, config, currentValue, mouseX, mouseY);
     }
 
@@ -123,6 +140,7 @@ public class SliderWidget extends Widget {
         }
         return false;
     }
+
 
     private void updateValueFromMouse(double mouseX) {
         int trackX = x + TRACK_PADDING;

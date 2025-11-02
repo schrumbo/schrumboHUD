@@ -27,9 +27,9 @@ public class ColorPickerWidget extends Widget {
     private float saturation = 1;
     private float value = 1;
 
-    private static final int WIDGET_HEIGHT = 40;
-    private static final int POPUP_WIDTH = 240;
-    private static final int POPUP_HEIGHT = 215;
+    private static final int WIDGET_HEIGHT = 50;
+    private static final int POPUP_WIDTH = 220;
+    private static final int POPUP_HEIGHT = 200;
     private static final int TITLE_BAR_HEIGHT = 30;
 
     private static final int PICKER_SIZE = 140;
@@ -84,10 +84,24 @@ public class ColorPickerWidget extends Widget {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-
+        hovered = isHovered(mouseX, mouseY);
+        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
         RenderUtils.fillRoundedRect(context, x, y, width, WIDGET_HEIGHT, 0.0f, config.guicolors.widgetBackground);
 
-        context.drawText(client.textRenderer, Text.literal(label), x + 7, y + 15, config.guicolors.text, true);
+        float textScale = config.guicolors.textSize;
+        int labelHeight = client.textRenderer.fontHeight;
+
+        int scaledHeight = (int)(labelHeight * textScale);
+
+        int labelX = x + 7;
+        int labelY = y + (WIDGET_HEIGHT - scaledHeight) / 2;
+
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(labelX, labelY);
+        matrices.scale(textScale, textScale);
+        context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
+        matrices.popMatrix();
 
         int previewSize = 20;
         int previewX = x + width - 8 - previewSize;
@@ -106,7 +120,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the color picker popup on a separate layer.
+     * Renders the color picker popup on a separate layer
      */
     public void renderPopupLayered(DrawContext context, int mouseX, int mouseY, float delta) {
         if (!popupOpen) return;
@@ -134,7 +148,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the main content of the color picker popup.
+     * Renders the main content of the color picker popup
      */
     private void renderPopupContent(DrawContext context, int mouseX, int mouseY, float delta) {
 
@@ -142,8 +156,6 @@ public class ColorPickerWidget extends Widget {
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-        //popupX = (screenWidth - POPUP_WIDTH) / 2;
-        //popupY = (screenHeight - POPUP_HEIGHT) / 2;
         centerPosX();
         centerPosY();
 
@@ -153,7 +165,7 @@ public class ColorPickerWidget extends Widget {
         int shadowColor = config.colorWithAlpha(0x000000, 0.4f);
         RenderUtils.fillRoundedRect(context, popupX + 2, popupY + 2, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, shadowColor);
 
-        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, config.guicolors.widgetBackground);
+        RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, config.guicolors.panelBackground);
 
         RenderUtils.drawRoundedRectWithOutline(context, popupX, popupY, POPUP_WIDTH, POPUP_HEIGHT, 0.0f, 2, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelBorderOpacity));
 
@@ -174,7 +186,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the close/save button for the color picker popup.
+     * Renders the close/save button for the color picker popup
      */
     private void renderCloseButton(DrawContext context, int mouseX, int mouseY, HudConfig config) {
         boolean isHovered = isMouseOverCloseButton(mouseX, mouseY);
@@ -200,7 +212,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Checks if the mouse is over the close button.
+     * Checks if the mouse is over the close button
      */
     private boolean isMouseOverCloseButton(double mouseX, double mouseY) {
         var client = MinecraftClient.getInstance();
@@ -216,7 +228,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the saturation-value picker.
+     * Renders the saturation-value picker
      */
     private void renderSVPicker(DrawContext context, int px, int py, int mouseX, int mouseY) {
         var matrices = context.getMatrices();
@@ -245,7 +257,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Renders the hue slider.
+     * Renders the hue slider
      */
     private void renderHueSlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
         var config = SchrumboHUDClient.config;
@@ -305,7 +317,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Handles mouse clicks within the popup area.
+     * Handles mouse clicks within the popup area
      */
     private boolean handlePopupClick(double mouseX, double mouseY) {
         int contentY = popupY + TITLE_BAR_HEIGHT + 15;
@@ -363,7 +375,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Updates saturation and value based on mouse position.
+     * Updates saturation and value based on mouse position
      */
     private void updateSVFromMouse(double mouseX, double mouseY, int pickerX, int contentY) {
         saturation = Math.max(0, Math.min(1, (float) (mouseX - pickerX) / PICKER_SIZE));
@@ -374,7 +386,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Updates hue based on mouse position.
+     * Updates hue based on mouse position
      */
     private void updateHueFromMouse(double mouseY, int contentY) {
         hue = Math.max(0, Math.min(1, (float) (mouseY - contentY) / PICKER_SIZE));
@@ -384,7 +396,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Linearly interpolates between two colors.
+     * Linearly interpolates between two colors
      */
     private int lerpColor(int from, int to, float t) {
         int aFrom = (from >> 24) & 0xFF;
@@ -406,7 +418,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Converts RGB color to HSV color space.
+     * Converts RGB color to HSV color space
      */
     private static float[] rgbToHsv(int rgb) {
         float r = ((rgb >> 16) & 0xFF) / 255.0f;
@@ -433,7 +445,7 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Converts HSV color to RGB color space.
+     * Converts HSV color to RGB color space
      */
     private static int hsvToRgb(float h, float s, float v) {
         int i = (int) (h * 6);
@@ -461,14 +473,14 @@ public class ColorPickerWidget extends Widget {
     }
 
     /**
-     * Checks if the popup is currently open.
+     * Checks if the popup is currently open
      */
     public boolean isPopupOpen() {
         return popupOpen;
     }
 
     /**
-     * Closes the color picker popup.
+     * Closes the color picker popup
      */
     public void closePopup() {
         this.popupOpen = false;
