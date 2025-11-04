@@ -207,9 +207,10 @@ public class ClickGuiScreen extends Screen {
         int scrollbarHeight = PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20;
 
         int trackColor = config.colorWithAlpha(0x000000, 0.3f);
-        context.fill(scrollbarX, scrollbarY, scrollbarX + scrollbarWidth, scrollbarY + scrollbarHeight, trackColor);
-
         int maxScroll = Math.max(0, contentHeight - (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20));
+
+        context.enableScissor(scrollbarX, scrollbarY, scrollbarX + scrollbarWidth, scrollbarY + scrollbarHeight);
+        context.fill(scrollbarX, scrollbarY, scrollbarX + scrollbarWidth, scrollbarY + scrollbarHeight, trackColor);
         if (maxScroll > 0) {
             float thumbHeightRatio = (float) (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20) / contentHeight;
             int thumbHeight = Math.max(20, (int) (scrollbarHeight * thumbHeightRatio));
@@ -218,6 +219,7 @@ public class ClickGuiScreen extends Screen {
             //SCROLLBAR THUMB
             RenderUtils.fillRoundedRect(context, scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
         }
+        context.disableScissor();
     }
 
 
