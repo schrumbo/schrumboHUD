@@ -13,6 +13,7 @@ public class ButtonWidget extends Widget {
     private boolean isPressed = false;
     private long lastClickTime = 0;
     private static final long CLICK_COOLDOWN_MS = 150;
+    private static final int PADDING = 7;
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
@@ -35,10 +36,10 @@ public class ButtonWidget extends Widget {
             bgColor = config.guicolors.widgetBackground;
         }
 
-        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, bgColor);
+        RenderUtils.fillRoundedRect(context, x, y, width - PADDING, height, 0.0f, bgColor);
 
         if (hovered) {
-            RenderUtils.drawRoundedRectWithOutline(context, x, y, width, height, 0.0f, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetBorderOpacity));
+            RenderUtils.drawRoundedRectWithOutline(context, x, y, width - PADDING, height, 0.0f, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetBorderOpacity));
         }
 
 
@@ -50,8 +51,8 @@ public class ButtonWidget extends Widget {
 
         var matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(labelX, labelY, 1);
-        matrices.scale(config.guicolors.textSize, config.guicolors.textSize, 1);
+        matrices.translate(labelX, labelY, 1.0f);
+        matrices.scale(config.guicolors.textSize, config.guicolors.textSize, 1.0f);
         context.drawText(textRenderer, Text.literal(label), 0, 0, textColor, true);
         matrices.pop();
     }

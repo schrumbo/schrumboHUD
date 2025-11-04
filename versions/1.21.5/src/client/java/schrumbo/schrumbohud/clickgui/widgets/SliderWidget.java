@@ -54,8 +54,8 @@ public class SliderWidget extends Widget {
 
         var matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(labelX, labelY, 1);
-        matrices.scale(config.guicolors.textSize, config.guicolors.textSize, 1);
+        matrices.translate(labelX, labelY, 1.0f);
+        matrices.scale(config.guicolors.textSize, config.guicolors.textSize, 1.0f);
         context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
         matrices.pop();
 
@@ -64,8 +64,8 @@ public class SliderWidget extends Widget {
         String valueText = formatValue(currentValue);
         int valueWidth = (int) (client.textRenderer.getWidth(valueText) * valueTextSize);
         matrices.push();
-        matrices.translate(x+ width - PADDING - valueWidth, y + PADDING, 1);
-        matrices.scale(valueTextSize, valueTextSize, 1);
+        matrices.translate(x+ width - PADDING - valueWidth, y + PADDING, 1.0f);
+        matrices.scale(valueTextSize, valueTextSize, 1.0f);
 
         context.drawText(client.textRenderer, Text.literal(valueText), 0, 0, config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity), true);
         matrices.pop();

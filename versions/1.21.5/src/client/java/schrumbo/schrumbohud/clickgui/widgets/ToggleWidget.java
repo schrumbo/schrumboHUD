@@ -45,8 +45,8 @@ public class ToggleWidget extends Widget {
 
         var matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(labelX, labelY, 1);
-        matrices.scale(config.guicolors.textSize, config.guicolors.textSize, 1);
+        matrices.translate(labelX, labelY, 1.0f);
+        matrices.scale(config.guicolors.textSize, config.guicolors.textSize, 1.0f);
         context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
         matrices.pop();
 
@@ -55,7 +55,6 @@ public class ToggleWidget extends Widget {
         int toggleY = y + WIDGET_HEIGHT / 4 + 3;
 
         int buttonBgColor = enabled ? config.colorWithAlpha(config.guicolors.accent, 0.5f) : config.colorWithAlpha(0x404040, 0.7f);
-        RenderUtils.fillRoundedRect(context, toggleX - PADDING, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
 
         int knobX = enabled ? toggleX + TOGGLE_WIDTH - KNOB_SIZE - 2 : toggleX + 2;
         int knobY = toggleY + 2;
@@ -63,11 +62,18 @@ public class ToggleWidget extends Widget {
         int knobColor = enabled ? config.colorWithAlpha(config.guicolors.accent, 1.0f) : config.colorWithAlpha(0x808080, 1.0f);
 
 
+
         if (hovered) {
             RenderUtils.fillRoundedRect(context, toggleX - PADDING, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, config.colorWithAlpha(0x404040, 0.8f));
+        }else{
+            RenderUtils.fillRoundedRect(context, toggleX - PADDING, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
         }
 
-        RenderUtils.fillRoundedRect(context, knobX - PADDING, knobY, KNOB_SIZE, KNOB_SIZE, 0.5f, knobColor);
+        matrices.push();
+        //RenderUtils.fillRoundedRect(context, knobX - PADDING, knobY, KNOB_SIZE, KNOB_SIZE, 0.2f, knobColor);
+        RenderUtils.drawRectWithCutCorners(context, knobX - PADDING, knobY, KNOB_SIZE, KNOB_SIZE, 1, knobColor);
+        matrices.pop();
+
     }
 
     @Override

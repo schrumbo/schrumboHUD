@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.clickgui.widgets.ButtonWidget;
-import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 import schrumbo.schrumbohud.hud.HudEditorScreen;
@@ -44,14 +43,6 @@ public class PositionCategory extends Category {
                 }
         ));
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new SliderWidget(
-                startX, currentY, width, "HUD Scale",
-                0.1f, 5.0f, "x",
-                () -> config.scale,
-                val -> config.scale = val
-        ));
-        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
     }
 
 }

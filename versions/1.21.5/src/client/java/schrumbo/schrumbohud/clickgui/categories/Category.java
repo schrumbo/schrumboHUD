@@ -82,8 +82,8 @@ public abstract class Category {
 
         var matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(labelX, labelY, 1);
-        matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize, 1);
+        matrices.translate(labelX, labelY, 1.0f);
+        matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize, 1.0f);
         context.drawText(client.textRenderer, Text.literal(name), 0, 0, textColor, true);
         matrices.pop();
 
@@ -91,8 +91,8 @@ public abstract class Category {
         String indicator = collapsed ? "▶" : "▼";
         int indicatorX = x + width - PADDING - client.textRenderer.getWidth(indicator) -13;
         matrices.push();
-        matrices.translate(indicatorX, labelY, 1);
-        matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize, 1);
+        matrices.translate(indicatorX, labelY, 1.0f);
+        matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize, 1.0f);
         context.drawText(client.textRenderer, Text.literal(indicator), 0, 0, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity), false);
         matrices.pop();
     }

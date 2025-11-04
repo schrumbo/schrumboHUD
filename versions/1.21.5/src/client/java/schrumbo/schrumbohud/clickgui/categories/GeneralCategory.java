@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
-import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
@@ -40,7 +39,7 @@ public class GeneralCategory extends Category {
                 startX, currentY, width,
                 "ClickGUI Accent Color",
                 () -> config.guicolors.accent,
-                (color) -> config.setAccentColor(color)
+                config::setAccentColor
         ));
 
 

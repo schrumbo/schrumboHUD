@@ -17,18 +17,23 @@ import java.util.function.Supplier;
 public class ColorPickerWidget extends Widget {
     private final Supplier<Integer> colorGetter;
     private final Consumer<Integer> colorSetter;
+    private final Supplier<Float> opacityGetter;
+    private final Consumer<Float> opacitySetter;
 
     private boolean popupOpen = false;
+    private boolean hasOpacityControl = false;
 
     private boolean draggingSV = false;
     private boolean draggingHue = false;
+    private boolean draggingOpacity = false;
 
     private float hue = 0;
     private float saturation = 1;
     private float value = 1;
+    private float opacity;
 
     private static final int WIDGET_HEIGHT = 50;
-    private static final int POPUP_WIDTH = 220;
+    private static final int POPUP_WIDTH = 245;
     private static final int POPUP_HEIGHT = 200;
     private static final int TITLE_BAR_HEIGHT = 30;
 
@@ -61,7 +66,7 @@ public class ColorPickerWidget extends Widget {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     /**
-     * Creates a new color picker widget.
+     * Color Picker widget with opacity Slider;
      *
      * @param x The x-coordinate of the widget
      * @param y The y-coordinate of the widget
@@ -70,12 +75,41 @@ public class ColorPickerWidget extends Widget {
      * @param colorGetter Supplier for the current color value
      * @param colorSetter Consumer for setting the new color value
      */
+    public ColorPickerWidget(int x, int y, int width, String label, Supplier<Integer> colorGetter, Consumer<Integer> colorSetter, Supplier<Float> opacityGetter, Consumer<Float> opacitySetter) {
+        super(x, y, width, WIDGET_HEIGHT, label);
+        this.colorGetter = colorGetter;
+        this.colorSetter = colorSetter;
+        this.opacityGetter = opacityGetter;
+        this.opacitySetter = opacitySetter;
+
+        int color = colorGetter.get();
+        this.hasOpacityControl = true;
+        this.opacity = opacityGetter.get();
+        float[] hsv = rgbToHsv(color);
+        this.hue = hsv[0];
+        this.saturation = hsv[1];
+        this.value = hsv[2];
+    }
+
+    /**
+     * Color Picker Widget without Opacity Slider
+     * @param x
+     * @param y
+     * @param width
+     * @param label
+     * @param colorGetter
+     * @param colorSetter
+     */
     public ColorPickerWidget(int x, int y, int width, String label, Supplier<Integer> colorGetter, Consumer<Integer> colorSetter) {
         super(x, y, width, WIDGET_HEIGHT, label);
         this.colorGetter = colorGetter;
         this.colorSetter = colorSetter;
+        this.opacityGetter = () -> 1.0f;
+        this.opacitySetter = f -> {};
+        this.hasOpacityControl = false;
 
         int color = colorGetter.get();
+        this.opacity = 1.0f;
         float[] hsv = rgbToHsv(color);
         this.hue = hsv[0];
         this.saturation = hsv[1];
@@ -85,6 +119,7 @@ public class ColorPickerWidget extends Widget {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         hovered = isHovered(mouseX, mouseY);
+
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
         RenderUtils.fillRoundedRect(context, x, y, width, WIDGET_HEIGHT, 0.0f, config.guicolors.widgetBackground);
 
@@ -98,8 +133,8 @@ public class ColorPickerWidget extends Widget {
 
         var matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(labelX, labelY, 1);
-        matrices.scale(textScale, textScale, 1);
+        matrices.translate(labelX, labelY, 1.0f);
+        matrices.scale(textScale, textScale, 1.0f);
         context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
         matrices.pop();
 
@@ -107,10 +142,13 @@ public class ColorPickerWidget extends Widget {
         int previewX = x + width - 8 - previewSize;
         int previewY = y + (WIDGET_HEIGHT - previewSize) / 2;
 
-        int previewColor = colorGetter.get();
+        int previewColor = config.colorWithAlpha(colorGetter.get(), opacityGetter.get());
         int borderColor = config.colorWithAlpha(0x404040, 0.8f);
         RenderUtils.drawRectWithCutCorners(context, previewX - 2, previewY - 2, previewSize + 4, previewSize + 4, 1, borderColor);
-        RenderUtils.fillRoundedRect(context, previewX, previewY, previewSize, previewSize, 0.0f, 0xFF000000 | previewColor);
+
+        RenderUtils.fillCheckerboard(context, previewX, previewY, previewSize, previewSize, 6);
+        RenderUtils.fillRoundedRect(context, previewX, previewY, previewSize, previewSize, 0.0f, previewColor);
+
         if (popupOpen) {
             panelX = popupX;
             panelY = popupY;
@@ -181,8 +219,10 @@ public class ColorPickerWidget extends Widget {
         int pickerX = popupX + PADDING;
 
         renderSVPicker(context, pickerX, contentY, mouseX, mouseY);
-        int sliderX = pickerX + PICKER_SIZE + SLIDER_SPACING;
-        renderHueSlider(context, sliderX, contentY, mouseX, mouseY);
+        int hueSliderX = pickerX + PICKER_SIZE + SLIDER_SPACING;
+        renderHueSlider(context, hueSliderX, contentY, mouseX, mouseY);
+        int opacitySliderX = hueSliderX + SLIDER_WIDTH + SLIDER_SPACING;
+        renderOpacitySlider(context, opacitySliderX, contentY, mouseX, mouseY);
     }
 
     /**
@@ -192,7 +232,7 @@ public class ColorPickerWidget extends Widget {
         boolean isHovered = isMouseOverCloseButton(mouseX, mouseY);
         var client = MinecraftClient.getInstance();
 
-        String closeText = "save";
+        String closeText = "close";
         int textWidth = client.textRenderer.getWidth(closeText);
 
         int buttonWidth = textWidth + 12;
@@ -232,6 +272,7 @@ public class ColorPickerWidget extends Widget {
      */
     private void renderSVPicker(DrawContext context, int px, int py, int mouseX, int mouseY) {
         var matrices = context.getMatrices();
+        context.enableScissor(px, py, px + PICKER_SIZE, py + PICKER_SIZE);
         matrices.push();
 
         int baseColor = hsvToRgb(hue, 1.0f, 1.0f);
@@ -240,7 +281,6 @@ public class ColorPickerWidget extends Widget {
             int gradColor = lerpColor(0xFFFFFFFF, 0xFF000000 | baseColor, s);
             context.fill(px + i, py, px + i + 1, py + PICKER_SIZE, gradColor);
         }
-
         for (int i = 0; i < PICKER_SIZE; i++) {
             float v = 1.0f - ((float) i / PICKER_SIZE);
             int alpha = (int) ((1.0f - v) * 255);
@@ -248,11 +288,12 @@ public class ColorPickerWidget extends Widget {
             context.fill(px, py + i, px + PICKER_SIZE, py + i + 1, blackOverlay);
         }
 
+
         int cursorX = px + (int) (saturation * PICKER_SIZE);
         int cursorY = py + (int) ((1.0f - value) * PICKER_SIZE);
         RenderUtils.drawRoundedRectWithOutline(context, cursorX - 2, cursorY - 2, 4, 4, 0.0f, 1, 0xFFFFFFFF);
         RenderUtils.drawRoundedRectWithOutline(context, cursorX - 3, cursorY - 3, 6, 6, 0.0f, 1, 0xFF000000);
-
+        context.disableScissor();
         matrices.pop();
     }
 
@@ -260,30 +301,57 @@ public class ColorPickerWidget extends Widget {
      * Renders the hue slider
      */
     private void renderHueSlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
-        var config = SchrumboHUDClient.config;
-
-        int trackBgColor = config.colorWithAlpha(0x000000, 0.3f);
-        RenderUtils.fillRoundedRect(context, sx, sy, SLIDER_WIDTH, PICKER_SIZE, 0.15f, trackBgColor);
-
         for (int i = 0; i < PICKER_SIZE; i++) {
             float h = (float) i / PICKER_SIZE;
             int color = 0xFF000000 | hsvToRgb(h, 1.0f, 1.0f);
             context.fill(sx, sy + i, sx + SLIDER_WIDTH, sy + i + 1, color);
         }
+        renderSliderHandle(context, sx, sy, mouseX, mouseY, hue, false);
+    }
 
-        int outlineColor = config.colorWithAlpha(0xFFFFFF, 0.2f);
-        RenderUtils.drawRoundedRectWithOutline(context, sx, sy, SLIDER_WIDTH, PICKER_SIZE, 0.15f, 1, outlineColor);
+    private void renderOpacitySlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
+        if(!hasOpacityControl)return;
 
-        int handleY = sy + (int) (hue * PICKER_SIZE) - HANDLE_HEIGHT / 2;
+        context.fill(sx, sy, sx + SLIDER_WIDTH, sy + PICKER_SIZE, 0xFFFFFFFF);
+
+        int baseColor = colorGetter.get();
+
+        for (int i = 0; i < PICKER_SIZE; i++) {
+            float alpha = 1.0f - ((float) i / PICKER_SIZE);
+            int color = config.colorWithAlpha(baseColor, alpha);
+            context.fill(sx, sy + i, sx + SLIDER_WIDTH, sy + i + 1, color);
+        }
+
+        renderSliderHandle(context, sx, sy, mouseX, mouseY, opacity, true);
+    }
+
+    /**
+     *
+     * @param context
+     * @param sx
+     * @param sy
+     * @param mouseX
+     * @param mouseY
+     * @param variable the value that should be changed, either hue or opacity
+     */
+    private void renderSliderHandle(DrawContext context, int sx, int sy, int mouseX, int mouseY, float variable, boolean reverse) {
+        int handleY;
+        if (reverse){
+            handleY = sy + (int) ((1.0f - opacity) * PICKER_SIZE) - HANDLE_HEIGHT / 2;
+        }else{
+            handleY = sy + (int) (variable * PICKER_SIZE) - HANDLE_HEIGHT / 2;
+        }
+
         handleY = Math.max(sy - HANDLE_HEIGHT / 2, Math.min(handleY, sy + PICKER_SIZE - HANDLE_HEIGHT / 2));
         int handleX = sx + (SLIDER_WIDTH - HANDLE_WIDTH) / 2;
 
         boolean hovered = mouseX >= sx - 5 && mouseX <= sx + SLIDER_WIDTH + 5 &&
                 mouseY >= handleY && mouseY <= handleY + HANDLE_HEIGHT;
 
-        int handleColor =hovered || draggingHue ? config.guicolors.sliderHandleHovered : config.guicolors.sliderHandle;
+        int handleColor = hovered || draggingHue ? config.guicolors.sliderHandleHovered : config.guicolors.sliderHandle;
         RenderUtils.drawRectWithCutCorners(context, handleX, handleY, HANDLE_WIDTH, HANDLE_HEIGHT, 2, handleColor);
     }
+
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -322,19 +390,24 @@ public class ColorPickerWidget extends Widget {
     private boolean handlePopupClick(double mouseX, double mouseY) {
         int contentY = popupY + TITLE_BAR_HEIGHT + 15;
         int pickerX = popupX + PADDING;
-        int sliderX = pickerX + PICKER_SIZE + SLIDER_SPACING;
+        int hueSliderX = pickerX + PICKER_SIZE + SLIDER_SPACING;
+        int opacitySliderX = hueSliderX + SLIDER_WIDTH + SLIDER_SPACING;
 
-        if (mouseX >= pickerX && mouseX <= pickerX + PICKER_SIZE &&
-                mouseY >= contentY && mouseY <= contentY + PICKER_SIZE) {
+        if (mouseX >= pickerX && mouseX <= pickerX + PICKER_SIZE && mouseY >= contentY && mouseY <= contentY + PICKER_SIZE) {
             draggingSV = true;
             updateSVFromMouse(mouseX, mouseY, pickerX, contentY);
             return true;
         }
 
-        if (mouseX >= sliderX && mouseX <= sliderX + SLIDER_WIDTH &&
-                mouseY >= contentY && mouseY <= contentY + PICKER_SIZE) {
+        if (mouseX >= hueSliderX && mouseX <= hueSliderX + SLIDER_WIDTH && mouseY >= contentY && mouseY <= contentY + PICKER_SIZE) {
             draggingHue = true;
             updateHueFromMouse(mouseY, contentY);
+            return true;
+        }
+
+        if (hasOpacityControl && mouseX >= opacitySliderX && mouseX <= opacitySliderX + SLIDER_WIDTH && mouseY >= contentY && mouseY <= contentY + PICKER_SIZE) {
+            draggingOpacity = true;
+            updateOpacityFromMouse(mouseY, contentY);
             return true;
         }
 
@@ -358,6 +431,11 @@ public class ColorPickerWidget extends Widget {
             return true;
         }
 
+        if(draggingOpacity){
+            updateOpacityFromMouse(mouseY, contentY);
+            return true;
+        }
+
         return false;
     }
 
@@ -368,10 +446,16 @@ public class ColorPickerWidget extends Widget {
         if (draggingSV || draggingHue) {
             draggingSV = false;
             draggingHue = false;
+            draggingOpacity = false;
             return true;
         }
 
         return false;
+    }
+
+    private void updateOpacityFromMouse(double mouseY, int contentY) {
+        opacity = Math.max(0, Math.min(1, 1.0f - (float) (mouseY - contentY) / PICKER_SIZE)); // Inverted!
+        opacitySetter.accept(opacity);
     }
 
     /**
