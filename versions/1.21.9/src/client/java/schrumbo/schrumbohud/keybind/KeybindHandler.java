@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import schrumbo.schrumbohud.SchrumboHUD;
 import schrumbo.schrumbohud.SchrumboHUDClient;
+import schrumbo.schrumbohud.Utils.ChatUtils;
 import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
@@ -45,6 +46,7 @@ public class KeybindHandler {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if(toggleHudKey.wasPressed()){
+                ChatUtils.modMessage("Toggled InventoryHUD");
                 SchrumboHUDClient.config.toggle();
                 ConfigManager.save();
             }

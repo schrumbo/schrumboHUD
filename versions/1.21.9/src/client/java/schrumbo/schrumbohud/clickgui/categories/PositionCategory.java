@@ -2,8 +2,12 @@ package schrumbo.schrumbohud.clickgui.categories;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
+import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.clickgui.widgets.ButtonWidget;
+import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 import schrumbo.schrumbohud.hud.HudEditorScreen;

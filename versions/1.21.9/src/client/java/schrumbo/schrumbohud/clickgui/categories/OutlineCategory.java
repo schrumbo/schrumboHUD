@@ -2,7 +2,10 @@ package schrumbo.schrumbohud.clickgui.categories;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
+import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
@@ -28,21 +31,14 @@ public class OutlineCategory extends Category {
                 val -> config.outlineEnabled = val
         ));
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
-        widgets.add(new SliderWidget(
-                startX, currentY, width, "Opacity",
-                0.0f, 1.0f, "x",
-                () -> config.outlineOpacity,
-                val -> config.outlineOpacity= val
-        ));
-        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
         widgets.add(new ColorPickerWidget(
                 startX, currentY, width,
-                "Outline Color",
+                "Border Color",
                 () -> config.colors.border,
-                (color) -> config.setBorderColor(color)
-        ));
+                config::setBorderColor,
+                () -> config.outlineOpacity,
+                config::setBorderOpacity)
+        );
     }
 
 }

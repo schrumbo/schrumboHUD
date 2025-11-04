@@ -31,19 +31,11 @@ public class TextCategory extends Category {
                 val -> config.textShadowEnabled = val
         ));
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
-        widgets.add(new SliderWidget(
-                startX, currentY, width, "Text Shadow Opacity",
-                0.0f, 1.0f, "x",
-                () -> config.textShadowOpacity,
-                val -> config.textShadowOpacity = val
-        ));
-        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
         widgets.add(new ColorPickerWidget(
                 startX, currentY, width,
                 "Text Color",
                 () -> config.colors.text,
-                (color) -> config.setTextColor(color)
+                config::setTextColor
         ));
     }
 

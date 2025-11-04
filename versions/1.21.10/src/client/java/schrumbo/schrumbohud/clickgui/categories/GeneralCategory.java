@@ -44,7 +44,7 @@ public class GeneralCategory extends Category {
                 startX, currentY, width,
                 "ClickGUI Accent Color",
                 () -> config.guicolors.accent,
-                (color) -> config.setAccentColor(color)
+                config::setAccentColor
         ));
 
 

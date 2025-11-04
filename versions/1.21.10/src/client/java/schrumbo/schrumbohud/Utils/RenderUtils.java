@@ -1,6 +1,9 @@
 package schrumbo.schrumbohud.Utils;
 
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 
 public class RenderUtils {
 
@@ -182,6 +185,27 @@ public class RenderUtils {
         context.fill(x, y + height - 1, x + width, y + height, color);
         context.fill(x, y, x + 1, y + height, color);
         context.fill(x + width - 1, y, x + width, y + height, color);
+    }
+
+    public static void fillCheckerboard(DrawContext context, int x, int y, int width, int height, int squareSize) {
+
+        int lightColor = 0xFFFFFFFF;
+        int darkColor = 0xFFC0C0C0;
+
+        for (int row = 0; row < Math.ceil((double) height / squareSize); row++) {
+            for (int col = 0; col < Math.ceil((double) width / squareSize); col++) {
+                boolean isLight = (row + col) % 2 == 0;
+                int color = isLight ? lightColor : darkColor;
+
+                int squareX = x + col * squareSize;
+                int squareY = y + row * squareSize;
+                int squareW = Math.min(squareSize, width - col * squareSize);
+                int squareH = Math.min(squareSize, height - row * squareSize);
+
+                context.fill(squareX, squareY, squareX + squareW, squareY + squareH, color);
+            }
+        }
+
     }
 
 }

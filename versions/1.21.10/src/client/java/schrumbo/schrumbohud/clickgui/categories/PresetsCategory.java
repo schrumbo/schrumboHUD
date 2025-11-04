@@ -31,16 +31,6 @@ public class PresetsCategory extends Category {
 
         widgets.add(new ButtonWidget(
                 startX, currentY, width,
-                "Classic InventoryHUD+",
-                () -> {
-                    SchrumboHUDClient.config.loadClassicInventoryHUD();
-                    ConfigManager.save();
-                }
-        ));
-        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
-        widgets.add(new ButtonWidget(
-                startX, currentY, width,
                 "Catppuccin Mocha",
                 () -> {
                     SchrumboHUDClient.config.loadCatppuccinMocha();
@@ -48,7 +38,6 @@ public class PresetsCategory extends Category {
                 }
         ));
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
         widgets.add(new ButtonWidget(
                 startX, currentY, width,
                 "Gruvbox",
@@ -58,7 +47,6 @@ public class PresetsCategory extends Category {
                 }
         ));
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
         widgets.add(new ButtonWidget(
                 startX, currentY, width,
                 "Monokai",
@@ -68,7 +56,6 @@ public class PresetsCategory extends Category {
                 }
         ));
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-
         widgets.add(new ButtonWidget(
                 startX, currentY, width,
                 "Dracula",
