@@ -1,5 +1,6 @@
 package schrumbo.schrumbohud.clickgui.widgets;
 
+import com.sun.jna.platform.win32.WinBase;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
@@ -232,7 +233,7 @@ public class ColorPickerWidget extends Widget {
         boolean isHovered = isMouseOverCloseButton(mouseX, mouseY);
         var client = MinecraftClient.getInstance();
 
-        String closeText = "save";
+        String closeText = "close";
         int textWidth = client.textRenderer.getWidth(closeText);
 
         int buttonWidth = textWidth + 12;
@@ -272,15 +273,15 @@ public class ColorPickerWidget extends Widget {
      */
     private void renderSVPicker(DrawContext context, int px, int py, int mouseX, int mouseY) {
         var matrices = context.getMatrices();
+        context.enableScissor(px, py, px + PICKER_SIZE, py + PICKER_SIZE);
         matrices.pushMatrix();
 
         int baseColor = hsvToRgb(hue, 1.0f, 1.0f);
         for (int i = 0; i < PICKER_SIZE; i++) {
             float s = (float) i / PICKER_SIZE;
             int gradColor = lerpColor(0xFFFFFFFF, 0xFF000000 | baseColor, s);
-            context.fill(px + i, py, px + i + 1, py + PICKER_SIZE - 1, gradColor);
+            context.fill(px + i, py, px + i + 1, py + PICKER_SIZE, gradColor);
         }
-
         for (int i = 0; i < PICKER_SIZE; i++) {
             float v = 1.0f - ((float) i / PICKER_SIZE);
             int alpha = (int) ((1.0f - v) * 255);
@@ -288,11 +289,12 @@ public class ColorPickerWidget extends Widget {
             context.fill(px, py + i, px + PICKER_SIZE, py + i + 1, blackOverlay);
         }
 
+
         int cursorX = px + (int) (saturation * PICKER_SIZE);
         int cursorY = py + (int) ((1.0f - value) * PICKER_SIZE);
         RenderUtils.drawRoundedRectWithOutline(context, cursorX - 2, cursorY - 2, 4, 4, 0.0f, 1, 0xFFFFFFFF);
         RenderUtils.drawRoundedRectWithOutline(context, cursorX - 3, cursorY - 3, 6, 6, 0.0f, 1, 0xFF000000);
-
+        context.disableScissor();
         matrices.popMatrix();
     }
 
@@ -300,23 +302,18 @@ public class ColorPickerWidget extends Widget {
      * Renders the hue slider
      */
     private void renderHueSlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
-
-
         for (int i = 0; i < PICKER_SIZE; i++) {
             float h = (float) i / PICKER_SIZE;
             int color = 0xFF000000 | hsvToRgb(h, 1.0f, 1.0f);
             context.fill(sx, sy + i, sx + SLIDER_WIDTH, sy + i + 1, color);
         }
-
-        int outlineColor = config.colorWithAlpha(0xFFFFFF, 0.2f);
-        RenderUtils.drawRoundedRectWithOutline(context, sx, sy, SLIDER_WIDTH, PICKER_SIZE, 0.15f, 1, outlineColor);
-
         renderSliderHandle(context, sx, sy, mouseX, mouseY, hue, false);
     }
 
     private void renderOpacitySlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
         if(!hasOpacityControl)return;
-        RenderUtils.fillCheckerboard(context, sx, sy, SLIDER_WIDTH, PICKER_SIZE, 6);
+
+        context.fill(sx, sy, sx + SLIDER_WIDTH, sy + PICKER_SIZE, 0xFFFFFFFF);
 
         int baseColor = colorGetter.get();
 

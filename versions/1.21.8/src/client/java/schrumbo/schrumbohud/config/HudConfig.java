@@ -224,10 +224,14 @@ public class HudConfig {
     public void setBackgroundColor(int color) {
         colors.background = color;
     }
+    public void setBackgroundOpacity(float opacity){
+        backgroundOpacity = opacity;
+    }
 
     public void setBorderColor(int color) {
         colors.border = color;
     }
+    public void setBorderOpacity(float opacity){outlineOpacity = opacity;}
 
     public void setTextColor(int color) {
         colors.text = color;
@@ -240,4 +244,5 @@ public class HudConfig {
     public void setSlotColor(int color){
         colors.slots = color;
     }
+    public void setSlotOpacity(float opacity){slotBackgroundOpacity = opacity;}
 }

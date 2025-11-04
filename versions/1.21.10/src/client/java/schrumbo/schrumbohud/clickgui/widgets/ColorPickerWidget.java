@@ -302,17 +302,11 @@ public class ColorPickerWidget extends Widget {
      * Renders the hue slider
      */
     private void renderHueSlider(DrawContext context, int sx, int sy, int mouseX, int mouseY) {
-
-
         for (int i = 0; i < PICKER_SIZE; i++) {
             float h = (float) i / PICKER_SIZE;
             int color = 0xFF000000 | hsvToRgb(h, 1.0f, 1.0f);
             context.fill(sx, sy + i, sx + SLIDER_WIDTH, sy + i + 1, color);
         }
-
-        int outlineColor = config.colorWithAlpha(0xFFFFFF, 0.2f);
-        RenderUtils.drawRoundedRectWithOutline(context, sx, sy, SLIDER_WIDTH, PICKER_SIZE, 0.15f, 1, outlineColor);
-
         renderSliderHandle(context, sx, sy, mouseX, mouseY, hue, false);
     }
 

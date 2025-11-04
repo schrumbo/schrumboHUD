@@ -2,7 +2,6 @@ package schrumbo.schrumbohud.clickgui.widgets;
 
 import net.minecraft.client.gui.DrawContext;
 import schrumbo.schrumbohud.Utils.Utils;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 
 public abstract class Widget {
     protected int x, y;
