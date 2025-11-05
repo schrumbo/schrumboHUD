@@ -73,7 +73,7 @@ public class HudConfig {
         public final float textSize = 2.0f;
 
         @SerializedName("headingSize")
-        public final float headingSize = 3f;
+        public final float headingSize = 2.0f;
 
         @SerializedName("hoveredTextOpacity")
         public final float hoveredTextOpacity =  1.0f;

@@ -21,7 +21,6 @@ public class SchrumboHUDClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		initTime = Util.getMeasuringTimeMs();
 		LOGGER.info("initializing SchrumboHUD");
-
 		configManager = new ConfigManager();
 		config = configManager.load();
 
