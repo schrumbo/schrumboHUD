@@ -19,9 +19,9 @@ public class ButtonWidget extends Widget {
     private final HudConfig config = SchrumboHUDClient.config;
 
 
-    public ButtonWidget(int x, int y, int width, String label, Runnable onClick) {
-        super(x, y, width, 50, label);
-        this.onClick = onClick;
+    private ButtonWidget(Builder builder){
+        super(builder);
+        this.onClick = builder.onClick;
     }
 
     @Override
@@ -91,5 +91,28 @@ public class ButtonWidget extends Widget {
     private boolean isHovered(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + width &&
                 mouseY >= y && mouseY <= y + height;
+    }
+
+    public static class Builder extends Widget.Builder<Builder> {
+        private Runnable onClick;
+
+        public Builder onClick(Runnable onClick) {
+            this.onClick = onClick;
+            return this;
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        @Override
+        public ButtonWidget build() {
+            return new ButtonWidget(this);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 }

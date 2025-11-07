@@ -2,13 +2,8 @@ package schrumbo.schrumbohud.clickgui.categories;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
-import schrumbo.schrumbohud.Utils.RenderUtils;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
-import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
@@ -27,20 +22,32 @@ public class BackgroundCategory extends Category {
     public void initializeWidgets(int startX, int startY, int width) {
 
         int currentY = startY;
-        widgets.add(new ToggleWidget(
-                startX, currentY, width, "Toggle Background",
-                () -> config.backgroundEnabled,
-                val -> config.backgroundEnabled = val
-        ));
+
+        ToggleWidget toggleBackground = ToggleWidget.builder()
+                .width(width)
+                .label("Toggle Background")
+                .y(currentY)
+                .value(()->config.backgroundEnabled, config::enableBackground)
+                .build();
+        widgets.add(toggleBackground);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ColorPickerWidget(
-                startX, currentY, width,
-                "Background Color",
-                () -> config.colors.background,
-                config::setBackgroundColor,
-                () -> config.backgroundOpacity,
-                config::setBackgroundOpacity)
-        );
+
+        ColorPickerWidget backgroundColorPicker = ColorPickerWidget.builder()
+                .color(() -> config.colors.background, config::setBackgroundColor)
+                .opacity(() -> config.backgroundOpacity, config::setBackgroundOpacity)
+                .label("background color")
+                .y(currentY)
+                .width(width)
+                .build();
+        widgets.add(backgroundColorPicker);
+
+
+
+
+
+
+
     }
 
 

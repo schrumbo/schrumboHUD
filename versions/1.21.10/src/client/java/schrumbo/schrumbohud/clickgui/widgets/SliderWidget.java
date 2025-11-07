@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 
 
 public class SliderWidget extends Widget {
-    private final String label;
     private final float min;
     private final float max;
     private final String suffix;
@@ -31,15 +30,58 @@ public class SliderWidget extends Widget {
     private final HudConfig config = SchrumboHUDClient.config;
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    public SliderWidget(int x, int y, int width, String label, float min, float max, String suffix, Supplier<Float> getter, Consumer<Float> setter) {
-        super(x, y, width, SLIDER_HEIGHT, label);
-        this.label = label;
-        this.min = min;
-        this.max = max;
-        this.suffix = suffix;
-        this.getter = getter;
-        this.setter = setter;
+
+    private SliderWidget(Builder builder){
+        super(builder);
+        this.setter = builder.setter;
+        this.getter = builder.getter;
+        this.suffix = builder.suffix;
+        this.min = builder.min;
+        this.max = builder.max;
     }
+
+
+    public static class Builder extends Widget.Builder<Builder>{
+        private float min;
+        private float max;
+        private String suffix;
+        private Supplier<Float> getter;
+        private Consumer<Float> setter;
+
+        public Builder range(float min, float max){
+            this.min = min;
+            this.max = max;
+            return this;
+        }
+
+        public Builder value(Supplier<Float> getter, Consumer<Float> setter){
+            this.getter = getter;
+            this.setter = setter;
+            return this;
+        }
+
+        public Builder suffix(String suffix){
+            this.suffix = suffix;
+            return this;
+        }
+
+        @Override
+        protected Builder self(){
+            return this;
+        }
+        @Override
+        public SliderWidget build(){
+            if(getter == null || setter == null){
+                throw new IllegalStateException("Setter and getter must be set");
+            }
+            return new SliderWidget(this);
+        }
+    }
+
+    public static Builder builder(){
+        return new Builder();
+    }
+
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {

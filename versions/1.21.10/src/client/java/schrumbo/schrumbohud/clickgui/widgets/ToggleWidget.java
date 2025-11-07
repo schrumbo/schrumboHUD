@@ -23,11 +23,42 @@ public class ToggleWidget extends Widget {
     private final HudConfig config = SchrumboHUDClient.config;
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    public ToggleWidget(int x, int y, int width, String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        super(x, y, width, WIDGET_HEIGHT, label);
-        this.getter = getter;
-        this.setter = setter;
+
+    public ToggleWidget(Builder builder){
+        super(builder);
+        this.getter = builder.getter;
+        this.setter = builder.setter;
     }
+
+    public static class Builder extends Widget.Builder<Builder>{
+        private  Supplier<Boolean> getter;
+        private Consumer<Boolean> setter;
+
+
+        public Builder value(Supplier<Boolean> getter, Consumer<Boolean> setter){
+            this.getter = getter;
+            this.setter = setter;
+            return this;
+        }
+
+        @Override
+        protected Builder self(){
+            return this;
+        }
+
+        @Override
+        public ToggleWidget build(){
+            if(getter == null || setter == null){
+                throw new IllegalStateException("Setter and getter must be set");
+            }
+            return new ToggleWidget(this);
+        }
+    }
+
+    public static Builder builder(){
+        return new Builder();
+    }
+
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {

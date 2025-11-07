@@ -11,6 +11,8 @@ import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
+import java.awt.*;
+
 public class OutlineCategory extends Category {
 
     private final MinecraftClient client = net.minecraft.client.MinecraftClient.getInstance();
@@ -25,20 +27,25 @@ public class OutlineCategory extends Category {
     public void initializeWidgets(int startX, int startY, int width) {
 
         int currentY = startY;
-        widgets.add(new ToggleWidget(
-                startX, currentY, width, "Toggle Outline",
-                () -> config.outlineEnabled,
-                val -> config.outlineEnabled = val
-        ));
+
+        ToggleWidget toggleOutline = ToggleWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Toggle Outline")
+                .value(()->config.outlineEnabled, config::enableBorder)
+                .build();
+        widgets.add(toggleOutline);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ColorPickerWidget(
-                startX, currentY, width,
-                "Border Color",
-                () -> config.colors.border,
-                config::setBorderColor,
-                () -> config.outlineOpacity,
-                config::setBorderOpacity)
-        );
+
+        ColorPickerWidget borderColorPicker = ColorPickerWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Border Color")
+                .color(() -> config.colors.border, config::setBorderColor)
+                .opacity(() -> config.outlineOpacity, config::setBorderOpacity)
+                .build();
+        widgets.add(borderColorPicker);
     }
 
 }

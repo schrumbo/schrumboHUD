@@ -25,20 +25,26 @@ public class SlotCategory extends Category {
     public void initializeWidgets(int startX, int startY, int width) {
 
         int currentY = startY;
-        widgets.add(new ToggleWidget(
-                startX, currentY, width, "Toggle Slot Background",
-                () -> config.slotBackgroundEnabled,
-                val -> config.slotBackgroundEnabled = val
-        ));
+
+        ToggleWidget toggleSlotBackground = ToggleWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Toggle Slot Background")
+                .value(()->config.slotBackgroundEnabled, config::enableSlotBackground)
+                .build();
+        widgets.add(toggleSlotBackground);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ColorPickerWidget(
-                startX, currentY, width,
-                "Slot Background Color",
-                () -> config.colors.slots,
-                config::setSlotColor,
-                () -> config.slotBackgroundOpacity,
-                config::setSlotOpacity)
-        );
+
+        ColorPickerWidget slotBackgroundColorPicker = ColorPickerWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Slot Background Color")
+                .color(() -> config.colors.slots, config::setSlotColor)
+                .opacity(() -> config.slotBackgroundOpacity, config::setSlotOpacity)
+                .build();
+        widgets.add(slotBackgroundColorPicker);
+
     }
 
 }

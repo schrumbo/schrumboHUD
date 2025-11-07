@@ -221,6 +221,25 @@ public class HudConfig {
         this.slotBackgroundEnabled = true;
     }
 
+    public void enableBackground(boolean value){
+        this.backgroundEnabled = value;
+    }
+    public void enableHud(boolean value){
+        this.enabled = value;
+    }
+    public void enableBorder(boolean value){
+        this.outlineEnabled = value;
+    }
+    public void enableSlotBackground(boolean value){
+        this.slotBackgroundEnabled = value;
+    }
+    public void enableTextShadow(boolean value){
+        this.textShadowEnabled = value;
+    }
+    public void enableRoundedCorners(boolean value){
+        this.roundedCorners = value;
+    }
+
     public void setBackgroundColor(int color) {
         colors.background = color;
     }

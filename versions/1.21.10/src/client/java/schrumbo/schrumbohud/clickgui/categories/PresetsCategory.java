@@ -29,42 +29,55 @@ public class PresetsCategory extends Category {
 
         int currentY = startY;
 
-        widgets.add(new ButtonWidget(
-                startX, currentY, width,
-                "Catppuccin Mocha",
-                () -> {
+        ButtonWidget catppucinMocha = ButtonWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Catppucin Mocha")
+                .onClick(()->{
                     SchrumboHUDClient.config.loadCatppuccinMocha();
                     ConfigManager.save();
-                }
-        ));
+                })
+                .build();
+        widgets.add(catppucinMocha);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ButtonWidget(
-                startX, currentY, width,
-                "Gruvbox",
-                () -> {
+
+        ButtonWidget gruvbox = ButtonWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Gruvbox")
+                .onClick(()->{
                     SchrumboHUDClient.config.loadGruvbox();
                     ConfigManager.save();
-                }
-        ));
+                })
+                .build();
+        widgets.add(gruvbox);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ButtonWidget(
-                startX, currentY, width,
-                "Monokai",
-                () -> {
+
+        ButtonWidget monokai = ButtonWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Monokai")
+                .onClick(()->{
                     SchrumboHUDClient.config.loadMonokai();
                     ConfigManager.save();
-                }
-        ));
+                })
+                .build();
+        widgets.add(monokai);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ButtonWidget(
-                startX, currentY, width,
-                "Dracula",
-                () -> {
+
+        ButtonWidget dracula = ButtonWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Dracula")
+                .onClick(()->{
                     SchrumboHUDClient.config.loadDracula();
                     ConfigManager.save();
-                }
-        ));
-        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
+                })
+                .build();
+        widgets.add(dracula);
 
     }
 

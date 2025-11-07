@@ -66,25 +66,15 @@ public class ColorPickerWidget extends Widget {
     private final HudConfig config = SchrumboHUDClient.config;
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    /**
-     * Color Picker widget with opacity Slider;
-     *
-     * @param x The x-coordinate of the widget
-     * @param y The y-coordinate of the widget
-     * @param width The width of the widget
-     * @param label The display label for the widget
-     * @param colorGetter Supplier for the current color value
-     * @param colorSetter Consumer for setting the new color value
-     */
-    public ColorPickerWidget(int x, int y, int width, String label, Supplier<Integer> colorGetter, Consumer<Integer> colorSetter, Supplier<Float> opacityGetter, Consumer<Float> opacitySetter) {
-        super(x, y, width, WIDGET_HEIGHT, label);
-        this.colorGetter = colorGetter;
-        this.colorSetter = colorSetter;
-        this.opacityGetter = opacityGetter;
-        this.opacitySetter = opacitySetter;
+    private ColorPickerWidget(Builder builder) {
+        super(builder);
+        this.colorGetter = builder.colorGetter;
+        this.colorSetter = builder.colorSetter;
+        this.opacityGetter = builder.opacityGetter;
+        this.opacitySetter = builder.opacitySetter;
+        this.hasOpacityControl = builder.hasOpacityControl;
 
         int color = colorGetter.get();
-        this.hasOpacityControl = true;
         this.opacity = opacityGetter.get();
         float[] hsv = rgbToHsv(color);
         this.hue = hsv[0];
@@ -92,30 +82,45 @@ public class ColorPickerWidget extends Widget {
         this.value = hsv[2];
     }
 
-    /**
-     * Color Picker Widget without Opacity Slider
-     * @param x
-     * @param y
-     * @param width
-     * @param label
-     * @param colorGetter
-     * @param colorSetter
-     */
-    public ColorPickerWidget(int x, int y, int width, String label, Supplier<Integer> colorGetter, Consumer<Integer> colorSetter) {
-        super(x, y, width, WIDGET_HEIGHT, label);
-        this.colorGetter = colorGetter;
-        this.colorSetter = colorSetter;
-        this.opacityGetter = () -> 1.0f;
-        this.opacitySetter = f -> {};
-        this.hasOpacityControl = false;
+    public static class Builder extends Widget.Builder<Builder> {
+        private Supplier<Integer> colorGetter;
+        private Consumer<Integer> colorSetter;
+        private Supplier<Float> opacityGetter = () -> 1.0f;
+        private Consumer<Float> opacitySetter = f -> {};
+        private boolean hasOpacityControl = false;
 
-        int color = colorGetter.get();
-        this.opacity = 1.0f;
-        float[] hsv = rgbToHsv(color);
-        this.hue = hsv[0];
-        this.saturation = hsv[1];
-        this.value = hsv[2];
+        public Builder color(Supplier<Integer> getter, Consumer<Integer> setter) {
+            this.colorGetter = getter;
+            this.colorSetter = setter;
+            return this;
+        }
+
+        public Builder opacity(Supplier<Float> getter, Consumer<Float> setter) {
+            this.opacityGetter = getter;
+            this.opacitySetter = setter;
+            this.hasOpacityControl = true;
+            return this;
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        @Override
+        public ColorPickerWidget build() {
+            if (colorGetter == null || colorSetter == null) {
+                throw new IllegalStateException("Color getter and setter must be set");
+            }
+            return new ColorPickerWidget(this);
+        }
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {

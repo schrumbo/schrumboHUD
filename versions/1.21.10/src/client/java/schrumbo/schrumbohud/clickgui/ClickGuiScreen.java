@@ -80,7 +80,8 @@ public class ClickGuiScreen extends Screen {
      * Calculates and sets positions for all categories.
      */
     private void initializeCategories() {
-        int contentWidth = PANEL_WIDTH - 20;
+        //TODO CHANGE HERE FOR LAYOUT
+        int contentWidth = PANEL_WIDTH / 3;
         int currentY = 0;
 
         for (Category category : categories) {

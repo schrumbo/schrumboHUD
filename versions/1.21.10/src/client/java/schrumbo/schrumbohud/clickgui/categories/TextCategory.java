@@ -25,18 +25,24 @@ public class TextCategory extends Category {
     public void initializeWidgets(int startX, int startY, int width) {
 
         int currentY = startY;
-        widgets.add(new ToggleWidget(
-                startX, currentY, width, "Toggle Text Shadow",
-                () -> config.textShadowEnabled,
-                val -> config.textShadowEnabled = val
-        ));
+
+        ToggleWidget toggleTextShadow = ToggleWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Toggle Text Shadow")
+                .value(()-> config.textShadowEnabled, config::enableTextShadow)
+                .build();
+        widgets.add(toggleTextShadow);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ColorPickerWidget(
-                startX, currentY, width,
-                "Text Color",
-                () -> config.colors.text,
-                config::setTextColor
-        ));
+
+        ColorPickerWidget textColorPicker = ColorPickerWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Text Color")
+                .color(() -> config.colors.text, config::setTextColor)
+                .build();
+        widgets.add(textColorPicker);
     }
 
 }
