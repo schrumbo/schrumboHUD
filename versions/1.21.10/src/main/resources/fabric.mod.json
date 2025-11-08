@@ -9,7 +9,8 @@
 	],
 	"contact": {
 		"homepage": "https://modrinth.com/mod/schrumbohud",
-		"sources": "https://github.com/schrumbo/schrumboHUD"
+		"sources": "https://github.com/schrumbo/schrumboHUD",
+		"issues": "https://github.com/schrumbo/schrumboHUD/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/schrumbohud/HUD.png",
