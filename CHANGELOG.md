@@ -1,5 +1,5 @@
-# SchrumboHUD v1.0.6
-- **changed layout of the clickgui**
+# SchrumboHUD v1.0.7
+- **added modmenu integration**
 
 # Known issues
 - **Text not being 100% centered on widgets**

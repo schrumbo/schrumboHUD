@@ -8,8 +8,8 @@
 		"schrumbo"
 	],
 	"contact": {
-		"homepage": "https://github.com/schrumbo/schrumboMods",
-		"sources": "https://github.com/schrumbo/schrumboMods"
+		"homepage": "https://modrinth.com/mod/schrumbohud",
+		"sources": "https://github.com/schrumbo/schrumboHUD"
 	},
 	"license": "MIT",
 	"icon": "assets/schrumbohud/HUD.png",
@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"client": [
 			"schrumbo.schrumbohud.SchrumboHUDClient"
+		],
+		"modmenu": [
+			"schrumbo.schrumbohud.modmenu.ModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -33,6 +36,6 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"another-mod": "*"
+		"modmenu": ">=15.0.0"
 	}
 }
