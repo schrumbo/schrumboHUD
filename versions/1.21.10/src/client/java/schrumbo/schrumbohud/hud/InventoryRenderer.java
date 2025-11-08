@@ -5,16 +5,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.render.OversizedItemGuiElementRenderer;
-import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
-import net.minecraft.client.gui.render.state.ItemGuiElementRenderState;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
-import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class InventoryRenderer implements HudElement {
@@ -25,9 +21,6 @@ public class InventoryRenderer implements HudElement {
     private static final int PADDING = 4;
 
 
-    /**
-     * Registers the inventory HUD element after the boss bar
-     */
     public static void register() {
         HudElementRegistry.attachElementAfter(
                 VanillaHudElements.BOSS_BAR,
@@ -68,9 +61,6 @@ public class InventoryRenderer implements HudElement {
     }
 
 
-    /**
-     * Calculates X position from relative offset
-     */
     private int calcX(HudConfig config, int screenWidth, int hudWidth) {
         return switch (config.anchor.horizontal) {
             case LEFT -> config.position.x;
@@ -78,9 +68,6 @@ public class InventoryRenderer implements HudElement {
         };
     }
 
-    /**
-     * Calculates Y position from relative offset
-     */
     private int calcY(HudConfig config, int screenHeight, int hudHeight) {
         return switch (config.anchor.vertical) {
             case TOP -> config.position.y;
@@ -88,9 +75,7 @@ public class InventoryRenderer implements HudElement {
         };
     }
 
-    /**
-     * Renders background and outline
-     */
+
     private void drawBackground(DrawContext context, int width, int height, HudConfig config) {
         if (config.backgroundEnabled) {
             int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity);
@@ -111,9 +96,7 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    /**
-     * Renders all inventory slots with items
-     */
+
     private void renderInventory(DrawContext context, PlayerInventory inventory, HudConfig config) {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
@@ -136,9 +119,7 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    /**
-     * Renders single item with count and durability
-     */
+
     private void renderItem(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         if (stack.isEmpty()) return;
 
@@ -155,9 +136,7 @@ public class InventoryRenderer implements HudElement {
 
 
 
-    /**
-     * Renders item stack count text
-     */
+
     private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         String count = String.valueOf(stack.getCount());
         int textColor = config.colorWithAlpha(config.colors.text, 1.0f);
@@ -173,9 +152,7 @@ public class InventoryRenderer implements HudElement {
         matrices.popMatrix();
     }
 
-    /**
-     * Renders durability bar below item
-     */
+
     private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         int maxDurability = stack.getMaxDamage();
         int currDurability = maxDurability - stack.getDamage();
@@ -194,9 +171,7 @@ public class InventoryRenderer implements HudElement {
         matrices.popMatrix();
     }
 
-    /**
-     * Returns color based on durability percentage (green > yellow > red)
-     */
+
     private int getDurabilityColor(float percent) {
         if (percent > 0.5f) return 0xFF00FF00;
         else if (percent > 0.25f) return 0xFFFFFF00;

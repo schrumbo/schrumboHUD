@@ -40,7 +40,7 @@ public class PositionCategory extends Category {
                 .width(width)
                 .label("Change Position")
                 .onClick(()->{
-                    MinecraftClient.getInstance().setScreen(new HudEditorScreen((MinecraftClient.getInstance().currentScreen)));
+                    MinecraftClient.getInstance().send(() -> MinecraftClient.getInstance().setScreen(new HudEditorScreen((MinecraftClient.getInstance().currentScreen))));
                 })
                 .build();
         widgets.add(changePos);

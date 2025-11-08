@@ -31,11 +31,6 @@ public class Commands {
             });
         });
 
-        registerCommand("schrumbo", () -> {
-            MinecraftClient.getInstance().send(() -> {
-                MinecraftClient.getInstance().setScreen(new ClickGuiScreen());
-            });
-        });
     }
 
 }

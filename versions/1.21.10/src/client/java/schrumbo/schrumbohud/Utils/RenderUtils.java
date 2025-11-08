@@ -7,9 +7,7 @@ import net.minecraft.client.render.VertexFormats;
 
 public class RenderUtils {
 
-    /**
-     * Renders a filled rounded rectangle
-     */
+
     public static void fillRoundedRect(DrawContext context, int x, int y, int width, int height, float radius, int color) {
         if (radius <= 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -36,9 +34,7 @@ public class RenderUtils {
         fillRoundedCorner(context, x + width - cornerRadius, y + height - cornerRadius, cornerRadius, color, 3);
     }
 
-    /**
-     * Renders an outlined rounded rectangle
-     */
+
     public static void drawRoundedRectWithOutline(DrawContext context, int x, int y, int width, int height, float radius, int thickness, int color) {
         if (radius <= 0) {
             drawBorder(context, x, y, width, height, color);
@@ -135,16 +131,6 @@ public class RenderUtils {
         }
     }
 
-    /**
-     * draws a rectangle with 1 missing pixel in each corner
-     * @param context
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param thickness
-     * @param color
-     */
     public static void drawRectWithCutCorners(DrawContext context, int x, int y, int width, int height, int thickness, int color) {
         context.fill(x + 1, y, x + width - 1, y + thickness, color);
 
@@ -157,14 +143,7 @@ public class RenderUtils {
         context.fill(x + thickness, y + thickness, x + width - thickness, y + height - thickness, color);
     }
 
-    /**
-     * Fills a circle using pixel-based rendering
-     * @param context DrawContext for rendering
-     * @param centerX Center X coordinate
-     * @param centerY Center Y coordinate
-     * @param radius Radius of the circle
-     * @param color Color in ARGB format
-     */
+
     public static void fillCircle(DrawContext context, int centerX, int centerY, int radius, int color) {
         for (int dy = -radius; dy <= radius; dy++) {
             for (int dx = -radius; dx <= radius; dx++) {
@@ -177,9 +156,7 @@ public class RenderUtils {
     }
 
 
-    /**
-     * draws a border around a rectangle
-     */
+
     public static void drawBorder(DrawContext context, int x, int y, int width, int height, int color){
         context.fill(x, y, x + width, y + 1, color);
         context.fill(x, y + height - 1, x + width, y + height, color);

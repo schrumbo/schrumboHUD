@@ -17,6 +17,4 @@ public class ChatUtils {
         client.player.sendMessage( PREFIX.copy().append(Text.literal("§f" + message)), false);
     }
 
-
-
 }
