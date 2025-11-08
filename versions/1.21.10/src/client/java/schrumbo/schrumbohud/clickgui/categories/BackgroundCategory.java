@@ -34,7 +34,7 @@ public class BackgroundCategory extends Category {
         ColorPickerWidget backgroundColorPicker = ColorPickerWidget.builder()
                 .color(() -> config.colors.background, config::setBackgroundColor)
                 .opacity(() -> config.backgroundOpacity, config::setBackgroundOpacity)
-                .label("background color")
+                .label("Background color")
                 .y(currentY)
                 .width(width)
                 .build();
