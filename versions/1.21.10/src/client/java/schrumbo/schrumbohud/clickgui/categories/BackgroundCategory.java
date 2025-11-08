@@ -1,15 +1,13 @@
 package schrumbo.schrumbohud.clickgui.categories;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
 import schrumbo.schrumbohud.SchrumboHUDClient;
+import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class BackgroundCategory extends Category {
-    private final MinecraftClient client = net.minecraft.client.MinecraftClient.getInstance();
-    private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
 
 
@@ -24,9 +22,9 @@ public class BackgroundCategory extends Category {
         int currentY = startY;
 
         ToggleWidget toggleBackground = ToggleWidget.builder()
-                .width(width)
                 .label("Toggle Background")
                 .y(currentY)
+                .width(width)
                 .value(()->config.backgroundEnabled, config::enableBackground)
                 .build();
         widgets.add(toggleBackground);
@@ -41,13 +39,7 @@ public class BackgroundCategory extends Category {
                 .width(width)
                 .build();
         widgets.add(backgroundColorPicker);
-
-
-
-
-
-
-
+        updateWidgetPositions(startX, startY);
     }
 
 

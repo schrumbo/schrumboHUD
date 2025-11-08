@@ -1,20 +1,12 @@
 package schrumbo.schrumbohud.clickgui.categories;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
-import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
-import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class SlotCategory extends Category {
 
-    private final MinecraftClient client = net.minecraft.client.MinecraftClient.getInstance();
-    private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
 
     public SlotCategory() {
@@ -44,7 +36,7 @@ public class SlotCategory extends Category {
                 .opacity(() -> config.slotBackgroundOpacity, config::setSlotOpacity)
                 .build();
         widgets.add(slotBackgroundColorPicker);
-
+        updateWidgetPositions(startX, startY);
     }
 
 }

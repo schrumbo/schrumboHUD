@@ -13,7 +13,6 @@ public class ButtonWidget extends Widget {
     private boolean isPressed = false;
     private long lastClickTime = 0;
     private static final long CLICK_COOLDOWN_MS = 150;
-    private static final int PADDING = 7;
     private final MinecraftClient client = net.minecraft.client.MinecraftClient.getInstance();
     private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
@@ -45,7 +44,7 @@ public class ButtonWidget extends Widget {
 
         int labelWidth = (int) (client.textRenderer.getWidth(label) * config.guicolors.textSize);
         int labelX = x + (width - labelWidth) / 2;
-        int labelY = y + (height - client.textRenderer.fontHeight) / 2;
+        int labelY = y - client.textRenderer.fontHeight + height / 2;
 
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
 

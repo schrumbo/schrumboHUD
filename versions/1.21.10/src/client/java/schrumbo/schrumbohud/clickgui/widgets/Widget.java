@@ -6,17 +6,12 @@ import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 
 public abstract class Widget {
     protected int x, y;
-    protected int width, height;
+    protected int width;
+    protected int height;
     protected String label;
     protected boolean hovered;
+    protected final int PADDING = 15;
 
-    public Widget(int x, int y, int width, int height, String label) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.label = label;
-    }
 
     protected Widget(Builder<?> builder){
         this.x = builder.x;
@@ -62,7 +57,7 @@ public abstract class Widget {
         protected int x = 0;
         protected int y = 0;
         protected int width = 100;
-        protected int height = 50;
+        protected int height = 45;
         protected String label = "";
 
         public T position(int x, int y) {

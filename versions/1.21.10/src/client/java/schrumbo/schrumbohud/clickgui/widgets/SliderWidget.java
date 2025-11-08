@@ -20,12 +20,10 @@ public class SliderWidget extends Widget {
 
     private boolean isDragging = false;
 
-    private static final int SLIDER_HEIGHT = 50;
     private static final int HANDLE_WIDTH = 8;
     private static final int HANDLE_HEIGHT = 16;
     private static final int TRACK_PADDING = 8;
     private static final int TRACK_HEIGHT = 4;
-    private static final int PADDING = 7;
 
     private final HudConfig config = SchrumboHUDClient.config;
     private final MinecraftClient client = MinecraftClient.getInstance();
@@ -90,7 +88,7 @@ public class SliderWidget extends Widget {
         RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
         int labelX = x + PADDING;
-        int labelY = y + PADDING;
+        int labelY = y - client.textRenderer.fontHeight + height / 2;
 
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
 

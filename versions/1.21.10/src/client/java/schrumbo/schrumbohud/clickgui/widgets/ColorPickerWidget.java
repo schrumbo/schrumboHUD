@@ -1,6 +1,5 @@
 package schrumbo.schrumbohud.clickgui.widgets;
 
-import com.sun.jna.platform.win32.WinBase;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
@@ -33,13 +32,12 @@ public class ColorPickerWidget extends Widget {
     private float value = 1;
     private float opacity;
 
-    private static final int WIDGET_HEIGHT = 50;
-    private static final int POPUP_WIDTH = 245;
+    private static final int POPUP_WIDTH = 250;
     private static final int POPUP_HEIGHT = 200;
-    private static final int TITLE_BAR_HEIGHT = 30;
+    private static final int TITLE_BAR_HEIGHT = 25;
 
     private static final int PICKER_SIZE = 140;
-    private static final int PADDING = 20;
+    private static final int POPUP_PADDING = 20;
     private static final int CLICK_BLOCK_PADDING = 10;
 
     private static final int SLIDER_WIDTH = 20;
@@ -47,10 +45,9 @@ public class ColorPickerWidget extends Widget {
     private static final int HANDLE_WIDTH = 28;
     private static final int HANDLE_HEIGHT = 8;
 
-    private static final int Z_LAYER_OFFSET = 400;
 
     private static final int CLOSE_BUTTON_SIZE = 18;
-    private static final int CLOSE_BUTTON_PADDING = 6;
+    private static final int CLOSE_BUTTON_PADDING = 4;
 
     private int popupX;
     private int popupY;
@@ -127,26 +124,24 @@ public class ColorPickerWidget extends Widget {
         hovered = isHovered(mouseX, mouseY);
 
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
-        RenderUtils.fillRoundedRect(context, x, y, width, WIDGET_HEIGHT, 0.0f, config.guicolors.widgetBackground);
+        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
         float textScale = config.guicolors.textSize;
-        int labelHeight = client.textRenderer.fontHeight;
 
-        int scaledHeight = (int)(labelHeight * textScale);
 
-        int labelX = x + 7;
-        int labelY = y + (WIDGET_HEIGHT - scaledHeight) / 2;
-
+        int labelX = x + PADDING;
+        int labelY = y - client.textRenderer.fontHeight + height / 2;
         var matrices = context.getMatrices();
         matrices.pushMatrix();
         matrices.translate(labelX, labelY);
         matrices.scale(textScale, textScale);
+
         context.drawText(client.textRenderer, Text.literal(label), 0, 0, textColor, true);
         matrices.popMatrix();
 
         int previewSize = 20;
-        int previewX = x + width - 8 - previewSize;
-        int previewY = y + (WIDGET_HEIGHT - previewSize) / 2;
+        int previewX = x + width - PADDING - previewSize;
+        int previewY = y + (height - previewSize) / 2;
 
         int previewColor = config.colorWithAlpha(colorGetter.get(), opacityGetter.get());
         int borderColor = config.colorWithAlpha(0x404040, 0.8f);
@@ -196,10 +191,6 @@ public class ColorPickerWidget extends Widget {
      */
     private void renderPopupContent(DrawContext context, int mouseX, int mouseY, float delta) {
 
-
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
-
         centerPosX();
         centerPosY();
 
@@ -215,14 +206,10 @@ public class ColorPickerWidget extends Widget {
 
         RenderUtils.fillRoundedRect(context, popupX, popupY, POPUP_WIDTH, TITLE_BAR_HEIGHT, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelTitleBarOpacity));
 
-        String title = "Color Picker";
-        int titleWidth = client.textRenderer.getWidth(title);
-        context.drawText(client.textRenderer, Text.literal(title), popupX + (POPUP_WIDTH - titleWidth) / 2, popupY + 11, config.guicolors.text, true);
-
         renderCloseButton(context, mouseX, mouseY, config);
 
         int contentY = popupY + TITLE_BAR_HEIGHT + 15;
-        int pickerX = popupX + PADDING;
+        int pickerX = popupX + POPUP_PADDING;
 
         renderSVPicker(context, pickerX, contentY, mouseX, mouseY);
         int hueSliderX = pickerX + PICKER_SIZE + SLIDER_SPACING;
@@ -395,7 +382,7 @@ public class ColorPickerWidget extends Widget {
      */
     private boolean handlePopupClick(double mouseX, double mouseY) {
         int contentY = popupY + TITLE_BAR_HEIGHT + 15;
-        int pickerX = popupX + PADDING;
+        int pickerX = popupX + POPUP_PADDING;
         int hueSliderX = pickerX + PICKER_SIZE + SLIDER_SPACING;
         int opacitySliderX = hueSliderX + SLIDER_WIDTH + SLIDER_SPACING;
 
@@ -425,7 +412,7 @@ public class ColorPickerWidget extends Widget {
         if (!popupOpen || button != 0) return false;
 
         int contentY = popupY + TITLE_BAR_HEIGHT + 15;
-        int pickerX = popupX + PADDING;
+        int pickerX = popupX + POPUP_PADDING;
 
         if (draggingSV) {
             updateSVFromMouse(mouseX, mouseY, pickerX, contentY);
