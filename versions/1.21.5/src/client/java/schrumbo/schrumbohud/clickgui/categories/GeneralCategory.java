@@ -1,7 +1,5 @@
 package schrumbo.schrumbohud.clickgui.categories;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
@@ -9,8 +7,6 @@ import schrumbo.schrumbohud.config.HudConfig;
 
 public class GeneralCategory extends Category {
 
-    private final MinecraftClient client = MinecraftClient.getInstance();
-    private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
 
     public GeneralCategory() {
@@ -22,27 +18,35 @@ public class GeneralCategory extends Category {
 
         int currentY = startY;
 
-        widgets.add(new ToggleWidget(
-                startX, currentY, width, "HUD Enabled",
-                () -> config.enabled,
-                val -> config.enabled = val
-        ));
+
+        ToggleWidget hudToggle = ToggleWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Toggle HUD")
+                .value(() -> config.enabled, config::enableHud)
+                .build();
+        widgets.add(hudToggle);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
 
-        widgets.add(new ToggleWidget(
-                startX, currentY, width, "Rounded Corners",
-                () -> config.roundedCorners,
-                val -> config.roundedCorners = val
-        ));
+        ToggleWidget roundedCorners = ToggleWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Toggle Rounded Corners")
+                .value(() -> config.roundedCorners, config::enableRoundedCorners)
+                .build();
+        widgets.add(roundedCorners);
+
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
-        widgets.add(new ColorPickerWidget(
-                startX, currentY, width,
-                "ClickGUI Accent Color",
-                () -> config.guicolors.accent,
-                config::setAccentColor
-        ));
 
-
+        ColorPickerWidget accentColorPicker = ColorPickerWidget.builder()
+                .width(width)
+                .y(currentY)
+                .label("Accent Color")
+                .color(() -> config.guicolors.accent, config::setAccentColor)
+                .build();
+        widgets.add(accentColorPicker);
+        updateWidgetPositions(startX, startY);
     }
 
 }

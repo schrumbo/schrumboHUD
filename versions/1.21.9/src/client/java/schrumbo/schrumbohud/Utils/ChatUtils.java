@@ -1,8 +1,11 @@
 package schrumbo.schrumbohud.Utils;
 
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import schrumbo.schrumbohud.SchrumboHUDClient;
+
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class ChatUtils {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -13,5 +16,7 @@ public class ChatUtils {
         if(client.player == null)return;
         client.player.sendMessage( PREFIX.copy().append(Text.literal("§f" + message)), false);
     }
+
+
 
 }

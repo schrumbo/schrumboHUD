@@ -73,7 +73,7 @@ public class HudConfig {
         public final float textSize = 2.0f;
 
         @SerializedName("headingSize")
-        public final float headingSize = 3f;
+        public final float headingSize = 2.0f;
 
         @SerializedName("hoveredTextOpacity")
         public final float hoveredTextOpacity =  1.0f;
@@ -219,6 +219,25 @@ public class HudConfig {
         this.outlineEnabled = true;
         this.textShadowEnabled = true;
         this.slotBackgroundEnabled = true;
+    }
+
+    public void enableBackground(boolean value){
+        this.backgroundEnabled = value;
+    }
+    public void enableHud(boolean value){
+        this.enabled = value;
+    }
+    public void enableBorder(boolean value){
+        this.outlineEnabled = value;
+    }
+    public void enableSlotBackground(boolean value){
+        this.slotBackgroundEnabled = value;
+    }
+    public void enableTextShadow(boolean value){
+        this.textShadowEnabled = value;
+    }
+    public void enableRoundedCorners(boolean value){
+        this.roundedCorners = value;
     }
 
     public void setBackgroundColor(int color) {

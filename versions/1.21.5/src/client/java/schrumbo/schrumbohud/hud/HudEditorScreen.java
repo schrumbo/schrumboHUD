@@ -9,8 +9,9 @@ import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 
-import static schrumbo.schrumbohud.Utils.RenderUtils.drawBorder;
+import java.io.ObjectInputFilter;
 
+import static schrumbo.schrumbohud.Utils.RenderUtils.drawBorder;
 
 /**
  * interactive screen for positioning and scaling the HUD
@@ -70,8 +71,8 @@ public class HudEditorScreen extends Screen {
 
         var matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(hudX, hudY, 1);
-        matrices.scale(config.scale, config.scale, 1);
+        matrices.translate(hudX, hudY, 1.0f);
+        matrices.scale(config.scale, config.scale, 1.0f);
 
 
         int bgColor = config.guicolors.widgetBackground;
@@ -97,7 +98,6 @@ public class HudEditorScreen extends Screen {
     private void renderInstructions(DrawContext context) {
         Text[] instructions = {
                 Text.literal("§8[").append(Text.literal("Drag").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fMoveHUD"),
-                Text.literal("§8[").append(Text.literal("Mouse Scroll").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fResize"),
                 Text.literal("§8[").append(Text.literal("R").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fReset Position"),
                 Text.literal("§8[").append(Text.literal("ESC").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fSave & Exit")
         };
@@ -201,26 +201,6 @@ public class HudEditorScreen extends Screen {
             return true;
         }
         return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        var config = SchrumboHUDClient.config;
-        int hudWidth = (int)(BASE_WIDTH * config.scale);
-        int hudHeight = (int)(BASE_HEIGHT * config.scale);
-        int hudX = getX(config);
-        int hudY = getY(config);
-
-        if (mouseX >= hudX && mouseX <= hudX + hudWidth &&
-                mouseY >= hudY && mouseY <= hudY + hudHeight) {
-
-            float delta = (float)verticalAmount * 0.1f;
-            config.scale = Math.max(0.1f, Math.min(5.0f, config.scale + delta));
-
-            return true;
-        }
-
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
 

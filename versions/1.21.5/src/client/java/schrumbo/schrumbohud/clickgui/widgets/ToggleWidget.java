@@ -14,20 +14,49 @@ public class ToggleWidget extends Widget {
     private final Supplier<Boolean> getter;
     private final Consumer<Boolean> setter;
 
-    private static final int WIDGET_HEIGHT = 50;
     private static final int TOGGLE_WIDTH = 40;
     private static final int TOGGLE_HEIGHT = 20;
     private static final int KNOB_SIZE = 16;
-    private static final int PADDING = 7;
 
     private final HudConfig config = SchrumboHUDClient.config;
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    public ToggleWidget(int x, int y, int width, String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        super(x, y, width, WIDGET_HEIGHT, label);
-        this.getter = getter;
-        this.setter = setter;
+
+    public ToggleWidget(Builder builder){
+        super(builder);
+        this.getter = builder.getter;
+        this.setter = builder.setter;
     }
+
+    public static class Builder extends Widget.Builder<Builder>{
+        private  Supplier<Boolean> getter;
+        private Consumer<Boolean> setter;
+
+
+        public Builder value(Supplier<Boolean> getter, Consumer<Boolean> setter){
+            this.getter = getter;
+            this.setter = setter;
+            return this;
+        }
+
+        @Override
+        protected Builder self(){
+            return this;
+        }
+
+        @Override
+        public ToggleWidget build(){
+            if(getter == null || setter == null){
+                throw new IllegalStateException("Setter and getter must be set");
+            }
+            return new ToggleWidget(this);
+        }
+    }
+
+    public static Builder builder(){
+        return new Builder();
+    }
+
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -36,10 +65,10 @@ public class ToggleWidget extends Widget {
         hovered = isHovered(mouseX, mouseY);
         boolean enabled = getter.get();
 
-        RenderUtils.fillRoundedRect(context, x, y, width, WIDGET_HEIGHT, 0.0f, config.guicolors.widgetBackground);
+        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, config.guicolors.widgetBackground);
 
         int labelX = x + PADDING;
-        int labelY = y + (WIDGET_HEIGHT - client.textRenderer.fontHeight) / 2;
+        int labelY = y - client.textRenderer.fontHeight + height / 2;
 
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
 
@@ -52,7 +81,7 @@ public class ToggleWidget extends Widget {
 
         int toggleX = x + width - TOGGLE_WIDTH;
         //idk why but +3 is need for the switch to be centered
-        int toggleY = y + WIDGET_HEIGHT / 4 + 3;
+        int toggleY = y + height / 4 + 3;
 
         int buttonBgColor = enabled ? config.colorWithAlpha(config.guicolors.accent, 0.5f) : config.colorWithAlpha(0x404040, 0.7f);
 
@@ -71,7 +100,7 @@ public class ToggleWidget extends Widget {
 
         matrices.push();
         //RenderUtils.fillRoundedRect(context, knobX - PADDING, knobY, KNOB_SIZE, KNOB_SIZE, 0.2f, knobColor);
-        RenderUtils.drawRectWithCutCorners(context, knobX - PADDING, knobY, KNOB_SIZE, KNOB_SIZE, 1, knobColor);
+        RenderUtils.drawRectWithCutCorners(context, knobX - PADDING, knobY, KNOB_SIZE, KNOB_SIZE, 2, knobColor);
         matrices.pop();
 
     }

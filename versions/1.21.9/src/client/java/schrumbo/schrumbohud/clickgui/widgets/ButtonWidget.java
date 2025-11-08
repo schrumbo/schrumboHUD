@@ -13,15 +13,14 @@ public class ButtonWidget extends Widget {
     private boolean isPressed = false;
     private long lastClickTime = 0;
     private static final long CLICK_COOLDOWN_MS = 150;
-    private static final int PADDING = 7;
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
 
 
-    public ButtonWidget(int x, int y, int width, String label, Runnable onClick) {
-        super(x, y, width, 50, label);
-        this.onClick = onClick;
+    private ButtonWidget(Builder builder){
+        super(builder);
+        this.onClick = builder.onClick;
     }
 
     @Override
@@ -45,7 +44,7 @@ public class ButtonWidget extends Widget {
 
         int labelWidth = (int) (client.textRenderer.getWidth(label) * config.guicolors.textSize);
         int labelX = x + (width - labelWidth) / 2;
-        int labelY = y + (height - client.textRenderer.fontHeight) / 2;
+        int labelY = y - client.textRenderer.fontHeight + height / 2;
 
         int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
 
@@ -91,5 +90,28 @@ public class ButtonWidget extends Widget {
     private boolean isHovered(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + width &&
                 mouseY >= y && mouseY <= y + height;
+    }
+
+    public static class Builder extends Widget.Builder<Builder> {
+        private Runnable onClick;
+
+        public Builder onClick(Runnable onClick) {
+            this.onClick = onClick;
+            return this;
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        @Override
+        public ButtonWidget build() {
+            return new ButtonWidget(this);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 }

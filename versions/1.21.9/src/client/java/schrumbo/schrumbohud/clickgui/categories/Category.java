@@ -5,7 +5,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.Utils.Utils;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.Widget;
 
@@ -14,10 +13,10 @@ import java.util.List;
 
 import static schrumbo.schrumbohud.SchrumboHUDClient.config;
 
+
 public abstract class Category {
     protected String name;
     public List<Widget> widgets;
-    protected boolean collapsed;
     protected boolean widgetsInitialized;
 
     protected int x, y;
@@ -25,18 +24,29 @@ public abstract class Category {
 
     protected MinecraftClient client = MinecraftClient.getInstance();
 
-    protected static final int HEADER_HEIGHT = 60;
+    protected static final int HEADER_HEIGHT = 40;
     protected static final int PADDING = 7;
     protected static final int WIDGET_SPACING = 5;
 
     public Category(String name) {
         this.name = name;
         this.widgets = new ArrayList<>();
-        this.collapsed = true;
         this.widgetsInitialized = false;
     }
 
+
     public abstract void initializeWidgets(int startX, int startY, int width);
+
+
+    public void initializeWidgetsIfNeeded(int startX, int startY, int width) {
+        if (!widgetsInitialized) {
+            initializeWidgets(startX, startY, width);
+            widgetsInitialized = true;
+        } else {
+            updateWidgetPositions(startX, startY);
+        }
+    }
+
 
     protected void updateWidgetPositions(int startX, int startY) {
         int currentY = startY;
@@ -46,40 +56,36 @@ public abstract class Category {
         }
     }
 
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderHeader(context, mouseX, mouseY);
 
-        if (!collapsed) {
-            for (Widget widget : widgets) {
-                widget.render(context, mouseX, mouseY, delta);
-            }
-
-            for (Widget widget : widgets) {
-                if (widget instanceof ColorPickerWidget) {
-                    ColorPickerWidget picker = (ColorPickerWidget) widget;
-                    if (picker.isPopupOpen()) {
-                        picker.renderPopupLayered(context, mouseX, mouseY, delta);
-                    }
-                }
-            }
+    public void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta) {
+        for (Widget widget : widgets) {
+            widget.render(context, mouseX, mouseY, delta);
         }
     }
 
 
-    protected void renderHeader(DrawContext context, int mouseX, int mouseY) {
-
+    public void renderHeader(DrawContext context, int mouseX, int mouseY, boolean isSelected) {
         boolean hovered = isHeaderHovered(mouseX, mouseY);
 
-        int bgColor = hovered ? config.guicolors.widgetBackground : config.guicolors.widgetBackgroundHovered;
+        int bgColor;
+        if (isSelected) {
+            bgColor = config.colorWithAlpha(config.guicolors.accent, 0.2f);
+        } else if (hovered) {
+            bgColor = config.guicolors.widgetBackgroundHovered;
+        } else {
+            bgColor = config.guicolors.widgetBackground;
+        }
+
         RenderUtils.fillRoundedRect(context, x, y, width, HEADER_HEIGHT, 0.0f, bgColor);
 
-        RenderUtils.fillRoundedRect(context, x, y, width, 3, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
-
+        RenderUtils.fillRoundedRect(context, x, y, width, 3, 0.0f,
+                config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
 
         int labelX = x + PADDING + 13;
         int labelY = y + (HEADER_HEIGHT - client.textRenderer.fontHeight) / 2;
-
-        int textColor = hovered ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
+        int textColor = (hovered || isSelected) ?
+                config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) :
+                config.guicolors.text;
 
         var matrices = context.getMatrices();
         matrices.pushMatrix();
@@ -87,100 +93,78 @@ public abstract class Category {
         matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize);
         context.drawText(client.textRenderer, Text.literal(name), 0, 0, textColor, true);
         matrices.popMatrix();
-
-
-        String indicator = collapsed ? "▶" : "▼";
-        int indicatorX = x + width - PADDING - client.textRenderer.getWidth(indicator) -13;
-        matrices.pushMatrix();
-        matrices.translate(indicatorX, labelY);
-        matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize);
-        context.drawText(client.textRenderer, Text.literal(indicator), 0, 0, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity), false);
-        matrices.popMatrix();
     }
 
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!collapsed) {
-            for (Widget widget : widgets) {
-                if (widget instanceof ColorPickerWidget) {
-                    ColorPickerWidget picker = (ColorPickerWidget) widget;
-                    if (picker.isPopupOpen()) {
-                        return picker.mouseClicked(mouseX, mouseY, button);
-                    }
-                }
-            }
-
-            for (Widget widget : widgets) {
-                if (widget.mouseClicked(mouseX, mouseY, button)) {
-                    return true;
+    public boolean mouseClickedWidgets(double mouseX, double mouseY, int button) {
+        for (Widget widget : widgets) {
+            if (widget instanceof ColorPickerWidget picker) {
+                if (picker.isPopupOpen()) {
+                    return picker.mouseClicked(mouseX, mouseY, button);
                 }
             }
         }
 
-        if (button == 0 && isHeaderHovered(mouseX, mouseY)) {
-            collapsed = !collapsed;
-            return true;
+        for (Widget widget : widgets) {
+            if (widget.mouseClicked(mouseX, mouseY, button)) {
+                return true;
+            }
         }
 
         return false;
     }
 
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (!collapsed) {
-            for (Widget widget : widgets) {
-                if (widget instanceof ColorPickerWidget && ((ColorPickerWidget) widget).isPopupOpen()) {
-                    return widget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-                }
-            }
-
-            for (Widget widget : widgets) {
-                if (widget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
-                    return true;
-                }
+    public boolean mouseDraggedWidgets(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        for (Widget widget : widgets) {
+            if (widget instanceof ColorPickerWidget picker && picker.isPopupOpen()) {
+                return widget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
             }
         }
+
+        for (Widget widget : widgets) {
+            if (widget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (!collapsed) {
-            for (Widget widget : widgets) {
-                if (widget instanceof ColorPickerWidget && ((ColorPickerWidget) widget).isPopupOpen()) {
-                    return widget.mouseReleased(mouseX, mouseY, button);
-                }
-            }
 
-            for (Widget widget : widgets) {
-                if (widget.mouseReleased(mouseX, mouseY, button)) {
-                    return true;
-                }
+    public boolean mouseReleasedWidgets(double mouseX, double mouseY, int button) {
+        for (Widget widget : widgets) {
+            if (widget instanceof ColorPickerWidget picker && picker.isPopupOpen()) {
+                return widget.mouseReleased(mouseX, mouseY, button);
             }
         }
+
+        for (Widget widget : widgets) {
+            if (widget.mouseReleased(mouseX, mouseY, button)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!collapsed) {
-            for (Widget widget : widgets) {
-                if (widget.keyPressed(keyCode, scanCode, modifiers)) {
-                    return true;
-                }
+        for (Widget widget : widgets) {
+            if (widget.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
             }
         }
         return false;
     }
 
     public boolean charTyped(char chr, int modifiers) {
-        if (!collapsed) {
-            for (Widget widget : widgets) {
-                if (widget.charTyped(chr, modifiers)) {
-                    return true;
-                }
+        for (Widget widget : widgets) {
+            if (widget.charTyped(chr, modifiers)) {
+                return true;
             }
         }
         return false;
     }
 
-    protected boolean isHeaderHovered(double mouseX, double mouseY) {
+    public boolean isHeaderHovered(double mouseX, double mouseY) {
         if(Utils.isInColorPickerWidget()) {
             return false;
         }
@@ -188,60 +172,29 @@ public abstract class Category {
     }
 
     public int getTotalHeight() {
-        if (collapsed) {
-            return HEADER_HEIGHT;
-        }
+        return HEADER_HEIGHT;
+    }
 
-        int height = HEADER_HEIGHT + PADDING;
-        for (Widget widget : widgets) {
-            height += widget.getHeight() + WIDGET_SPACING;
-        }
-        return height + PADDING;
+    public int getHeaderHeight() {
+        return HEADER_HEIGHT;
     }
 
     public void setPosition(int x, int y, int width) {
         this.x = x;
         this.y = y;
         this.width = width;
-
-        int startX = x + PADDING;
-        int startY = y + HEADER_HEIGHT + PADDING;
-        int contentWidth = width - PADDING ;
-
-        if (!widgetsInitialized) {
-            initializeWidgets(startX, startY, contentWidth);
-            widgetsInitialized = true;
-        } else {
-            updateWidgetPositions(startX, startY);
-        }
     }
 
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
-
-        int startX = x + PADDING;
-        int startY = y + HEADER_HEIGHT + PADDING;
-        int contentWidth = width - PADDING * 2;
-
-        if (!widgetsInitialized) {
-            initializeWidgets(startX, startY, contentWidth);
-            widgetsInitialized = true;
-        } else {
-            updateWidgetPositions(startX, startY);
-        }
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean isCollapsed() {
-        return collapsed;
-    }
-
     public boolean isWidgetsInitialized() {
         return widgetsInitialized;
     }
-
 }

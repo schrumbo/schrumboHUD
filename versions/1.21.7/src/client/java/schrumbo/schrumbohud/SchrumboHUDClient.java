@@ -8,6 +8,7 @@ import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 import schrumbo.schrumbohud.hud.InventoryRenderer;
 import schrumbo.schrumbohud.keybind.KeybindHandler;
+import schrumbo.schrumbohud.misc.Commands;
 import schrumbo.schrumbohud.misc.FirstJoin;
 
 public class SchrumboHUDClient implements ClientModInitializer {
@@ -21,7 +22,6 @@ public class SchrumboHUDClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		initTime = Util.getMeasuringTimeMs();
 		LOGGER.info("initializing SchrumboHUD");
-
 		configManager = new ConfigManager();
 		config = configManager.load();
 
@@ -29,6 +29,7 @@ public class SchrumboHUDClient implements ClientModInitializer {
 		InventoryRenderer.register();
 		FirstJoin.register();
 		config.initColors();
+		Commands.register();
 
 		initTime = Util.getMeasuringTimeMs() - initTime;
 		LOGGER.info("SchrumboHUD initialized in " + initTime + "ms");

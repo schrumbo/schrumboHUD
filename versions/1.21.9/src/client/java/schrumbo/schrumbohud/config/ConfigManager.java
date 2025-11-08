@@ -57,13 +57,4 @@ public class ConfigManager {
             LOGGER.info("failed to write changes to config" + e);
         }
     }
-
-
-
-    /**
-     * simply reloads config
-     */
-    public static void reload(){
-        load();
-    }
 }

@@ -15,7 +15,7 @@ public class Utils {
     public static boolean isInColorPickerWidget() {
         List<Category> categories = ClickGuiScreen.categories;
         for (Category category : categories) {
-            if (!category.isCollapsed()) {
+            if (category.isWidgetsInitialized()) {
                 for (Widget widget : category.widgets) {
                     if (widget instanceof ColorPickerWidget colorPicker) {
                         if (colorPicker.isPopupOpen()) {
