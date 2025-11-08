@@ -1,4 +1,4 @@
-# SchrumboHUD v1.0.5
+# SchrumboHUD v1.0.6
 - **changed layout of the clickgui**
 
 # Known issues
