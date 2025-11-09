@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "schrumbohud",
+	"version": "${version}",
+	"name": "schrumboHUD",
+	"description": "Customizable Inventory HUD!",
+	"authors": [
+		"schrumbo"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/schrumbohud",
+		"sources": "https://github.com/schrumbo/schrumboHUD",
+		"issues": "https://github.com/schrumbo/schrumboHUD/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/schrumbohud/HUD.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"schrumbo.schrumbohud.SchrumboHUDClient"
+		],
+		"modmenu": [
+			"schrumbo.schrumbohud.modmenu.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"schrumbohud.mixins.json",
+		{
+			"config": "schrumbohud.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "1.21.3",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": ">=12.0.0"
+	}
+}
