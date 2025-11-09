@@ -6,11 +6,10 @@ import schrumbo.schrumbohud.config.ConfigManager;
 
 
 public class PresetsCategory extends Category {
-
-
     public PresetsCategory() {
         super("Presets");
     }
+
 
     @Override
     public void initializeWidgets(int startX, int startY, int width) {
@@ -68,5 +67,4 @@ public class PresetsCategory extends Category {
         widgets.add(dracula);
         updateWidgetPositions(startX, startY);
     }
-
 }

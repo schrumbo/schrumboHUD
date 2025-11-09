@@ -14,7 +14,7 @@
 	},
 	"license": "MIT",
 	"icon": "assets/schrumbohud/HUD.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"client": [
 			"schrumbo.schrumbohud.SchrumboHUDClient"
@@ -38,10 +38,5 @@
 	},
 	"suggests": {
 		"modmenu": ">=16.0.0-rc.1"
-	},
-	"custom": {
-		"modmenu": {
-			"badges": ["client"]
-		}
 	}
 }

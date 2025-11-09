@@ -90,13 +90,8 @@ public class ToggleWidget extends Widget {
 
         int knobColor = enabled ? config.colorWithAlpha(config.guicolors.accent, 1.0f) : config.colorWithAlpha(0x808080, 1.0f);
 
+        RenderUtils.fillRoundedRect(context, toggleX - PADDING, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
 
-
-        if (hovered) {
-            RenderUtils.fillRoundedRect(context, toggleX - PADDING, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, config.colorWithAlpha(0x404040, 0.8f));
-        }else{
-            RenderUtils.fillRoundedRect(context, toggleX - PADDING, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, 0.5f, buttonBgColor);
-        }
 
         matrices.push();
         //RenderUtils.fillRoundedRect(context, knobX - PADDING, knobY, KNOB_SIZE, KNOB_SIZE, 0.2f, knobColor);

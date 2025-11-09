@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import schrumbo.schrumbohud.Utils.RenderUtils;
-import schrumbo.schrumbohud.Utils.Utils;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.Widget;
 
@@ -83,24 +82,25 @@ public abstract class Category {
 
         int labelX = x + PADDING + 13;
         int labelY = y + (HEADER_HEIGHT - client.textRenderer.fontHeight) / 2;
-        int textColor = (hovered || isSelected) ?
-                config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) :
-                config.guicolors.text;
+        int textColor = (hovered || isSelected) ? config.colorWithAlpha(config.guicolors.accent, config.guicolors.hoveredTextOpacity) : config.guicolors.text;
 
         var matrices = context.getMatrices();
         matrices.push();
         matrices.translate(labelX, labelY, 1.0f);
         matrices.scale(config.guicolors.headingSize, config.guicolors.headingSize, 1.0f);
-        context.drawText(client.textRenderer, Text.literal(name), 0, 0, textColor, true);
+        if(isSelected){
+            context.drawText(client.textRenderer, Text.literal(name), 0, 0, textColor, true);
+        }else{
+            context.drawText(client.textRenderer, Text.literal(name), 0, 0, textColor, true);
+        }
+
         matrices.pop();
     }
 
     public boolean mouseClickedWidgets(double mouseX, double mouseY, int button) {
         for (Widget widget : widgets) {
             if (widget instanceof ColorPickerWidget picker) {
-                if (picker.isPopupOpen()) {
                     return picker.mouseClicked(mouseX, mouseY, button);
-                }
             }
         }
 
@@ -115,9 +115,8 @@ public abstract class Category {
 
     public boolean mouseDraggedWidgets(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         for (Widget widget : widgets) {
-            if (widget instanceof ColorPickerWidget picker && picker.isPopupOpen()) {
+
                 return widget.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-            }
         }
 
         for (Widget widget : widgets) {
@@ -132,9 +131,7 @@ public abstract class Category {
 
     public boolean mouseReleasedWidgets(double mouseX, double mouseY, int button) {
         for (Widget widget : widgets) {
-            if (widget instanceof ColorPickerWidget picker && picker.isPopupOpen()) {
                 return widget.mouseReleased(mouseX, mouseY, button);
-            }
         }
 
         for (Widget widget : widgets) {
@@ -155,19 +152,8 @@ public abstract class Category {
         return false;
     }
 
-    public boolean charTyped(char chr, int modifiers) {
-        for (Widget widget : widgets) {
-            if (widget.charTyped(chr, modifiers)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public boolean isHeaderHovered(double mouseX, double mouseY) {
-        if(Utils.isInColorPickerWidget()) {
-            return false;
-        }
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + HEADER_HEIGHT;
     }
 

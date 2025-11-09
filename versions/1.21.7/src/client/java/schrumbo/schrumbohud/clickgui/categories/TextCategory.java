@@ -6,7 +6,6 @@ import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class TextCategory extends Category {
-
     private final HudConfig config = SchrumboHUDClient.config;
 
     public TextCategory() {

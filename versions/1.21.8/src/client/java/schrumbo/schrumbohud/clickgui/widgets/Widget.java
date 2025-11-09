@@ -1,8 +1,6 @@
 package schrumbo.schrumbohud.clickgui.widgets;
 
 import net.minecraft.client.gui.DrawContext;
-import schrumbo.schrumbohud.Utils.Utils;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 
 public abstract class Widget {
     protected int x, y;
@@ -34,10 +32,7 @@ public abstract class Widget {
         this.y = y;
     }
 
-    public boolean isHovered(int mouseX, int mouseY) {
-        if(Utils.isInColorPickerWidget()){
-            return false;
-        }
+    public boolean isHovered(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
@@ -49,9 +44,6 @@ public abstract class Widget {
         return false;
     }
 
-    public boolean charTyped(char chr, int modifiers) {
-        return false;
-    }
 
     public static abstract class Builder<T extends Builder<T>> {
         protected int x = 0;

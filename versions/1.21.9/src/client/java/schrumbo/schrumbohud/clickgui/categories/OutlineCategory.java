@@ -37,5 +37,4 @@ public class OutlineCategory extends Category {
         widgets.add(borderColorPicker);
         updateWidgetPositions(startX, startY);
     }
-
 }

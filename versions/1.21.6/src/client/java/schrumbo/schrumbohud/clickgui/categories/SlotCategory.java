@@ -6,7 +6,6 @@ import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class SlotCategory extends Category {
-
     private final HudConfig config = SchrumboHUDClient.config;
 
     public SlotCategory() {
@@ -38,5 +37,4 @@ public class SlotCategory extends Category {
         widgets.add(slotBackgroundColorPicker);
         updateWidgetPositions(startX, startY);
     }
-
 }

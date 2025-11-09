@@ -6,7 +6,6 @@ import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class GeneralCategory extends Category {
-
     private final HudConfig config = SchrumboHUDClient.config;
 
     public GeneralCategory() {

@@ -28,8 +28,8 @@ public class ClickGuiScreen extends Screen {
     private final HudConfig config = SchrumboHUDClient.config;
     private static int panelX = 0;
     private static int panelY = 0;
-    private static final int PANEL_WIDTH = 1000;
-    private static final int PANEL_HEIGHT = 700;
+    private static int PANEL_WIDTH = 1000;
+    private static int PANEL_HEIGHT = 700;
     private static final int TITLE_BAR_HEIGHT = 25;
     private static final int PADDING = 10;
     int categoriesWidth = PANEL_WIDTH / 5;
@@ -69,6 +69,13 @@ public class ClickGuiScreen extends Screen {
         calcScale();
         centerPosX();
         centerPosY();
+
+        if(PANEL_WIDTH >= client.getWindow().getWidth() || PANEL_HEIGHT >= client.getWindow().getHeight()){
+            PANEL_WIDTH = client.getWindow().getWidth();
+            PANEL_HEIGHT = client.getWindow().getHeight();
+            panelX = 0;
+            panelY = 0;
+        }
 
         initializeCategories();
     }

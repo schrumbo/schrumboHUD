@@ -35,10 +35,10 @@ public class ButtonWidget extends Widget {
             bgColor = config.guicolors.widgetBackground;
         }
 
-        RenderUtils.fillRoundedRect(context, x, y, width - PADDING, height, 0.0f, bgColor);
+        RenderUtils.fillRoundedRect(context, x, y, width, height, 0.0f, bgColor);
 
         if (hovered) {
-            RenderUtils.drawRoundedRectWithOutline(context, x, y, width - PADDING, height, 0.0f, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetBorderOpacity));
+            RenderUtils.drawRoundedRectWithOutline(context, x, y, width - 1, height, 0.0f, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetBorderOpacity));
         }
 
 
@@ -70,7 +70,7 @@ public class ButtonWidget extends Widget {
             try {
                 onClick.run();
             } catch (Exception e) {
-                e.printStackTrace();
+                SchrumboHUDClient.LOGGER.error(onClick.toString());
             }
 
             return true;
@@ -85,11 +85,6 @@ public class ButtonWidget extends Widget {
             return true;
         }
         return false;
-    }
-
-    private boolean isHovered(double mouseX, double mouseY) {
-        return mouseX >= x && mouseX <= x + width &&
-                mouseY >= y && mouseY <= y + height;
     }
 
     public static class Builder extends Widget.Builder<Builder> {

@@ -1,16 +1,12 @@
 package schrumbo.schrumbohud.clickgui.categories;
 
-import net.minecraft.client.gui.Click;
 import schrumbo.schrumbohud.SchrumboHUDClient;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
 public class BackgroundCategory extends Category {
     private final HudConfig config = SchrumboHUDClient.config;
-
-
 
     public BackgroundCategory() {
         super("Background");
@@ -41,6 +37,7 @@ public class BackgroundCategory extends Category {
         widgets.add(backgroundColorPicker);
         updateWidgetPositions(startX, startY);
     }
+
 
 
 }

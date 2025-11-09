@@ -1,15 +1,10 @@
 package schrumbo.schrumbohud.Utils;
 
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 
 public class RenderUtils {
 
-    /**
-     * Renders a filled rounded rectangle
-     */
+
     public static void fillRoundedRect(DrawContext context, int x, int y, int width, int height, float radius, int color) {
         if (radius <= 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -36,9 +31,7 @@ public class RenderUtils {
         fillRoundedCorner(context, x + width - cornerRadius, y + height - cornerRadius, cornerRadius, color, 3);
     }
 
-    /**
-     * Renders an outlined rounded rectangle
-     */
+
     public static void drawRoundedRectWithOutline(DrawContext context, int x, int y, int width, int height, float radius, int thickness, int color) {
         if (radius <= 0) {
             drawBorder(context, x, y, width, height, color);
@@ -135,51 +128,27 @@ public class RenderUtils {
         }
     }
 
-    /**
-     * draws a rectangle with 1 missing pixel in each corner
-     * @param context
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @param thickness
-     * @param color
-     */
     public static void drawRectWithCutCorners(DrawContext context, int x, int y, int width, int height, int thickness, int color) {
-        context.fill(x + 1, y, x + width - 1, y + thickness, color);
-
-        context.fill(x + 1, y + height - thickness, x + width - 1, y + height, color);
-
-        context.fill(x, y + 1, x + thickness, y + height - 1, color);
-
-        context.fill(x + width - thickness, y + 1, x + width, y + height - 1, color);
+        drawOutlineWithCutCorners(context, x, y, width, height, thickness, color);
 
         context.fill(x + thickness, y + thickness, x + width - thickness, y + height - thickness, color);
     }
 
-    /**
-     * Fills a circle using pixel-based rendering
-     * @param context DrawContext for rendering
-     * @param centerX Center X coordinate
-     * @param centerY Center Y coordinate
-     * @param radius Radius of the circle
-     * @param color Color in ARGB format
-     */
-    public static void fillCircle(DrawContext context, int centerX, int centerY, int radius, int color) {
-        for (int dy = -radius; dy <= radius; dy++) {
-            for (int dx = -radius; dx <= radius; dx++) {
-                if (dx * dx + dy * dy <= radius * radius) {
-                    context.fill(centerX + dx, centerY + dy,
-                            centerX + dx + 1, centerY + dy + 1, color);
-                }
-            }
-        }
+    public static void drawOutlineWithCutCorners(DrawContext context, int x, int y, int width, int height, int thickness, int color){
+        //oben
+        context.fill(x + 1, y, x + width - 1, y + thickness, color);
+
+        //unten
+        context.fill(x + 1, y + height - thickness, x + width - 1, y + height, color);
+
+        //links
+        context.fill(x, y + 1, x + thickness, y + height - 1, color);
+
+        //rechts
+        context.fill(x + width - thickness, y + 1, x + width, y + height - 1, color);
+
     }
 
-
-    /**
-     * draws a border around a rectangle
-     */
     public static void drawBorder(DrawContext context, int x, int y, int width, int height, int color){
         context.fill(x, y, x + width, y + 1, color);
         context.fill(x, y + height - 1, x + width, y + height, color);
@@ -187,25 +156,6 @@ public class RenderUtils {
         context.fill(x + width - 1, y, x + width, y + height, color);
     }
 
-    public static void fillCheckerboard(DrawContext context, int x, int y, int width, int height, int squareSize) {
 
-        int lightColor = 0xFFFFFFFF;
-        int darkColor = 0xFFC0C0C0;
-
-        for (int row = 0; row < Math.ceil((double) height / squareSize); row++) {
-            for (int col = 0; col < Math.ceil((double) width / squareSize); col++) {
-                boolean isLight = (row + col) % 2 == 0;
-                int color = isLight ? lightColor : darkColor;
-
-                int squareX = x + col * squareSize;
-                int squareY = y + row * squareSize;
-                int squareW = Math.min(squareSize, width - col * squareSize);
-                int squareH = Math.min(squareSize, height - row * squareSize);
-
-                context.fill(squareX, squareY, squareX + squareW, squareY + squareH, color);
-            }
-        }
-
-    }
 
 }

@@ -37,7 +37,9 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+	if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
+		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+	}
 
 }
 
@@ -90,13 +92,13 @@ publishing {
 }
 
 modrinth {
-	token = System.getenv("MODRINTH_TOKEN") // Remember to have the MODRINTH_TOKEN environment variable set or else this will fail - just make sure it stays private!
-	projectId = "u4K3P3A5" // This can be the project ID or the slug. Either will work!
-	versionNumber = "1.0.5" // You don't need to set this manually. Will fail if Modrinth has this version already
-	versionType = "release" // This is the default -- can also be `beta` or `alpha`
-	uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-	gameVersions = ["1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.10", "1.21.10"] // Must be an array, even with only one version
-	loaders = ["fabric"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "u4K3P3A5"
+	versionNumber = "1.0.5"
+	versionType = "release"
+	uploadFile = remapJar
+	gameVersions = ["1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.10", "1.21.10", "1.21.11"]
+	loaders = ["fabric"]
 	syncBodyFrom = rootProject.file("CHANGELOG.md").text
 	dependencies {
 		required.project "fabric-api"
