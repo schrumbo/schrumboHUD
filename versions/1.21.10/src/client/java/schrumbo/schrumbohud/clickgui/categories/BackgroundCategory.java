@@ -10,8 +10,6 @@ import schrumbo.schrumbohud.config.HudConfig;
 public class BackgroundCategory extends Category {
     private final HudConfig config = SchrumboHUDClient.config;
 
-
-
     public BackgroundCategory() {
         super("Background");
     }
@@ -41,6 +39,7 @@ public class BackgroundCategory extends Category {
         widgets.add(backgroundColorPicker);
         updateWidgetPositions(startX, startY);
     }
+
 
 
 }

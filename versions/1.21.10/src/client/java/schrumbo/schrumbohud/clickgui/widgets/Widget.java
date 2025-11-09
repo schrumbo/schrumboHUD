@@ -34,10 +34,7 @@ public abstract class Widget {
         this.y = y;
     }
 
-    public boolean isHovered(int mouseX, int mouseY) {
-        if(Utils.isInColorPickerWidget()){
-            return false;
-        }
+    public boolean isHovered(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
@@ -49,9 +46,6 @@ public abstract class Widget {
         return false;
     }
 
-    public boolean charTyped(char chr, int modifiers) {
-        return false;
-    }
 
     public static abstract class Builder<T extends Builder<T>> {
         protected int x = 0;

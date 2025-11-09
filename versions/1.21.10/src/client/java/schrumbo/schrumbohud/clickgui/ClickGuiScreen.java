@@ -11,7 +11,6 @@ import org.lwjgl.glfw.GLFW;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.clickgui.categories.*;
-import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
 import schrumbo.schrumbohud.clickgui.widgets.Widget;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
@@ -27,10 +26,10 @@ public class ClickGuiScreen extends Screen {
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final TextRenderer textRenderer = client.textRenderer;
     private final HudConfig config = SchrumboHUDClient.config;
-    private int panelX = 0;
-    private int panelY = 0;
+    private static int panelX = 0;
+    private static int panelY = 0;
     private static final int PANEL_WIDTH = 1000;
-    private static final int PANEL_HEIGHT = 600;
+    private static final int PANEL_HEIGHT = 700;
     private static final int TITLE_BAR_HEIGHT = 25;
     private static final int PADDING = 10;
     int categoriesWidth = PANEL_WIDTH / 5;
@@ -40,9 +39,9 @@ public class ClickGuiScreen extends Screen {
     private int dragOffsetY = 0;
 
     public static final List<Category> categories = new ArrayList<>();
-    private Category selectedCategory = null;
+    private Category selectedCategory;
     private int scrollOffset = 0;
-    private int contentHeight = 0;
+    private int categoriesHeight = 0;
     public static int widgetX;
     public static int widgetWidth;
 
@@ -60,10 +59,7 @@ public class ClickGuiScreen extends Screen {
         categories.add(new OutlineCategory());
         categories.add(new SlotCategory());
         categories.add(new TextCategory());
-
-        if (!categories.isEmpty()) {
-            selectedCategory = categories.get(0);
-        }
+        selectedCategory = categories.getFirst();
     }
 
     @Override
@@ -99,7 +95,7 @@ public class ClickGuiScreen extends Screen {
             currentY += category.getHeaderHeight() + 5;
         }
 
-        contentHeight = currentY;
+        categoriesHeight = currentY;
 
         if (selectedCategory != null) {
             int widgetStartY = panelY + TITLE_BAR_HEIGHT + 10;
@@ -123,7 +119,7 @@ public class ClickGuiScreen extends Screen {
         matrices.pushMatrix();
         matrices.scale(scale, scale);
         renderPanel(context);
-        renderScrollbar(context);
+        renderCategoriesScrollbar(context);
         matrices.popMatrix();
 
         int contentX = panelX + 10;
@@ -141,11 +137,7 @@ public class ClickGuiScreen extends Screen {
         matrices.pushMatrix();
         matrices.scale(scale, scale);
 
-        // Separator
-        context.fill(panelX + categoriesWidth + (2 * PADDING), panelY + TITLE_BAR_HEIGHT + PADDING,
-                panelX + categoriesWidth + (2 * PADDING) + 2, panelY + PANEL_HEIGHT - PADDING,
-                config.colorWithAlpha(config.guicolors.accent, 0.8f));
-
+        context.fill(panelX + categoriesWidth + (2 * PADDING), panelY + TITLE_BAR_HEIGHT + PADDING, panelX + categoriesWidth + (2 * PADDING) + 2, panelY + PANEL_HEIGHT - PADDING, config.colorWithAlpha(config.guicolors.accent, 0.8f));
 
         for (Category category : categories) {
             category.renderHeader(context, (int) scaledMouseX, (int) scaledMouseY, category == selectedCategory);
@@ -155,6 +147,12 @@ public class ClickGuiScreen extends Screen {
         context.disableScissor();
 
         if (selectedCategory != null) {
+            int widgetScissorX = (int) (widgetX * scale);
+            int widgetScissorY = (int) (contentY * scale);
+            int widgetScissorX2 = (int) ((widgetX + widgetWidth) * scale);
+            int widgetScissorY2 = (int) ((contentY + contentAreaHeight) * scale);
+
+            context.enableScissor(widgetScissorX, widgetScissorY, widgetScissorX2, widgetScissorY2);
 
             matrices.pushMatrix();
             matrices.scale(scale, scale);
@@ -162,20 +160,9 @@ public class ClickGuiScreen extends Screen {
             selectedCategory.renderWidgets(context, (int) scaledMouseX, (int) scaledMouseY, delta);
 
             matrices.popMatrix();
+
+            context.disableScissor();
         }
-
-        matrices.pushMatrix();
-        matrices.scale(scale, scale);
-
-        if (selectedCategory != null) {
-            for (Widget widget : selectedCategory.widgets) {
-                if (widget instanceof ColorPickerWidget colorPicker) {
-                    colorPicker.renderPopupLayered(context, (int) scaledMouseX, (int) scaledMouseY, delta);
-                }
-            }
-        }
-
-        matrices.popMatrix();
     }
 
     /**
@@ -185,7 +172,7 @@ public class ClickGuiScreen extends Screen {
         int guiScale = client.options.getGuiScale().getValue();
 
         if(guiScale == 0) {
-            guiScale = (int) client.getWindow().getScaleFactor();
+            guiScale = client.getWindow().getScaleFactor();
         }
         config.configScale = 1.0f / guiScale;
 
@@ -195,29 +182,30 @@ public class ClickGuiScreen extends Screen {
      * centers x pos
      */
     public void centerPosX(){
-        int windowWidth = (int)(client.getWindow().getFramebufferWidth());
-        panelX = (int)(windowWidth / 2 - PANEL_WIDTH / 2);
+        int windowWidth = (client.getWindow().getFramebufferWidth());
+        panelX = (windowWidth / 2 - PANEL_WIDTH / 2);
     }
 
     /**
      * centers y pos
      */
     public void centerPosY(){
-        int windowHeight = (int)(client.getWindow().getFramebufferHeight());
-        panelY = (int)(windowHeight / 2 - PANEL_HEIGHT / 2);
+        int windowHeight = (client.getWindow().getFramebufferHeight());
+        panelY = (windowHeight / 2 - PANEL_HEIGHT / 2);
     }
 
     /**
      * Renders the main panel background and title bar.
      */
     private void renderPanel(DrawContext context) {
+        var matrices = context.getMatrices();
 
-        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, config.guicolors.panelBackground);
+        RenderUtils.drawRectWithCutCorners(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 1, config.colorWithAlpha(config.guicolors.panelBackground, 1.0f));
 
-        RenderUtils.drawRoundedRectWithOutline(context, panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, 0.0f, 2, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelBorderOpacity));
-
-        RenderUtils.fillRoundedRect(context, panelX, panelY, PANEL_WIDTH, TITLE_BAR_HEIGHT, 0.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelTitleBarOpacity));
-
+        RenderUtils.drawOutlineWithCutCorners(context, panelX - 1, panelY - 1, PANEL_WIDTH + 2, PANEL_HEIGHT + 2,2, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelBorderOpacity));
+        matrices.pushMatrix();
+        RenderUtils.drawRectWithCutCorners(context, panelX, panelY, PANEL_WIDTH, TITLE_BAR_HEIGHT, 1, config.colorWithAlpha(config.guicolors.accent, config.guicolors.panelTitleBarOpacity));
+        matrices.popMatrix();
         String title = "";
         int titleX = panelX + (PANEL_WIDTH - client.textRenderer.getWidth(title)) / 2;
         int titleY = panelY + (TITLE_BAR_HEIGHT - 8) / 2;
@@ -228,28 +216,27 @@ public class ClickGuiScreen extends Screen {
     /**
      * Renders the scrollbar based on content height.
      */
-    private void renderScrollbar(DrawContext context) {
-
+    private void renderCategoriesScrollbar(DrawContext context) {
         int scrollbarWidth = 4;
-        int scrollbarX = panelX + PANEL_WIDTH - scrollbarWidth - 3;
+        int scrollbarX = panelX + categoriesWidth + 15;
         int scrollbarY = panelY + TITLE_BAR_HEIGHT + 10;
         int scrollbarHeight = PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20;
 
         int trackColor = config.colorWithAlpha(0x000000, 0.3f);
-        int maxScroll = Math.max(0, contentHeight - (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20));
+        int maxScroll = Math.max(0, categoriesHeight - (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20));
 
         context.enableScissor(scrollbarX, scrollbarY, scrollbarX + scrollbarWidth, scrollbarY + scrollbarHeight);
         context.fill(scrollbarX, scrollbarY, scrollbarX + scrollbarWidth, scrollbarY + scrollbarHeight, trackColor);
         if (maxScroll > 0) {
-            float thumbHeightRatio = (float) (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20) / contentHeight;
+            float thumbHeightRatio = (float) (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20) / categoriesHeight;
             int thumbHeight = Math.max(20, (int) (scrollbarHeight * thumbHeightRatio));
             int thumbY = scrollbarY + (int) ((float) scrollOffset / maxScroll * (scrollbarHeight - thumbHeight));
 
-            //SCROLLBAR THUMB
             RenderUtils.fillRoundedRect(context, scrollbarX, thumbY, scrollbarWidth, thumbHeight, 2.0f, config.colorWithAlpha(config.guicolors.accent, config.guicolors.widgetAccentOpacity));
         }
         context.disableScissor();
     }
+
 
     @Override
     public boolean mouseClicked(Click click, boolean doubled) {
@@ -261,12 +248,8 @@ public class ClickGuiScreen extends Screen {
 
         if (selectedCategory != null) {
             for (Widget widget : selectedCategory.widgets) {
-                if (widget instanceof ColorPickerWidget colorPicker) {
-                    if (colorPicker.isPopupOpen()) {
-                        boolean handled = colorPicker.mouseClicked(scaledMouseX, scaledMouseY, click.button());
-                        if (handled) return true;
-                    }
-                }
+                boolean handled = widget.mouseClicked(scaledMouseX, scaledMouseY, click.button());
+                if (handled) return true;
             }
         }
 
@@ -307,12 +290,10 @@ public class ClickGuiScreen extends Screen {
 
         if (selectedCategory != null) {
             for (Widget widget : selectedCategory.widgets) {
-                if (widget instanceof ColorPickerWidget colorPicker) {
-                    if (colorPicker.isPopupOpen()) {
-                        boolean handled = colorPicker.mouseDragged(scaledMouseX, scaledMouseY, click.button(), scaledOffsetX, scaledOffsetY);
+
+                        boolean handled = widget.mouseDragged(scaledMouseX, scaledMouseY, click.button(), scaledOffsetX, scaledOffsetY);
                         if (handled) return true;
-                    }
-                }
+
             }
         }
 
@@ -342,12 +323,8 @@ public class ClickGuiScreen extends Screen {
 
         if (selectedCategory != null) {
             for (Widget widget : selectedCategory.widgets) {
-                if (widget instanceof ColorPickerWidget colorPicker) {
-                    if (colorPicker.isPopupOpen()) {
-                        boolean handled = colorPicker.mouseReleased(scaledMouseX, scaledMouseY, click.button());
+                        boolean handled = widget.mouseReleased(scaledMouseX, scaledMouseY, click.button());
                         if (handled) return true;
-                    }
-                }
             }
         }
 
@@ -373,13 +350,32 @@ public class ClickGuiScreen extends Screen {
 
         if (scaledMouseX >= panelX && scaledMouseX <= panelX + PANEL_WIDTH && scaledMouseY >= panelY + TITLE_BAR_HEIGHT && scaledMouseY <= panelY + PANEL_HEIGHT) {
 
-            int maxScroll = Math.max(0, contentHeight - (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20));
+            int maxScroll = Math.max(0, categoriesHeight - (PANEL_HEIGHT - TITLE_BAR_HEIGHT - 20));
             scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset - (int) (verticalAmount * 20)));
 
             initializeCategories();
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+
+    @Override
+    public boolean keyPressed(KeyInput input) {
+        if (selectedCategory != null) {
+            for (Widget widget : selectedCategory.widgets) {
+                if (widget.keyPressed(input.key(), input.scancode(), input.modifiers())) {
+                    return true;
+                }
+            }
+        }
+        if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
+            ConfigManager.save();
+            this.close();
+            return true;
+        }
+
+        return super.keyPressed(input);
     }
 
     @Override
@@ -389,28 +385,15 @@ public class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
-        if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
-            if (selectedCategory != null) {
-                for (Widget widget : selectedCategory.widgets) {
-                    if (widget instanceof ColorPickerWidget colorPicker) {
-                        if (colorPicker.isPopupOpen()) {
-                            colorPicker.closePopup();
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            ConfigManager.save();
-            this.close();
-            return true;
-        }
-        return super.keyPressed(input);
-    }
-
-    @Override
     public boolean shouldPause() {
         return false;
+    }
+
+    public static int getPanelX(){
+        return panelX;
+    }
+
+    public static int getPanelY(){
+        return panelY;
     }
 }

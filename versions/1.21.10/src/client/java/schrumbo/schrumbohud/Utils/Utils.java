@@ -8,23 +8,5 @@ import schrumbo.schrumbohud.clickgui.widgets.Widget;
 import java.util.List;
 
 public class Utils {
-    /**
-     * Checks if any ColorPicker popup is currently open in any category.
-     * @return true if any popup is open, false otherwise
-     */
-    public static boolean isInColorPickerWidget() {
-        List<Category> categories = ClickGuiScreen.categories;
-        for (Category category : categories) {
-            if (category.isWidgetsInitialized()) {
-                for (Widget widget : category.widgets) {
-                    if (widget instanceof ColorPickerWidget colorPicker) {
-                        if (colorPicker.isPopupOpen()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
+
 }

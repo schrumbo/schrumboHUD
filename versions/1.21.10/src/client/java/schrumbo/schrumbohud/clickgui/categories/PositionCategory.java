@@ -8,8 +8,6 @@ import schrumbo.schrumbohud.config.HudConfig;
 import schrumbo.schrumbohud.hud.HudEditorScreen;
 
 public class PositionCategory extends Category {
-
-
     public PositionCategory() {
         super("Position");
     }
@@ -46,5 +44,4 @@ public class PositionCategory extends Category {
         widgets.add(changePos);
         updateWidgetPositions(startX, startY);
     }
-
 }
