@@ -18,12 +18,15 @@ public class SchrumboHUDClient implements ClientModInitializer {
 	public static HudConfig config;
 	private double initTime;
 
+	/**
+	 * initializes all features
+	 */
 	@Override
 	public void onInitializeClient() {
 		initTime = Util.getMeasuringTimeMs();
 		LOGGER.info("initializing SchrumboHUD");
 		configManager = new ConfigManager();
-		config = configManager.load();
+		config = ConfigManager.load();
 
 		KeybindHandler.register();
 		InventoryRenderer.register();

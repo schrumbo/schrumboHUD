@@ -4,6 +4,9 @@ import net.minecraft.client.gui.DrawContext;
 import schrumbo.schrumbohud.Utils.Utils;
 import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
 
+/**
+ * base class for widgets which are late placed in the categories
+ */
 public abstract class Widget {
     protected int x, y;
     protected int width;
@@ -29,24 +32,50 @@ public abstract class Widget {
         return false;
     }
 
+    /**
+     * sets the position
+     * @param x
+     * @param y
+     */
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * checks if the widget is being hovered
+     * @param mouseX
+     * @param mouseY
+     * @return
+     */
     public boolean isHovered(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
+    /**
+     * gets the height of a widget
+     * @return height
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * checks if a key is pressed
+     * @param keyCode
+     * @param scanCode
+     * @param modifiers
+     * @return
+     */
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 
 
+    /**
+     * builder for a widget
+     * @param <T>
+     */
     public static abstract class Builder<T extends Builder<T>> {
         protected int x = 0;
         protected int y = 0;

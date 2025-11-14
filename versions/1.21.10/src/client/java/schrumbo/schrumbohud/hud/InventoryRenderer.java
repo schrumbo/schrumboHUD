@@ -13,6 +13,9 @@ import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.HudConfig;
 
+/**
+ * renders a preview of the player's inventory permanently on the screen
+ */
 public class InventoryRenderer implements HudElement {
     public static final Identifier ID = Identifier.of("schrumbomods", "inventory_hud");
     private static final int SLOT_SIZE = 18;
@@ -21,6 +24,9 @@ public class InventoryRenderer implements HudElement {
     private static final int PADDING = 4;
 
 
+    /**
+     * entrypoint
+     */
     public static void register() {
         HudElementRegistry.attachElementAfter(
                 VanillaHudElements.BOSS_BAR,
@@ -61,6 +67,13 @@ public class InventoryRenderer implements HudElement {
     }
 
 
+    /**
+     * calculates the x position based on the current anchor
+     * @param config
+     * @param screenWidth
+     * @param hudWidth
+     * @return x position of the hud
+     */
     private int calcX(HudConfig config, int screenWidth, int hudWidth) {
         return switch (config.anchor.horizontal) {
             case LEFT -> config.position.x;
@@ -68,6 +81,13 @@ public class InventoryRenderer implements HudElement {
         };
     }
 
+    /**
+     * calculates the y position based on the current anchor
+     * @param config
+     * @param screenHeight
+     * @param hudHeight
+     * @return y position of the hud
+     */
     private int calcY(HudConfig config, int screenHeight, int hudHeight) {
         return switch (config.anchor.vertical) {
             case TOP -> config.position.y;
@@ -76,6 +96,13 @@ public class InventoryRenderer implements HudElement {
     }
 
 
+    /**
+     * draws the background
+     * @param context
+     * @param width
+     * @param height
+     * @param config
+     */
     private void drawBackground(DrawContext context, int width, int height, HudConfig config) {
         if (config.backgroundEnabled) {
             int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity);
@@ -97,6 +124,12 @@ public class InventoryRenderer implements HudElement {
     }
 
 
+    /**
+     * renders the items, item count and the slot background
+     * @param context
+     * @param inventory
+     * @param config
+     */
     private void renderInventory(DrawContext context, PlayerInventory inventory, HudConfig config) {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
@@ -119,7 +152,14 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-
+    /**
+     * renders an item with stack count and durability bar
+     * @param context
+     * @param stack
+     * @param x
+     * @param y
+     * @param config
+     */
     private void renderItem(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         if (stack.isEmpty()) return;
 
@@ -135,8 +175,14 @@ public class InventoryRenderer implements HudElement {
     }
 
 
-
-
+    /**
+     * renders an item's stack count
+     * @param context
+     * @param stack
+     * @param x
+     * @param y
+     * @param config
+     */
     private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         String count = String.valueOf(stack.getCount());
         int textColor = config.colorWithAlpha(config.colors.text, 1.0f);
@@ -153,6 +199,14 @@ public class InventoryRenderer implements HudElement {
     }
 
 
+    /**
+     * renders an item's durability bar
+     * @param context
+     * @param stack
+     * @param x
+     * @param y
+     * @param config
+     */
     private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         int maxDurability = stack.getMaxDamage();
         int currDurability = maxDurability - stack.getDamage();
@@ -172,6 +226,11 @@ public class InventoryRenderer implements HudElement {
     }
 
 
+    /**
+     * calculates an item's durability color based on the remaining durability
+     * @param percent
+     * @return
+     */
     private int getDurabilityColor(float percent) {
         if (percent > 0.5f) return 0xFF00FF00;
         else if (percent > 0.25f) return 0xFFFFFF00;

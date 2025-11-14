@@ -13,7 +13,9 @@ import java.util.List;
 
 import static schrumbo.schrumbohud.SchrumboHUDClient.config;
 
-
+/**
+ * Base class for Categories, used to Hold widgets
+ */
 public abstract class Category {
     protected String name;
     public List<Widget> widgets;
@@ -37,7 +39,12 @@ public abstract class Category {
 
     public abstract void initializeWidgets(int startX, int startY, int width);
 
-
+    /**
+     * initializes widgets if that has not already happened
+     * @param startX
+     * @param startY
+     * @param width
+     */
     public void initializeWidgetsIfNeeded(int startX, int startY, int width) {
         if (!widgetsInitialized) {
             initializeWidgets(startX, startY, width);
@@ -48,6 +55,11 @@ public abstract class Category {
     }
 
 
+    /**
+     * updates widget positions so they stay in the panel
+     * @param startX
+     * @param startY
+     */
     protected void updateWidgetPositions(int startX, int startY) {
         int currentY = startY;
         for (Widget widget : widgets) {
@@ -57,6 +69,13 @@ public abstract class Category {
     }
 
 
+    /**
+     * renders all the categories widgets
+     * @param context
+     * @param mouseX
+     * @param mouseY
+     * @param delta
+     */
     public void renderWidgets(DrawContext context, int mouseX, int mouseY, float delta) {
         for (Widget widget : widgets) {
             widget.render(context, mouseX, mouseY, delta);
@@ -64,6 +83,13 @@ public abstract class Category {
     }
 
 
+    /**
+     * renders the title bar / header for the category
+     * @param context
+     * @param mouseX
+     * @param mouseY
+     * @param isSelected
+     */
     public void renderHeader(DrawContext context, int mouseX, int mouseY, boolean isSelected) {
         boolean hovered = isHeaderHovered(mouseX, mouseY);
 
@@ -98,6 +124,13 @@ public abstract class Category {
         matrices.popMatrix();
     }
 
+    /**
+     * handles mouse clicks on widgets
+     * @param mouseX
+     * @param mouseY
+     * @param button
+     * @return
+     */
     public boolean mouseClickedWidgets(double mouseX, double mouseY, int button) {
         for (Widget widget : widgets) {
             if (widget instanceof ColorPickerWidget picker) {
@@ -114,6 +147,15 @@ public abstract class Category {
         return false;
     }
 
+    /**
+     * handles dragging for widgets -> used for Color Pickers and Sliders
+     * @param mouseX
+     * @param mouseY
+     * @param button
+     * @param deltaX
+     * @param deltaY
+     * @return
+     */
     public boolean mouseDraggedWidgets(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         for (Widget widget : widgets) {
 
@@ -129,7 +171,13 @@ public abstract class Category {
         return false;
     }
 
-
+    /**
+     * handles mouse release for widgets -> used for Color Pickers and Sliders
+     * @param mouseX
+     * @param mouseY
+     * @param button
+     * @return
+     */
     public boolean mouseReleasedWidgets(double mouseX, double mouseY, int button) {
         for (Widget widget : widgets) {
                 return widget.mouseReleased(mouseX, mouseY, button);
@@ -144,6 +192,13 @@ public abstract class Category {
         return false;
     }
 
+    /**
+     * handles key presses
+     * @param keyCode
+     * @param scanCode
+     * @param modifiers
+     * @return
+     */
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         for (Widget widget : widgets) {
             if (widget.keyPressed(keyCode, scanCode, modifiers)) {
@@ -154,33 +209,68 @@ public abstract class Category {
     }
 
 
+    /**
+     * checks if the categories header is hovered
+     * @param mouseX
+     * @param mouseY
+     * @return if hovered
+     */
     public boolean isHeaderHovered(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + HEADER_HEIGHT;
     }
 
+    /**
+     * gets height with widgets
+     * @deprecated widgets are no longer interacting with the category headers due to layout change
+     * @return
+     */
+    @Deprecated
     public int getTotalHeight() {
         return HEADER_HEIGHT;
     }
 
+    /**
+     * gets header height
+     * @return
+     */
     public int getHeaderHeight() {
         return HEADER_HEIGHT;
     }
 
+    /**
+     * sets a categories position and width
+     * @param x
+     * @param y
+     * @param width
+     */
     public void setPosition(int x, int y, int width) {
         this.x = x;
         this.y = y;
         this.width = width;
     }
 
+    /**
+     * sets a categories position
+     * @param x
+     * @param y
+     */
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * gets a categories name
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * checks if the categories widgets are initialized
+     * @return true if initialized
+     */
     public boolean isWidgetsInitialized() {
         return widgetsInitialized;
     }

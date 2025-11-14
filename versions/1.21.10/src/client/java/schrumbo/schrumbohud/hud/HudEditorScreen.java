@@ -16,7 +16,7 @@ import java.io.ObjectInputFilter;
 import static schrumbo.schrumbohud.Utils.RenderUtils.drawBorder;
 
 /**
- * interactive screen for positioning and scaling the HUD
+ * interactive screen for positioning the HUD
  */
 public class HudEditorScreen extends Screen {
     private final Screen parent;
@@ -57,6 +57,11 @@ public class HudEditorScreen extends Screen {
         renderInstructions(context);
     }
 
+    /**
+     * renders and alignment guide (just 2 lines in the middle of the screen)
+     * @param context
+     * @param config
+     */
     private void renderAlignmentGuides(DrawContext context, HudConfig config) {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
@@ -67,6 +72,11 @@ public class HudEditorScreen extends Screen {
 
     }
 
+    /**
+     * renders a preview of the inventory hud without the individual items and slots
+     * @param context
+     * @param config
+     */
     private void renderHudPreview(DrawContext context, HudConfig config) {
         int hudX = getX(config);
         int hudY = getY(config);
@@ -97,6 +107,10 @@ public class HudEditorScreen extends Screen {
         matrices.popMatrix();
     }
 
+    /**
+     * user guide for change the hud position
+     * @param context
+     */
     private void renderInstructions(DrawContext context) {
         Text[] instructions = {
                 Text.literal("§8[").append(Text.literal("Drag").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fMoveHUD"),
@@ -111,6 +125,9 @@ public class HudEditorScreen extends Screen {
         }
     }
 
+    /**
+     * updates anchor dependent on where the hud was being dragged
+     */
     private void updateAnchor() {
         var config = SchrumboHUDClient.config;
         int hudWidth = (int)(BASE_WIDTH * config.scale);
@@ -134,6 +151,11 @@ public class HudEditorScreen extends Screen {
         }
     }
 
+    /**
+     * gets the x position of the hud based on the anchor
+     * @param config
+     * @return
+     */
     private int getX(HudConfig config) {
         if (dragging) return tempAbsX;
 
@@ -144,6 +166,11 @@ public class HudEditorScreen extends Screen {
         };
     }
 
+    /**
+     * gets the y position of the hud based on the anchor
+     * @param config
+     * @return
+     */
     private int getY(HudConfig config) {
         if (dragging) return tempAbsY;
 
@@ -207,7 +234,11 @@ public class HudEditorScreen extends Screen {
         return super.mouseReleased(click);
     }
 
-
+    /**
+     * handles key Input
+     * @param input
+     * @return
+     */
     @Override
     public boolean keyPressed(KeyInput input) {
         var config = SchrumboHUDClient.config;
