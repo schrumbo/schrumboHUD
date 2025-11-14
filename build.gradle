@@ -104,3 +104,43 @@ modrinth {
 		required.project "fabric-api"
 	}
 }
+javadoc {
+	source = sourceSets.main.allJava
+	source += sourceSets.client.allJava  // Client-Klassen einbeziehen
+
+	classpath = configurations.compileClasspath
+	classpath += sourceSets.client.compileClasspath
+
+	options.encoding = 'UTF-8'
+	options.charSet = 'UTF-8'
+	options.memberLevel = JavadocMemberLevel.PRIVATE
+
+	// Fabric/Minecraft spezifische Warnungen unterdrücken
+	options.addStringOption('Xdoclint:none', '-quiet')
+
+	destinationDir = file("${buildDir}/docs/javadoc")
+}
+
+task generateAllDocs(type: Javadoc) {
+	source = sourceSets.main.allJava
+	source += sourceSets.client.allJava
+
+	classpath = configurations.compileClasspath
+	classpath += sourceSets.client.compileClasspath
+
+	options.encoding = 'UTF-8'
+	options.memberLevel = JavadocMemberLevel.PRIVATE
+	options.addStringOption('Xdoclint:none', '-quiet')
+
+	destinationDir = file("${buildDir}/docs/all-javadoc")
+
+	doFirst {
+		println "Generiere Dokumentation für folgende Dateien:"
+		source.files.each { println "  - ${it.name}" }
+	}
+}
+task copyJavadocToGithubPages(type: Copy) {
+	dependsOn javadoc
+	from javadoc.destinationDir
+	into file("${rootProject.projectDir}/docs")
+}
