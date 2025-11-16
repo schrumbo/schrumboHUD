@@ -29,8 +29,8 @@ public class InventoryRenderer implements HudElement {
      * Registers the inventory HUD element after the boss bar
      */
     public static void register() {
-        HudElementRegistry.attachElementAfter(
-                VanillaHudElements.BOSS_BAR,
+        HudElementRegistry.attachElementBefore(
+                VanillaHudElements.MISC_OVERLAYS,
                 ID,
                 new InventoryRenderer()
         );
