@@ -148,13 +148,3 @@ task copyJavadocToGithubPages(type: Copy) {
 	from javadoc.destinationDir
 	into file("${rootProject.projectDir}/docs")
 }
-
-tasks.named('jar') {
-	archiveClassifier.set('')
-	destinationDirectory.set(file(System.getProperty("user.home") + "/Desktop/build/schrumbohud"))
-}
-
-// Sources JAR bleibt in build/libs
-tasks.named('sourcesJar') {
-	destinationDirectory.set(file("$buildDir/libs"))
-}
