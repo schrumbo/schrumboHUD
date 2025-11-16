@@ -28,11 +28,12 @@ public class InventoryRenderer implements HudElement {
      * entrypoint
      */
     public static void register() {
-        HudElementRegistry.attachElementAfter(
-                VanillaHudElements.BOSS_BAR,
+        HudElementRegistry.attachElementBefore(
+                VanillaHudElements.MISC_OVERLAYS,
                 ID,
                 new InventoryRenderer()
         );
+
     }
 
     @Override

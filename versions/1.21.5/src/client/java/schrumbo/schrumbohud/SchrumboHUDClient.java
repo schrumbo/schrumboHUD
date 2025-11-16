@@ -1,6 +1,7 @@
 package schrumbo.schrumbohud;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +24,16 @@ public class SchrumboHUDClient implements ClientModInitializer {
 		initTime = Util.getMeasuringTimeMs();
 		LOGGER.info("initializing SchrumboHUD");
 		configManager = new ConfigManager();
-		config = configManager.load();
+		config = ConfigManager.load();
 
 		KeybindHandler.register();
-		InventoryRenderer.register();
+		HudLayerRegistrationCallback.EVENT.register(new InventoryRenderer());
 		FirstJoin.register();
 		config.initColors();
 		Commands.register();
 
 		initTime = Util.getMeasuringTimeMs() - initTime;
-		LOGGER.info("SchrumboHUD initialized in " + initTime + "ms");
+        LOGGER.info("SchrumboHUD initialized in {}ms", initTime);
 	}
 
 
