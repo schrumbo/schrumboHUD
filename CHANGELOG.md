@@ -1,8 +1,6 @@
-# SchrumboHUD v1.0.8
-- **colorpicker rewrite**
+# SchrumboHUD v1.0.9
+- **fixed 1.21.5 version using deprecated stuff for hud Rendering and hopefully fixed issues with the layering**
+- **1.21.5+ fixed layering of the hud**
 
-- **fixed clickGUI messing up if the game window is tiny**
-- **fixed modmenu badge not showing -> now shows the "client" badge**
-- **fixed position for the categories scrollbar**
 
 
