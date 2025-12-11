@@ -160,6 +160,7 @@ public class InventoryRenderer implements HudLayerRegistrationCallback {
         var textRenderer = MinecraftClient.getInstance().textRenderer;
         var matrices = context.getMatrices();
         matrices.push();
+        //1.21.5 only thing
         matrices.translate(0, 0, 200);
         context.drawText(textRenderer,
                 count,
