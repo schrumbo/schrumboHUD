@@ -138,8 +138,6 @@ public class InventoryRenderer implements HudLayerRegistrationCallback {
      */
     private void renderItem(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         if (stack.isEmpty()) return;
-
-
         context.drawItem(stack, x, y);
 
         if (stack.getCount() > 1) {
@@ -148,6 +146,7 @@ public class InventoryRenderer implements HudLayerRegistrationCallback {
         if (stack.isDamaged()) {
             renderDurabilityBar(context, stack, x, y, config);
         }
+
     }
 
 
@@ -158,15 +157,16 @@ public class InventoryRenderer implements HudLayerRegistrationCallback {
     private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
         String count = String.valueOf(stack.getCount());
         int textColor = config.colorWithAlpha(config.colors.text, 1.0f);
-
         var textRenderer = MinecraftClient.getInstance().textRenderer;
         var matrices = context.getMatrices();
         matrices.push();
-
-        context.drawText(textRenderer, count,
+        matrices.translate(0, 0, 200);
+        context.drawText(textRenderer,
+                count,
                 x + SLOT_SIZE - 2 - textRenderer.getWidth(count),
-                y + SLOT_SIZE - 9, textColor, config.textShadowEnabled);
-
+                y + SLOT_SIZE - 9,
+                textColor,
+                config.textShadowEnabled);
         matrices.pop();
     }
 
