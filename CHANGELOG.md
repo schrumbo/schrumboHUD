@@ -1,6 +1,5 @@
-# SchrumboHUD v1.0.9
-- **fixed 1.21.5 version using deprecated stuff for hud Rendering and hopefully fixed issues with the layering**
-- **1.21.5+ fixed layering of the hud**
+# SchrumboHUD v1.0.10
+- **fix 1.21.5 stack size showing below the displayed item**
 
 
 
