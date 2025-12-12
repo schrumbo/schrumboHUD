@@ -137,6 +137,18 @@ public class HudConfig {
         return (alpha << 24) | (color & 0x00FFFFFF);
     }
 
+    public void loadDarkMode(){
+        colors.background = 0x1c1c1c;
+        colors.border = 0x434343;
+        colors.text = 0xfddbbf;
+        colors.slots = 0x282828;
+
+        backgroundOpacity = 1.0f;
+        outlineOpacity = 1.0f;
+        textShadowOpacity = 1.0f;
+        slotBackgroundOpacity = 1.0f;
+    }
+
 
     public void loadClassicInventoryHUD() {
         colors.background = 0x5955D9;
