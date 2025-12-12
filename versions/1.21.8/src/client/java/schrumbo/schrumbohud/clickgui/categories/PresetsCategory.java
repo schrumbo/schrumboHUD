@@ -29,6 +29,19 @@ public class PresetsCategory extends Category {
 
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
 
+        ButtonWidget darkMode = ButtonWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Dark")
+                .onClick(()->{
+                    SchrumboHUDClient.config.loadDarkMode();
+                    ConfigManager.save();
+                })
+                .build();
+        widgets.add(darkMode);
+
+        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
+
         ButtonWidget gruvbox = ButtonWidget.builder()
                 .y(currentY)
                 .width(width)
