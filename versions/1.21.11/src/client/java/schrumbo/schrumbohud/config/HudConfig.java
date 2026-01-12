@@ -150,6 +150,18 @@ public class HudConfig {
         slotBackgroundOpacity = 0.3f;
     }
 
+    public void loadDarkMode(){
+        colors.background = 0x1c1c1c;
+        colors.border = 0x434343;
+        colors.text = 0xfddbbf;
+        colors.slots = 0x282828;
+
+        backgroundOpacity = 1.0f;
+        outlineOpacity = 1.0f;
+        textShadowOpacity = 1.0f;
+        slotBackgroundOpacity = 1.0f;
+    }
+
 
     public void loadCatppuccinMocha() {
         colors.background = 0x1E1E2E;
