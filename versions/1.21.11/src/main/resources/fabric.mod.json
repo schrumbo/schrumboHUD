@@ -18,6 +18,9 @@
 	"entrypoints": {
 		"client": [
 			"schrumbo.schrumbohud.SchrumboHUDClient"
+		],
+		"modmenu": [
+			"schrumbo.schrumbohud.modmenu.ModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -29,7 +32,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.9",
-		"minecraft": "1.21.11-alpha.25.46.a",
+		"minecraft": "1.21.11",
 		"java": ">=21",
 		"fabric-api": "*"
 	}
