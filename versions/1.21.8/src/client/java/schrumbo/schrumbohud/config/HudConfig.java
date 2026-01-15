@@ -29,6 +29,8 @@ public class HudConfig {
     @SerializedName("armorPosition")
     public Position armorPosition = new Position();
 
+    public float armorTransparency = 1.0f;
+
     public static class Anchor {
         @SerializedName("horizontal")
         public HorizontalAnchor horizontal = HorizontalAnchor.LEFT;
@@ -252,6 +254,9 @@ public class HudConfig {
     public void enableArmorHud(boolean value){
         this.armorEnabled = value;
     }
+    public void enableVerticalMode(boolean value){
+        this.armorVertical = value;
+    }
     public void enableBorder(boolean value){
         this.outlineEnabled = value;
     }
@@ -271,7 +276,6 @@ public class HudConfig {
     public void setBackgroundOpacity(float opacity){
         backgroundOpacity = opacity;
     }
-
     public void setBorderColor(int color) {
         colors.border = color;
     }
@@ -289,4 +293,11 @@ public class HudConfig {
         colors.slots = color;
     }
     public void setSlotOpacity(float opacity){slotBackgroundOpacity = opacity;}
+
+    public void setArmorOpacity(float opacity){
+        armorTransparency = opacity;
+    }
+    public float getArmorOpacity(){
+        return armorTransparency;
+    }
 }

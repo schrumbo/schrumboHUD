@@ -9,8 +9,6 @@ import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 
-import java.io.ObjectInputFilter;
-
 import static schrumbo.schrumbohud.Utils.RenderUtils.drawBorder;
 
 /**
@@ -18,12 +16,22 @@ import static schrumbo.schrumbohud.Utils.RenderUtils.drawBorder;
  */
 public class HudEditorScreen extends Screen {
     private final Screen parent;
-    private boolean dragging = false;
-    private int dragOffsetX = 0;
-    private int dragOffsetY = 0;
-    private int tempAbsX = 0;
-    private int tempAbsY = 0;
 
+    //inv hud drag
+    private boolean draggingInventory = false;
+    private int invDragOffsetX = 0;
+    private int invDragOffsetY = 0;
+    private int invTempAbsX = 0;
+    private int invTempAbsY = 0;
+
+    //armor hud drag
+    private boolean draggingArmor = false;
+    private int armorDragOffsetX = 0;
+    private int armorDragOffsetY = 0;
+    private int armorTempAbsX = 0;
+    private int armorTempAbsY = 0;
+
+    //inv hud const
     private static final int SLOT_SIZE = 18;
     private static final int ROW_SLOTS = 9;
     private static final int ROWS = 3;
@@ -51,7 +59,8 @@ public class HudEditorScreen extends Screen {
         var config = SchrumboHUDClient.config;
 
         renderAlignmentGuides(context, config);
-        renderHudPreview(context, config);
+        renderInventoryHudPreview(context, config);
+        renderArmorHudPreview(context, config);
         renderInstructions(context);
     }
 
@@ -60,45 +69,79 @@ public class HudEditorScreen extends Screen {
         int centerY = this.height / 2;
         int guideColor = 0x80FFFFFF;
 
-        context.fill(centerX, 0, centerX - 1, this.height, guideColor);
+        context.fill(centerX, 0, centerX + 1, this.height, guideColor);
         context.fill(0, centerY, this.width, centerY + 1, guideColor);
-
     }
 
-    private void renderHudPreview(DrawContext context, HudConfig config) {
-        int hudX = getX(config);
-        int hudY = getY(config);
+    private void renderInventoryHudPreview(DrawContext context, HudConfig config) {
+        int hudX = getInventoryX(config);
+        int hudY = getInventoryY(config);
 
         var matrices = context.getMatrices();
         matrices.pushMatrix();
         matrices.translate(hudX, hudY);
         matrices.scale(config.scale, config.scale);
 
-
         int bgColor = config.guicolors.widgetBackground;
         if(config.roundedCorners){
-            RenderUtils.fillRoundedRect(context,0,0, BASE_WIDTH, BASE_HEIGHT, 0.2f, bgColor);
-        }else{
+            RenderUtils.fillRoundedRect(context, 0, 0, BASE_WIDTH, BASE_HEIGHT, 0.2f, bgColor);
+        } else {
             context.fill(0, 0, BASE_WIDTH, BASE_HEIGHT, bgColor);
         }
 
-
         int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity);
-
         if(config.roundedCorners){
             RenderUtils.drawRoundedRectWithOutline(context, 0, 0, BASE_WIDTH, BASE_HEIGHT, 0.2f, 1, borderColor);
-        }else{
+        } else {
             drawBorder(context, 0, 0, BASE_WIDTH, BASE_HEIGHT, borderColor);
         }
 
+        matrices.popMatrix();
+    }
+
+    private void renderArmorHudPreview(DrawContext context, HudConfig config) {
+        if (!config.armorEnabled) return;
+
+        int rows, rowSlots;
+        if (!config.armorVertical) {
+            rows = 1;
+            rowSlots = 4;
+        } else {
+            rows = 4;
+            rowSlots = 1;
+        }
+
+        int armorWidth = rowSlots * SLOT_SIZE + PADDING * 2;
+        int armorHeight = rows * SLOT_SIZE + PADDING * 2;
+
+        int armorX = getArmorX(config, armorWidth);
+        int armorY = getArmorY(config, armorHeight);
+
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(armorX, armorY);
+
+        int bgColor = config.guicolors.widgetBackground;
+        if(config.roundedCorners){
+            RenderUtils.fillRoundedRect(context, 0, 0, armorWidth, armorHeight, 0.5f, bgColor);
+        } else {
+            context.fill(0, 0, armorWidth, armorHeight, bgColor);
+        }
+
+        int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity);
+        if(config.roundedCorners){
+            RenderUtils.drawRoundedRectWithOutline(context, 0, 0, armorWidth, armorHeight, 0.5f, 1, borderColor);
+        } else {
+            drawBorder(context, 0, 0, armorWidth, armorHeight, borderColor);
+        }
 
         matrices.popMatrix();
     }
 
     private void renderInstructions(DrawContext context) {
         Text[] instructions = {
-                Text.literal("§8[").append(Text.literal("Drag").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fMoveHUD"),
-                Text.literal("§8[").append(Text.literal("R").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fReset Position"),
+                Text.literal("§8[").append(Text.literal("Drag").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fMove HUD Elements"),
+                Text.literal("§8[").append(Text.literal("R").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fReset Positions"),
                 Text.literal("§8[").append(Text.literal("ESC").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fSave & Exit")
         };
 
@@ -109,7 +152,7 @@ public class HudEditorScreen extends Screen {
         }
     }
 
-    private void updateAnchor() {
+    private void updateInventoryAnchor() {
         var config = SchrumboHUDClient.config;
         int hudWidth = (int)(BASE_WIDTH * config.scale);
         int hudHeight = (int)(BASE_HEIGHT * config.scale);
@@ -132,8 +175,29 @@ public class HudEditorScreen extends Screen {
         }
     }
 
-    private int getX(HudConfig config) {
-        if (dragging) return tempAbsX;
+    private void updateArmorAnchor(int armorWidth, int armorHeight) {
+        var config = SchrumboHUDClient.config;
+
+        int absX = config.armorPosition.x;
+        int absY = config.armorPosition.y;
+
+        if (absX + armorWidth / 2 > this.width / 2) {
+            config.armorAnchor.horizontal = HudConfig.HorizontalAnchor.RIGHT;
+            config.armorPosition.x = this.width - absX - armorWidth;
+        } else {
+            config.armorAnchor.horizontal = HudConfig.HorizontalAnchor.LEFT;
+        }
+
+        if (absY + armorHeight / 2 > this.height / 2) {
+            config.armorAnchor.vertical = HudConfig.VerticalAnchor.BOTTOM;
+            config.armorPosition.y = this.height - absY - armorHeight;
+        } else {
+            config.armorAnchor.vertical = HudConfig.VerticalAnchor.TOP;
+        }
+    }
+
+    private int getInventoryX(HudConfig config) {
+        if (draggingInventory) return invTempAbsX;
 
         int hudWidth = (int)(BASE_WIDTH * config.scale);
         return switch (config.anchor.horizontal) {
@@ -142,8 +206,8 @@ public class HudEditorScreen extends Screen {
         };
     }
 
-    private int getY(HudConfig config) {
-        if (dragging) return tempAbsY;
+    private int getInventoryY(HudConfig config) {
+        if (draggingInventory) return invTempAbsY;
 
         int hudHeight = (int)(BASE_HEIGHT * config.scale);
         return switch (config.anchor.vertical) {
@@ -152,25 +216,62 @@ public class HudEditorScreen extends Screen {
         };
     }
 
+    private int getArmorX(HudConfig config, int armorWidth) {
+        if (draggingArmor) return armorTempAbsX;
+
+        return switch (config.armorAnchor.horizontal) {
+            case LEFT -> config.armorPosition.x;
+            case RIGHT -> this.width - armorWidth - config.armorPosition.x;
+        };
+    }
+
+    private int getArmorY(HudConfig config, int armorHeight) {
+        if (draggingArmor) return armorTempAbsY;
+
+        return switch (config.armorAnchor.vertical) {
+            case TOP -> config.armorPosition.y;
+            case BOTTOM -> this.height - armorHeight - config.armorPosition.y;
+        };
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             var config = SchrumboHUDClient.config;
+
+            //armor hud
+            if (config.armorEnabled) {
+                int rows = config.armorVertical ? 4 : 1;
+                int rowSlots = config.armorVertical ? 1 : 4;
+                int armorWidth = rowSlots * SLOT_SIZE + PADDING * 2;
+                int armorHeight = rows * SLOT_SIZE + PADDING * 2;
+                int armorX = getArmorX(config, armorWidth);
+                int armorY = getArmorY(config, armorHeight);
+
+                if (mouseX >= armorX && mouseX <= armorX + armorWidth &&
+                        mouseY >= armorY && mouseY <= armorY + armorHeight) {
+                    draggingArmor = true;
+                    armorDragOffsetX = (int)mouseX - armorX;
+                    armorDragOffsetY = (int)mouseY - armorY;
+                    armorTempAbsX = armorX;
+                    armorTempAbsY = armorY;
+                    return true;
+                }
+            }
+
+            //inv hud
             int hudWidth = (int)(BASE_WIDTH * config.scale);
             int hudHeight = (int)(BASE_HEIGHT * config.scale);
-            int hudX = getX(config);
-            int hudY = getY(config);
-
+            int hudX = getInventoryX(config);
+            int hudY = getInventoryY(config);
 
             if (mouseX >= hudX && mouseX <= hudX + hudWidth &&
                     mouseY >= hudY && mouseY <= hudY + hudHeight) {
-                dragging = true;
-                dragOffsetX = (int)mouseX - hudX;
-                dragOffsetY = (int)mouseY - hudY;
-
-                tempAbsX = hudX;
-                tempAbsY = hudY;
-
+                draggingInventory = true;
+                invDragOffsetX = (int)mouseX - hudX;
+                invDragOffsetY = (int)mouseY - hudY;
+                invTempAbsX = hudX;
+                invTempAbsY = hudY;
                 return true;
             }
         }
@@ -179,30 +280,52 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (dragging && button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            tempAbsX = (int)mouseX - dragOffsetX;
-            tempAbsY = (int)mouseY - dragOffsetY;
-            return true;
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            if (draggingInventory) {
+                invTempAbsX = (int)mouseX - invDragOffsetX;
+                invTempAbsY = (int)mouseY - invDragOffsetY;
+                return true;
+            }
+            if (draggingArmor) {
+                armorTempAbsX = (int)mouseX - armorDragOffsetX;
+                armorTempAbsY = (int)mouseY - armorDragOffsetY;
+                return true;
+            }
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && dragging) {
-            dragging = false;
-
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             var config = SchrumboHUDClient.config;
-            config.position.x = tempAbsX;
-            config.position.y = tempAbsY;
 
-            updateAnchor();
-            ConfigManager.save();
-            return true;
+            if (draggingInventory) {
+                draggingInventory = false;
+                config.position.x = invTempAbsX;
+                config.position.y = invTempAbsY;
+                updateInventoryAnchor();
+                ConfigManager.save();
+                return true;
+            }
+
+            if (draggingArmor) {
+                draggingArmor = false;
+                config.armorPosition.x = armorTempAbsX;
+                config.armorPosition.y = armorTempAbsY;
+
+                int rows = config.armorVertical ? 4 : 1;
+                int rowSlots = config.armorVertical ? 1 : 4;
+                int armorWidth = rowSlots * SLOT_SIZE + PADDING * 2;
+                int armorHeight = rows * SLOT_SIZE + PADDING * 2;
+
+                updateArmorAnchor(armorWidth, armorHeight);
+                ConfigManager.save();
+                return true;
+            }
         }
         return super.mouseReleased(mouseX, mouseY, button);
     }
-
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -211,6 +334,8 @@ public class HudEditorScreen extends Screen {
         if (keyCode == GLFW.GLFW_KEY_R) {
             config.position.x = 10;
             config.position.y = 10;
+            config.armorPosition.x = 10;
+            config.armorPosition.y = 10;
             return true;
         }
 

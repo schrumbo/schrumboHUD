@@ -2,14 +2,15 @@ package schrumbo.schrumbohud.clickgui.categories;
 
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.clickgui.widgets.ColorPickerWidget;
+import schrumbo.schrumbohud.clickgui.widgets.SliderWidget;
 import schrumbo.schrumbohud.clickgui.widgets.ToggleWidget;
 import schrumbo.schrumbohud.config.HudConfig;
 
-public class GeneralCategory extends Category {
+public class ArmorCategory extends Category {
     private final HudConfig config = SchrumboHUDClient.config;
 
-    public GeneralCategory() {
-        super("General");
+    public ArmorCategory() {
+        super("ArmorHUD");
     }
 
     @Override
@@ -17,34 +18,35 @@ public class GeneralCategory extends Category {
 
         int currentY = startY;
 
-
-        ToggleWidget hudToggle = ToggleWidget.builder()
+        ToggleWidget armorToggle = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Inventory HUD")
-                .value(() -> config.enabled, config::enableHud)
+                .label("Armor HUD")
+                .value(() -> config.armorEnabled, config::enableArmorHud)
                 .build();
-        widgets.add(hudToggle);
+        widgets.add(armorToggle);
 
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
 
-        ToggleWidget roundedCorners = ToggleWidget.builder()
+        ToggleWidget verticalMode = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle Rounded Corners")
-                .value(() -> config.roundedCorners, config::enableRoundedCorners)
+                .label("vertical mode")
+                .value(() -> config.armorVertical, config::enableVerticalMode)
                 .build();
-        widgets.add(roundedCorners);
+        widgets.add(verticalMode);
 
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
 
-        ColorPickerWidget accentColorPicker = ColorPickerWidget.builder()
+        SliderWidget transparency = SliderWidget.builder()
+                .value(config::getArmorOpacity, config::setArmorOpacity)
+                .label("transparency")
+                .suffix("x")
+                .range(0.0f, 1.0f)
                 .width(width)
                 .y(currentY)
-                .label("Accent Color")
-                .color(() -> config.guicolors.accent, config::setAccentColor)
                 .build();
-        widgets.add(accentColorPicker);
+        widgets.add(transparency);
         updateWidgetPositions(startX, startY);
     }
 
