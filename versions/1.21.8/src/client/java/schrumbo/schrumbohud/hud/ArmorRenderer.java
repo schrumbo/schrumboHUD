@@ -16,7 +16,7 @@ import schrumbo.schrumbohud.config.HudConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//TODO FIX DUPE CODE
 public class ArmorRenderer implements HudElement {
     public static final Identifier ID = Identifier.of("schrumbomods", "armor_hud");
 
@@ -108,7 +108,7 @@ public class ArmorRenderer implements HudElement {
      */
     private void drawBackground(DrawContext context, int width, int height, HudConfig config) {
         if (config.backgroundEnabled) {
-            int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity);
+            int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity * config.armorTransparency);
             if (config.roundedCorners) {
                 RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.5f, backgroundColor);
             } else {
@@ -117,7 +117,7 @@ public class ArmorRenderer implements HudElement {
         }
 
         if (config.outlineEnabled) {
-            int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity);
+            int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity * config.armorTransparency);
             if (config.roundedCorners) {
                 RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.5f, 1, borderColor);
             } else {
@@ -137,7 +137,7 @@ public class ArmorRenderer implements HudElement {
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
                 if (config.slotBackgroundEnabled) {
-                    int slotColor = config.colorWithAlpha(config.colors.slots, config.slotBackgroundOpacity);
+                    int slotColor = config.colorWithAlpha(config.colors.slots, config.slotBackgroundOpacity * config.armorTransparency);
                     if (config.roundedCorners) {
                         RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
                     } else {

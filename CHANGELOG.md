@@ -1,6 +1,5 @@
-# SchrumboHUD v1.0.11
-- **fixed keybind not having a translation -> doesn't show raw key anymore**
-:3
+# v1.0.11+1.21.8
+- **added armor hud**
 
 
 

@@ -57,6 +57,7 @@ public class ClickGuiScreen extends Screen {
         categories.add(new OutlineCategory());
         categories.add(new SlotCategory());
         categories.add(new TextCategory());
+        categories.add(new ArmorCategory());
         selectedCategory = categories.getFirst();
     }
 
