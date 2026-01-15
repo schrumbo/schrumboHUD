@@ -5,76 +5,92 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.render.OversizedItemGuiElementRenderer;
-import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
-import net.minecraft.client.gui.render.state.ItemGuiElementRenderState;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
-import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
 
-public class InventoryRenderer implements HudElement {
-    public static final Identifier ID = Identifier.of("schrumbomods", "inventory_hud");
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class ArmorRenderer implements HudElement {
+    public static final Identifier ID = Identifier.of("schrumbomods", "armor_hud");
+
     private static final int SLOT_SIZE = 18;
-    private static final int ROW_SLOTS = 9;
-    private static final int ROWS = 3;
     private static final int PADDING = 4;
 
+    private static final MinecraftClient client = MinecraftClient.getInstance();
+    private List<ItemStack> armor = new ArrayList<>();
 
-    /**
-     * Registers the inventory HUD element after the boss bar
-     */
+    int rows;
+    int rowSlots;
+
     public static void register() {
         HudElementRegistry.attachElementBefore(
                 VanillaHudElements.SUBTITLES,
                 ID,
-                new InventoryRenderer()
+                new ArmorRenderer()
         );
     }
 
     @Override
-    public void render(DrawContext context, RenderTickCounter tickCounter) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public void render(DrawContext drawContext, RenderTickCounter renderTickCounter) {
         HudConfig config = SchrumboHUDClient.config;
 
-        if (!config.enabled || client == null || client.player == null) return;
+        if (!config.armorEnabled || client == null || client.player == null) return;
 
-        PlayerInventory inventory = client.player.getInventory();
+        if (!config.armorVertical){
+            rows = 1;
+            rowSlots = 4;
+        }else{
+            rows = 4;
+            rowSlots = 1;
+        }
+        getArmor();
 
-        int hudWidth = ROW_SLOTS * SLOT_SIZE + PADDING * 2;
-        int hudHeight = ROWS * SLOT_SIZE + PADDING * 2;
-
+        int hudWidth = rowSlots * SLOT_SIZE + PADDING * 2;
+        int hudHeight = rows * SLOT_SIZE + PADDING * 2;
 
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-
-
         int x = calcX(config, screenWidth, hudWidth);
         int y = calcY(config, screenHeight, hudHeight);
 
-        var matrices = context.getMatrices();
+        var matrices = drawContext.getMatrices();
         matrices.pushMatrix();
         matrices.translate(x, y);
 
-        drawBackground(context, hudWidth, hudHeight, config);
-        renderInventory(context, inventory, config);
+        drawBackground(drawContext, hudWidth, hudHeight, config);
+        renderArmor(drawContext, config);
 
         matrices.popMatrix();
+
     }
 
+    /**
+     * gets the players current equipped armor
+     */
+    private void getArmor(){
+        if(client.player == null)return;
+        armor.clear();
+        armor.add(client.player.getEquippedStack(EquipmentSlot.HEAD));
+        armor.add(client.player.getEquippedStack(EquipmentSlot.CHEST));
+        armor.add(client.player.getEquippedStack(EquipmentSlot.LEGS));
+        armor.add(client.player.getEquippedStack(EquipmentSlot.FEET));
+    }
 
     /**
      * Calculates X position from relative offset
      */
     private int calcX(HudConfig config, int screenWidth, int hudWidth) {
-        return switch (config.anchor.horizontal) {
-            case LEFT -> config.position.x;
-            case RIGHT -> screenWidth - hudWidth - config.position.x;
+        return switch (config.armorAnchor.horizontal) {
+            case LEFT -> config.armorPosition.x;
+            case RIGHT -> screenWidth - hudWidth - config.armorPosition.x;
         };
     }
 
@@ -82,12 +98,11 @@ public class InventoryRenderer implements HudElement {
      * Calculates Y position from relative offset
      */
     private int calcY(HudConfig config, int screenHeight, int hudHeight) {
-        return switch (config.anchor.vertical) {
-            case TOP -> config.position.y;
-            case BOTTOM -> screenHeight - hudHeight - config.position.y;
+        return switch (config.armorAnchor.vertical) {
+            case TOP -> config.armorPosition.y;
+            case BOTTOM -> screenHeight - hudHeight - config.armorPosition.y;
         };
     }
-
     /**
      * Renders background and outline
      */
@@ -95,7 +110,7 @@ public class InventoryRenderer implements HudElement {
         if (config.backgroundEnabled) {
             int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity);
             if (config.roundedCorners) {
-                RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.2f, backgroundColor);
+                RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.5f, backgroundColor);
             } else {
                 context.fill(0, 0, width, height, backgroundColor);
             }
@@ -104,25 +119,23 @@ public class InventoryRenderer implements HudElement {
         if (config.outlineEnabled) {
             int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity);
             if (config.roundedCorners) {
-                RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.2f, 1, borderColor);
+                RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.5f, 1, borderColor);
             } else {
                 RenderUtils.drawBorder(context, 0, 0, width, height, borderColor);
             }
         }
     }
 
-    /**
-     * Renders all inventory slots with items
-     */
-    private void renderInventory(DrawContext context, PlayerInventory inventory, HudConfig config) {
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < ROW_SLOTS; col++) {
-                int slot = 9 + row * ROW_SLOTS + col;
-                ItemStack stack = inventory.getStack(slot);
+    private void renderArmor(DrawContext context, HudConfig config){
+        int index = 0;
+        for (int row = 0; row < rows; row ++){
+            for (int col = 0; col < rowSlots; col ++){
+
+                ItemStack stack = armor.get(index);
+                index++;
 
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
-
                 if (config.slotBackgroundEnabled) {
                     int slotColor = config.colorWithAlpha(config.colors.slots, config.slotBackgroundOpacity);
                     if (config.roundedCorners) {
@@ -145,32 +158,9 @@ public class InventoryRenderer implements HudElement {
 
         context.drawItem(stack, x, y);
 
-        if (stack.getCount() > 1) {
-            renderStackCount(context, stack, x, y, config);
-        }
         if (stack.isDamaged()) {
             renderDurabilityBar(context, stack, x, y, config);
         }
-    }
-
-
-
-    /**
-     * Renders item stack count text
-     */
-    private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
-        String count = String.valueOf(stack.getCount());
-        int textColor = config.colorWithAlpha(config.colors.text, 1.0f);
-
-        var textRenderer = MinecraftClient.getInstance().textRenderer;
-        var matrices = context.getMatrices();
-        matrices.pushMatrix();
-
-        context.drawText(textRenderer, count,
-                x + SLOT_SIZE - 2 - textRenderer.getWidth(count),
-                y + SLOT_SIZE - 9, textColor, config.textShadowEnabled);
-
-        matrices.popMatrix();
     }
 
     /**
@@ -202,4 +192,5 @@ public class InventoryRenderer implements HudElement {
         else if (percent > 0.25f) return 0xFFFFFF00;
         else return 0xFFFF0000;
     }
+
 }
