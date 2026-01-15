@@ -1,6 +1,7 @@
 package schrumbo.schrumbohud.config;
 
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.client.realms.Request;
 
 public class HudConfig {
 
@@ -20,6 +21,16 @@ public class HudConfig {
     public ClickGUIColors guicolors = new ClickGUIColors();
 
 
+    public boolean armorEnabled = true;
+    public boolean armorVertical = false;
+    @SerializedName("armorAnchor")
+    public Anchor armorAnchor = new Anchor();
+
+    @SerializedName("armorPosition")
+    public Position armorPosition = new Position();
+
+    public float armorTransparency = 1.0f;
+
     public static class Anchor {
         @SerializedName("horizontal")
         public HorizontalAnchor horizontal = HorizontalAnchor.LEFT;
@@ -27,6 +38,7 @@ public class HudConfig {
         @SerializedName("vertical")
         public VerticalAnchor vertical = VerticalAnchor.TOP;
     }
+
 
     public enum HorizontalAnchor {
         LEFT,
@@ -137,6 +149,18 @@ public class HudConfig {
         return (alpha << 24) | (color & 0x00FFFFFF);
     }
 
+    public void loadDarkMode(){
+        colors.background = 0x1c1c1c;
+        colors.border = 0x434343;
+        colors.text = 0xfddbbf;
+        colors.slots = 0x282828;
+
+        backgroundOpacity = 1.0f;
+        outlineOpacity = 1.0f;
+        textShadowOpacity = 1.0f;
+        slotBackgroundOpacity = 1.0f;
+    }
+
 
     public void loadClassicInventoryHUD() {
         colors.background = 0x5955D9;
@@ -227,6 +251,12 @@ public class HudConfig {
     public void enableHud(boolean value){
         this.enabled = value;
     }
+    public void enableArmorHud(boolean value){
+        this.armorEnabled = value;
+    }
+    public void enableVerticalMode(boolean value){
+        this.armorVertical = value;
+    }
     public void enableBorder(boolean value){
         this.outlineEnabled = value;
     }
@@ -246,7 +276,6 @@ public class HudConfig {
     public void setBackgroundOpacity(float opacity){
         backgroundOpacity = opacity;
     }
-
     public void setBorderColor(int color) {
         colors.border = color;
     }
@@ -264,4 +293,11 @@ public class HudConfig {
         colors.slots = color;
     }
     public void setSlotOpacity(float opacity){slotBackgroundOpacity = opacity;}
+
+    public void setArmorOpacity(float opacity){
+        armorTransparency = opacity;
+    }
+    public float getArmorOpacity(){
+        return armorTransparency;
+    }
 }

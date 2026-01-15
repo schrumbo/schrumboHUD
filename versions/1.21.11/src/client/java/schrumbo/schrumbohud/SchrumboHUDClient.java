@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import schrumbo.schrumbohud.config.ConfigManager;
 import schrumbo.schrumbohud.config.HudConfig;
+import schrumbo.schrumbohud.hud.ArmorRenderer;
 import schrumbo.schrumbohud.hud.InventoryRenderer;
 import schrumbo.schrumbohud.keybind.KeybindHandler;
 import schrumbo.schrumbohud.misc.Commands;
@@ -27,6 +28,7 @@ public class SchrumboHUDClient implements ClientModInitializer {
 
 		KeybindHandler.register();
 		InventoryRenderer.register();
+		ArmorRenderer.register();
 		FirstJoin.register();
 		config.initColors();
 		Commands.register();
