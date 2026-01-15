@@ -21,10 +21,20 @@ public class GeneralCategory extends Category {
         ToggleWidget hudToggle = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle HUD")
+                .label("Inventory HUD")
                 .value(() -> config.enabled, config::enableHud)
                 .build();
         widgets.add(hudToggle);
+
+        currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
+
+        ToggleWidget armorToggle = ToggleWidget.builder()
+                .y(currentY)
+                .width(width)
+                .label("Armor HUD")
+                .value(() -> config.armorEnabled, config::enableArmorHud)
+                .build();
+        widgets.add(armorToggle);
 
         currentY += widgets.get(widgets.size() - 1).getHeight() + WIDGET_SPACING;
 
