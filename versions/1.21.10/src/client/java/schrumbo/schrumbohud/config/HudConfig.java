@@ -21,7 +21,7 @@ public class HudConfig {
     public ClickGUIColors guicolors = new ClickGUIColors();
 
 
-    public boolean armorEnabled = true;
+    public boolean armorEnabled = false;
     public boolean armorVertical = false;
     @SerializedName("armorAnchor")
     public Anchor armorAnchor = new Anchor();

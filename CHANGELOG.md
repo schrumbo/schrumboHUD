@@ -1,4 +1,4 @@
-# SchrumboHUD v1.0.11
+# SchrumboHUD v1.1.0
 - **added armor hud**
 
 
