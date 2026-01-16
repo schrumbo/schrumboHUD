@@ -1,23 +1,17 @@
 # SchrumboHUD
-SchrumboHUD is a highly customizable Minecraft mod that permanently displays the player’s inventory on the screen.
+SchrumboHUD is a highly customizable Minecraft mod that permanently displays the player’s inventory and/or armor on the screen.
 
-This mod was created because other inventory HUD mods lack sufficient customization options.
+## Mod Features
+- **Inventory HUD**
+- **Armor HUD**
+  
+You can either use one of the color presets or change the colors yourself.
 
-![catppuccin mocha preset](https://cdn.modrinth.com/data/cached_images/344f83ae8f2f281af701c1cf50a92f5619458f4e.png)
+To open the ClickGUI press `Right Shift` or use `/shud`
 
-# Mod Features
+Suggestions are welcome, please message me on discord (schrumboo). 
 
-## Controls
-- **Toggle HUD**: `L` (default)
-- **Toggle ClickGUI**: `Right Shift` (default)
 
-## Customization Options
-### Colors
-- **Background**
-- **Border**
-- **Text**
-- **Accent**
-- **Slots**
 
-Opacity of all colors may also be changed
+
 
