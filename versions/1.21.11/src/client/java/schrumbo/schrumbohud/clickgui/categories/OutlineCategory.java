@@ -20,7 +20,7 @@ public class OutlineCategory extends Category {
         ToggleWidget toggleOutline = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle Outline")
+                .label("Outline")
                 .value(()->config.outlineEnabled, config::enableBorder)
                 .build();
         widgets.add(toggleOutline);

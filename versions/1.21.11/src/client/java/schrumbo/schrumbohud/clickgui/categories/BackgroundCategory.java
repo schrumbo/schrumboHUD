@@ -20,7 +20,7 @@ public class BackgroundCategory extends Category {
         int currentY = startY;
 
         ToggleWidget toggleBackground = ToggleWidget.builder()
-                .label("Toggle Background")
+                .label("Background")
                 .y(currentY)
                 .width(width)
                 .value(()->config.backgroundEnabled, config::enableBackground)
@@ -32,7 +32,7 @@ public class BackgroundCategory extends Category {
         ColorPickerWidget backgroundColorPicker = ColorPickerWidget.builder()
                 .color(() -> config.colors.background, config::setBackgroundColor)
                 .opacity(() -> config.backgroundOpacity, config::setBackgroundOpacity)
-                .label("Background color")
+                .label("Background Color")
                 .y(currentY)
                 .width(width)
                 .build();

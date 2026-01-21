@@ -21,7 +21,7 @@ public class GeneralCategory extends Category {
         ToggleWidget hudToggle = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle HUD")
+                .label("Inventory HUD")
                 .value(() -> config.enabled, config::enableHud)
                 .build();
         widgets.add(hudToggle);
@@ -31,7 +31,7 @@ public class GeneralCategory extends Category {
         ToggleWidget roundedCorners = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle Rounded Corners")
+                .label("Round Corners")
                 .value(() -> config.roundedCorners, config::enableRoundedCorners)
                 .build();
         widgets.add(roundedCorners);
