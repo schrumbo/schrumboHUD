@@ -20,7 +20,7 @@ public class OutlineCategory extends Category {
         ToggleWidget toggleOutline = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle Outline")
+                .label("Outline")
                 .value(()->config.outlineEnabled, config::enableBorder)
                 .build();
         widgets.add(toggleOutline);
@@ -30,7 +30,7 @@ public class OutlineCategory extends Category {
         ColorPickerWidget borderColorPicker = ColorPickerWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Border Color")
+                .label("Outline Color")
                 .color(() -> config.colors.border, config::setBorderColor)
                 .opacity(() -> config.outlineOpacity, config::setBorderOpacity)
                 .build();

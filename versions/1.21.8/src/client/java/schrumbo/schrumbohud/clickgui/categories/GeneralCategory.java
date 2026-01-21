@@ -31,7 +31,7 @@ public class GeneralCategory extends Category {
         ToggleWidget roundedCorners = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle Rounded Corners")
+                .label("Round Corners")
                 .value(() -> config.roundedCorners, config::enableRoundedCorners)
                 .build();
         widgets.add(roundedCorners);
