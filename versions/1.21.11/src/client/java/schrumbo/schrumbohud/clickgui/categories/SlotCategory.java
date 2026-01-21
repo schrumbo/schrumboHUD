@@ -20,7 +20,7 @@ public class SlotCategory extends Category {
         ToggleWidget toggleSlotBackground = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle Slot Background")
+                .label("Slot Background")
                 .value(()->config.slotBackgroundEnabled, config::enableSlotBackground)
                 .build();
         widgets.add(toggleSlotBackground);

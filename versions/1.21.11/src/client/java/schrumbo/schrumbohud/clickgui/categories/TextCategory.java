@@ -20,7 +20,7 @@ public class TextCategory extends Category {
         ToggleWidget toggleTextShadow = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("Toggle Text Shadow")
+                .label("Text Shadow")
                 .value(()-> config.textShadowEnabled, config::enableTextShadow)
                 .build();
         widgets.add(toggleTextShadow);
