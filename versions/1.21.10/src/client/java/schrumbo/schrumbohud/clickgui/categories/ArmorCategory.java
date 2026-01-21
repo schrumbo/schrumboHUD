@@ -9,7 +9,7 @@ public class ArmorCategory extends Category {
     private final HudConfig config = SchrumboHUDClient.config;
 
     public ArmorCategory() {
-        super("ArmorHUD");
+        super("Armor HUD");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ArmorCategory extends Category {
         ToggleWidget verticalMode = ToggleWidget.builder()
                 .y(currentY)
                 .width(width)
-                .label("vertical mode")
+                .label("vertical")
                 .value(() -> config.armorVertical, config::enableVerticalMode)
                 .build();
         widgets.add(verticalMode);
@@ -39,7 +39,7 @@ public class ArmorCategory extends Category {
 
         SliderWidget transparency = SliderWidget.builder()
                 .value(config::getArmorOpacity, config::setArmorOpacity)
-                .label("transparency")
+                .label("Transparency")
                 .suffix("x")
                 .range(0.0f, 1.0f)
                 .width(width)

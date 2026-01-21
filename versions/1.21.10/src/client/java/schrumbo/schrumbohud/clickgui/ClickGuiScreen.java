@@ -53,8 +53,8 @@ public class ClickGuiScreen extends Screen {
 
         categories.clear();
         categories.add(new GeneralCategory());
-        categories.add(new PresetsCategory());
         categories.add(new PositionCategory());
+        categories.add(new PresetsCategory());
         categories.add(new BackgroundCategory());
         categories.add(new OutlineCategory());
         categories.add(new SlotCategory());
