@@ -1,5 +1,5 @@
-# SchrumboHUD v1.1.0
-- **added armor hud**
+# SchrumboHUD v1.1.1
+- **renamed some buttons and changed the order in which the categories are displayed**
 
 
 
