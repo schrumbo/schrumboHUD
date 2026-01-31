@@ -17,9 +17,6 @@ public class SchrumboHUDClient implements ClientModInitializer {
 	public static SchrumboHudConfig config;
 	private double initTime;
 
-	/**
-	 * initializes all features
-	 */
 	@Override
 	public void onInitializeClient() {
 		initTime = Util.getMeasuringTimeMs();

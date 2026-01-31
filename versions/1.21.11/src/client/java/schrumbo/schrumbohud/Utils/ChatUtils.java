@@ -10,7 +10,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 public class ChatUtils {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
-    private static final Text PREFIX = Text.literal("§8[").append(Text.literal("InventoryHUD").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] "));
+    private static final Text PREFIX = Text.literal("§8[").append(Text.literal("InventoryHUD").styled(style -> style.withColor(SchrumboHUDClient.config.borderColor))).append(Text.literal("§8] "));
 
     public static void modMessage(String message){
         if(client.player == null)return;

@@ -12,27 +12,21 @@ import schrumbo.schrumbohud.config.SchrumboHudConfig;
 
 import static schrumbo.schrumbohud.Utils.RenderUtils.drawBorder;
 
-/**
- * interactive screen for positioning and scaling the HUD
- */
 public class HudEditorScreen extends Screen {
     private final Screen parent;
 
-    //inv hud drag
     private boolean draggingInventory = false;
     private int invDragOffsetX = 0;
     private int invDragOffsetY = 0;
     private int invTempAbsX = 0;
     private int invTempAbsY = 0;
 
-    //armor hud drag
     private boolean draggingArmor = false;
     private int armorDragOffsetX = 0;
     private int armorDragOffsetY = 0;
     private int armorTempAbsX = 0;
     private int armorTempAbsY = 0;
 
-    //inv hud const
     private static final int SLOT_SIZE = 18;
     private static final int ROW_SLOTS = 9;
     private static final int ROWS = 3;
@@ -83,14 +77,14 @@ public class HudEditorScreen extends Screen {
         matrices.translate(hudX, hudY);
         matrices.scale(config.scale, config.scale);
 
-        int bgColor = config.guicolors.widgetBackground;
+        int bgColor = config.colors.background();
         if(config.roundedCorners){
             RenderUtils.fillRoundedRect(context, 0, 0, BASE_WIDTH, BASE_HEIGHT, 0.2f, bgColor);
         } else {
             context.fill(0, 0, BASE_WIDTH, BASE_HEIGHT, bgColor);
         }
 
-        int borderColor = config.colors.border;
+        int borderColor = config.colors.border();
         if(config.roundedCorners){
             RenderUtils.drawRoundedRectWithOutline(context, 0, 0, BASE_WIDTH, BASE_HEIGHT, 0.2f, 1, borderColor);
         } else {
@@ -122,14 +116,14 @@ public class HudEditorScreen extends Screen {
         matrices.pushMatrix();
         matrices.translate(armorX, armorY);
 
-        int bgColor = config.guicolors.widgetBackground;
+        int bgColor = config.colors.background();
         if(config.roundedCorners){
             RenderUtils.fillRoundedRect(context, 0, 0, armorWidth, armorHeight, 0.5f, bgColor);
         } else {
             context.fill(0, 0, armorWidth, armorHeight, bgColor);
         }
 
-        int borderColor = config.colors.border;
+        int borderColor = config.colors.border();
         if(config.roundedCorners){
             RenderUtils.drawRoundedRectWithOutline(context, 0, 0, armorWidth, armorHeight, 0.5f, 1, borderColor);
         } else {
@@ -141,9 +135,9 @@ public class HudEditorScreen extends Screen {
 
     private void renderInstructions(DrawContext context) {
         Text[] instructions = {
-                Text.literal("§8[").append(Text.literal("Drag").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fMove HUD Elements"),
-                Text.literal("§8[").append(Text.literal("R").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fReset Positions"),
-                Text.literal("§8[").append(Text.literal("ESC").styled(style -> style.withColor(SchrumboHUDClient.config.guicolors.accent))).append(Text.literal("§8] ")).append("§fSave & Exit")
+                Text.literal("§8[").append(Text.literal("Drag").styled(style -> style.withColor(SchrumboHUDClient.config.borderColor))).append(Text.literal("§8] ")).append("§fMove HUD Elements"),
+                Text.literal("§8[").append(Text.literal("R").styled(style -> style.withColor(SchrumboHUDClient.config.borderColor))).append(Text.literal("§8] ")).append("§fReset Positions"),
+                Text.literal("§8[").append(Text.literal("ESC").styled(style -> style.withColor(SchrumboHUDClient.config.borderColor))).append(Text.literal("§8] ")).append("§fSave & Exit")
         };
 
         int y = 10;
@@ -240,7 +234,6 @@ public class HudEditorScreen extends Screen {
         if (click.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             var config = SchrumboHUDClient.config;
 
-            //armor hud
             if (config.armorEnabled) {
                 int rows = config.armorVertical ? 4 : 1;
                 int rowSlots = config.armorVertical ? 1 : 4;
@@ -260,7 +253,6 @@ public class HudEditorScreen extends Screen {
                 }
             }
 
-            //inv hud
             int hudWidth = (int)(BASE_WIDTH * config.scale);
             int hudHeight = (int)(BASE_HEIGHT * config.scale);
             int hudX = getInventoryX(config);

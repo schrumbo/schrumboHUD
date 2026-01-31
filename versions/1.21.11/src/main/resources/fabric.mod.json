@@ -12,7 +12,7 @@
 		"sources": "https://github.com/schrumbo/schrumboHUD",
 		"issues": "https://github.com/schrumbo/schrumboHUD/issues"
 	},
-	"license": "AGLP-3.0",
+	"license": "AGPL-3.0",
 	"icon": "assets/schrumbohud/HUD.png",
 	"environment": "client",
 	"entrypoints": {
@@ -35,5 +35,8 @@
 		"minecraft": "1.21.11",
 		"java": ">=21",
 		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": ">=17.0.0-beta.2"
 	}
 }

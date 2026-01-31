@@ -12,18 +12,12 @@ import schrumbo.schlib.gui.theme.Theme;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.ChatUtils;
 
-/**
- * handles keybindings
- */
 public class KeybindHandler {
     private static KeyBinding toggleHudKey;
     private static KeyBinding configKey;
     private static final KeyBinding.Category CATEGORY = KeyBinding.Category.create(Identifier.of("schrumbohud", "main"));
 
 
-    /**
-     * registers all keybinds
-     */
     public static void register(){
         toggleHudKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "Toggle InventoryHUD",

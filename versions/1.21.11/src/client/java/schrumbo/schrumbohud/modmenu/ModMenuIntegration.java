@@ -8,6 +8,7 @@ import schrumbo.schlib.gui.theme.Theme;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 
 public class ModMenuIntegration implements ModMenuApi {
+
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return parent -> ConfigProcessor.createScreen(
