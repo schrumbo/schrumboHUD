@@ -2,7 +2,10 @@ package schrumbo.schrumbohud.misc;
 
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
+import net.minecraft.text.Text;
+import schrumbo.schlib.config.ConfigProcessor;
+import schrumbo.schlib.gui.theme.Theme;
+import schrumbo.schrumbohud.SchrumboHUDClient;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 //danke julianh06!
@@ -29,13 +32,21 @@ public class Commands {
     public static void register(){
         registerCommand("shud", () -> {
             MinecraftClient.getInstance().send(() -> {
-                MinecraftClient.getInstance().setScreen(new ClickGuiScreen());
+                MinecraftClient.getInstance().setScreen(ConfigProcessor.createScreen(
+                    SchrumboHUDClient.config,
+                    Text.literal("SchrumboHUD Config"),
+                    new Theme()
+                ));
             });
         });
 
         registerCommand("schrumbohud", () -> {
             MinecraftClient.getInstance().send(() -> {
-                MinecraftClient.getInstance().setScreen(new ClickGuiScreen());
+                MinecraftClient.getInstance().setScreen(ConfigProcessor.createScreen(
+                    SchrumboHUDClient.config,
+                    Text.literal("SchrumboHUD Config"),
+                    new Theme()
+                ));
             });
         });
 

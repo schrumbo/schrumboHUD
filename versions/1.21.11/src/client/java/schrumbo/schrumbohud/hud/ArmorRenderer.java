@@ -11,12 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
-import schrumbo.schrumbohud.config.HudConfig;
+import schrumbo.schrumbohud.config.SchrumboHudConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO FIX DUPE CODE
 public class ArmorRenderer implements HudElement {
     public static final Identifier ID = Identifier.of("schrumbomods", "armor_hud");
 
@@ -39,7 +38,7 @@ public class ArmorRenderer implements HudElement {
 
     @Override
     public void render(DrawContext drawContext, RenderTickCounter renderTickCounter) {
-        HudConfig config = SchrumboHUDClient.config;
+        SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.armorEnabled || client == null || client.player == null) return;
 
@@ -72,9 +71,6 @@ public class ArmorRenderer implements HudElement {
 
     }
 
-    /**
-     * gets the players current equipped armor
-     */
     private void getArmor(){
         if(client.player == null)return;
         armor.clear();
@@ -84,40 +80,32 @@ public class ArmorRenderer implements HudElement {
         armor.add(client.player.getEquippedStack(EquipmentSlot.FEET));
     }
 
-    /**
-     * Calculates X position from relative offset
-     */
-    private int calcX(HudConfig config, int screenWidth, int hudWidth) {
+    private int calcX(SchrumboHudConfig config, int screenWidth, int hudWidth) {
         return switch (config.armorAnchor.horizontal) {
             case LEFT -> config.armorPosition.x;
             case RIGHT -> screenWidth - hudWidth - config.armorPosition.x;
         };
     }
 
-    /**
-     * Calculates Y position from relative offset
-     */
-    private int calcY(HudConfig config, int screenHeight, int hudHeight) {
+    private int calcY(SchrumboHudConfig config, int screenHeight, int hudHeight) {
         return switch (config.armorAnchor.vertical) {
             case TOP -> config.armorPosition.y;
             case BOTTOM -> screenHeight - hudHeight - config.armorPosition.y;
         };
     }
-    /**
-     * Renders background and outline
-     */
-    private void drawBackground(DrawContext context, int width, int height, HudConfig config) {
+
+    private void drawBackground(DrawContext context, int width, int height, SchrumboHudConfig config) {
         if (config.backgroundEnabled) {
-            int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity * config.armorTransparency);
+            int bgColor = config.colors.background();
             if (config.roundedCorners) {
-                RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.5f, backgroundColor);
+                RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.5f, bgColor);
             } else {
-                context.fill(0, 0, width, height, backgroundColor);
+                context.fill(0, 0, width, height, bgColor);
             }
         }
 
         if (config.outlineEnabled) {
-            int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity * config.armorTransparency);
+            int borderColor = config.colors.border();
             if (config.roundedCorners) {
                 RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.5f, 1, borderColor);
             } else {
@@ -126,7 +114,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    private void renderArmor(DrawContext context, HudConfig config){
+    private void renderArmor(DrawContext context, SchrumboHudConfig config){
         int index = 0;
         for (int row = 0; row < rows; row ++){
             for (int col = 0; col < rowSlots; col ++){
@@ -137,7 +125,7 @@ public class ArmorRenderer implements HudElement {
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
                 if (config.slotBackgroundEnabled) {
-                    int slotColor = config.colorWithAlpha(config.colors.slots, config.slotBackgroundOpacity * config.armorTransparency);
+                    int slotColor = config.colors.slots();
                     if (config.roundedCorners) {
                         RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
                     } else {
@@ -149,10 +137,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    /**
-     * Renders single item with count and durability
-     */
-    private void renderItem(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
+    private void renderItem(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         if (stack.isEmpty()) return;
 
 
@@ -163,10 +148,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    /**
-     * Renders durability bar below item
-     */
-    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
+    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         int maxDurability = stack.getMaxDamage();
         int currDurability = maxDurability - stack.getDamage();
         float percentDurability = (float) currDurability / maxDurability;
@@ -184,9 +166,6 @@ public class ArmorRenderer implements HudElement {
         matrices.popMatrix();
     }
 
-    /**
-     * Returns color based on durability percentage (green > yellow > red)
-     */
     private int getDurabilityColor(float percent) {
         if (percent > 0.5f) return 0xFF00FF00;
         else if (percent > 0.25f) return 0xFFFFFF00;
