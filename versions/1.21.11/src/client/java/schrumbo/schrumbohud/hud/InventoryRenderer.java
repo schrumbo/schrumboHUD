@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
-import schrumbo.schrumbohud.config.HudConfig;
+import schrumbo.schrumbohud.config.SchrumboHudConfig;
 
 public class InventoryRenderer implements HudElement {
     public static final Identifier ID = Identifier.of("schrumbomods", "inventory_hud");
@@ -20,19 +20,19 @@ public class InventoryRenderer implements HudElement {
     private static final int ROWS = 3;
     private static final int PADDING = 4;
 
-
     public static void register() {
         HudElementRegistry.attachElementBefore(
                 VanillaHudElements.MISC_OVERLAYS,
                 ID,
                 new InventoryRenderer()
         );
+
     }
 
     @Override
     public void render(DrawContext context, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
-        HudConfig config = SchrumboHUDClient.config;
+        SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.enabled || client == null || client.player == null) return;
 
@@ -60,34 +60,32 @@ public class InventoryRenderer implements HudElement {
         matrices.popMatrix();
     }
 
-
-    private int calcX(HudConfig config, int screenWidth, int hudWidth) {
+    private int calcX(SchrumboHudConfig config, int screenWidth, int hudWidth) {
         return switch (config.anchor.horizontal) {
             case LEFT -> config.position.x;
             case RIGHT -> screenWidth - hudWidth - config.position.x;
         };
     }
 
-    private int calcY(HudConfig config, int screenHeight, int hudHeight) {
+    private int calcY(SchrumboHudConfig config, int screenHeight, int hudHeight) {
         return switch (config.anchor.vertical) {
             case TOP -> config.position.y;
             case BOTTOM -> screenHeight - hudHeight - config.position.y;
         };
     }
 
-
-    private void drawBackground(DrawContext context, int width, int height, HudConfig config) {
+    private void drawBackground(DrawContext context, int width, int height, SchrumboHudConfig config) {
         if (config.backgroundEnabled) {
-            int backgroundColor = config.colorWithAlpha(config.colors.background, config.backgroundOpacity);
+            int bgColor = config.colors.background();
             if (config.roundedCorners) {
-                RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.2f, backgroundColor);
+                RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.2f, bgColor);
             } else {
-                context.fill(0, 0, width, height, backgroundColor);
+                context.fill(0, 0, width, height, bgColor);
             }
         }
 
         if (config.outlineEnabled) {
-            int borderColor = config.colorWithAlpha(config.colors.border, config.outlineOpacity);
+            int borderColor = config.colors.border();
             if (config.roundedCorners) {
                 RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.2f, 1, borderColor);
             } else {
@@ -96,8 +94,7 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-
-    private void renderInventory(DrawContext context, PlayerInventory inventory, HudConfig config) {
+    private void renderInventory(DrawContext context, PlayerInventory inventory, SchrumboHudConfig config) {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
                 int slot = 9 + row * ROW_SLOTS + col;
@@ -107,7 +104,7 @@ public class InventoryRenderer implements HudElement {
                 int slotY = PADDING + row * SLOT_SIZE + 1;
 
                 if (config.slotBackgroundEnabled) {
-                    int slotColor = config.colorWithAlpha(config.colors.slots, config.slotBackgroundOpacity);
+                    int slotColor = config.colors.slots();
                     if (config.roundedCorners) {
                         RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
                     } else {
@@ -119,8 +116,7 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-
-    private void renderItem(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
+    private void renderItem(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         if (stack.isEmpty()) return;
 
 
@@ -134,12 +130,8 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-
-
-
-    private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
+    private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         String count = String.valueOf(stack.getCount());
-        int textColor = config.colorWithAlpha(config.colors.text, 1.0f);
 
         var textRenderer = MinecraftClient.getInstance().textRenderer;
         var matrices = context.getMatrices();
@@ -147,13 +139,12 @@ public class InventoryRenderer implements HudElement {
 
         context.drawText(textRenderer, count,
                 x + SLOT_SIZE - 2 - textRenderer.getWidth(count),
-                y + SLOT_SIZE - 9, textColor, config.textShadowEnabled);
+                y + SLOT_SIZE - 9, config.colors.text(), config.textShadowEnabled);
 
         matrices.popMatrix();
     }
 
-
-    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y, HudConfig config) {
+    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         int maxDurability = stack.getMaxDamage();
         int currDurability = maxDurability - stack.getDamage();
         float percentDurability = (float) currDurability / maxDurability;
@@ -170,7 +161,6 @@ public class InventoryRenderer implements HudElement {
 
         matrices.popMatrix();
     }
-
 
     private int getDurabilityColor(float percent) {
         if (percent > 0.5f) return 0xFF00FF00;

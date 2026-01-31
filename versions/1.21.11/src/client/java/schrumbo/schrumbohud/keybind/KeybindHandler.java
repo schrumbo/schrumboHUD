@@ -4,21 +4,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.PlainTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import schrumbo.schrumbohud.SchrumboHUD;
+import schrumbo.schlib.config.ConfigProcessor;
+import schrumbo.schlib.gui.theme.Theme;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.ChatUtils;
-import schrumbo.schrumbohud.clickgui.ClickGuiScreen;
-import schrumbo.schrumbohud.config.ConfigManager;
-import schrumbo.schrumbohud.config.HudConfig;
-
-import javax.swing.text.JTextComponent;
 
 /**
  * handles keybindings
@@ -48,11 +40,15 @@ public class KeybindHandler {
             if(toggleHudKey.wasPressed()){
                 ChatUtils.modMessage("Toggled InventoryHUD");
                 SchrumboHUDClient.config.toggle();
-                ConfigManager.save();
+                SchrumboHUDClient.config.save();
             }
 
             if(configKey.wasPressed()){
-                client.setScreen(new ClickGuiScreen());
+                client.setScreen(ConfigProcessor.createScreen(
+                    SchrumboHUDClient.config,
+                    Text.literal("SchrumboHUD Config"),
+                    new Theme()
+                ));
             }
             });
 
