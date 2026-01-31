@@ -8,14 +8,8 @@ import schrumbo.schlib.gui.theme.Theme;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
-//danke julianh06!
 public class Commands {
 
-    /**
-     * helper method for creating commands
-     * @param name
-     * @param action
-     */
     public static void registerCommand(String name, Runnable action) {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(literal(name).executes(context -> {
@@ -26,9 +20,6 @@ public class Commands {
         });
     }
 
-    /**
-     *  initializes commands
-     */
     public static void register(){
         registerCommand("shud", () -> {
             MinecraftClient.getInstance().send(() -> {

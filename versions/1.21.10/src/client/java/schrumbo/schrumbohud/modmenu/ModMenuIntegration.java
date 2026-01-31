@@ -7,9 +7,6 @@ import schrumbo.schlib.config.ConfigProcessor;
 import schrumbo.schlib.gui.theme.Theme;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 
-/**
- * integration of the ModMenu Mod
- */
 public class ModMenuIntegration implements ModMenuApi {
 
     @Override

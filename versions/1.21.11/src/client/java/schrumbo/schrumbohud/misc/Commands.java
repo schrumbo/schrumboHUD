@@ -8,7 +8,7 @@ import schrumbo.schlib.gui.theme.Theme;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
-//danke julianh06!
+
 public class Commands {
 
     public static void registerCommand(String name, Runnable action) {

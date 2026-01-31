@@ -43,10 +43,6 @@ public class SchrumboHudConfig extends ManagedConfig {
     @Switch
     public boolean roundedCorners = true;
 
-    @ConfigOption(name = "Accent Color", description = "GUI accent color", category = "General")
-    @ColorPicker(allowAlpha = true)
-    public int accentColor = 0xFF5DADE2;
-
     public static class Anchor {
         public HorizontalAnchor horizontal = HorizontalAnchor.LEFT;
         public VerticalAnchor vertical = VerticalAnchor.TOP;
@@ -91,9 +87,9 @@ public class SchrumboHudConfig extends ManagedConfig {
         }
     };
 
-    @ConfigOption(name = "Catppucin Mocha", description = "Load Catppucin Mocha theme", category = "Presets")
+    @ConfigOption(name = "Catppuccin Mocha", description = "Load Catppuccin Mocha theme", category = "Presets")
     @Button
-    public transient Runnable catppucinMocha = () -> {
+    public transient Runnable catppuccinMocha = () -> {
         loadCatppuccinMocha();
         save();
     };
@@ -186,6 +182,7 @@ public class SchrumboHudConfig extends ManagedConfig {
     @Override
     public SchrumboHudConfig load() {
         super.load();
+        migrateColors();
         initColors();
         return this;
     }
@@ -196,7 +193,21 @@ public class SchrumboHudConfig extends ManagedConfig {
     }
 
     public void initColors() {
-        if (colors == null) colors = new Colors();
+        colors = new Colors();
+    }
+
+    private void migrateColors() {
+        backgroundColor = ensureAlpha(backgroundColor, 0xF2);
+        borderColor = ensureAlpha(borderColor, 0xFF);
+        slotColor = ensureAlpha(slotColor, 0xB3);
+        textColor = ensureAlpha(textColor, 0xFF);
+    }
+
+    private int ensureAlpha(int color, int defaultAlpha) {
+        if (((color >> 24) & 0xFF) == 0) {
+            return (defaultAlpha << 24) | (color & 0x00FFFFFF);
+        }
+        return color;
     }
 
     public void loadDarkMode() {
@@ -280,10 +291,6 @@ public class SchrumboHudConfig extends ManagedConfig {
 
     public void setTextColor(int color) {
         textColor = color;
-    }
-
-    public void setAccentColor(int color) {
-        accentColor = color;
     }
 
     public void setSlotColor(int color) {
