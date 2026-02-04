@@ -5,6 +5,9 @@ import schrumbo.schlib.annotations.*;
 import schrumbo.schlib.config.ManagedConfig;
 import schrumbo.schrumbohud.hud.HudEditorScreen;
 
+/**
+ * SchrumboHUD configuration — colors, layout, and theme presets
+ */
 public class SchrumboHudConfig extends ManagedConfig {
 
     public SchrumboHudConfig() {
@@ -14,32 +17,20 @@ public class SchrumboHudConfig extends ManagedConfig {
     @Category(name = "General", description = "General settings")
     public static final int GENERAL = 0;
 
-    @Category(name = "Position", description = "Position settings")
-    public static final int POSITION = 1;
-
     @Category(name = "Presets", description = "Theme presets")
-    public static final int PRESETS = 2;
+    public static final int PRESETS = 1;
 
-    @Category(name = "Background", description = "Background settings")
-    public static final int BACKGROUND = 3;
-
-    @Category(name = "Outline", description = "Outline settings")
-    public static final int OUTLINE = 4;
-
-    @Category(name = "Item Slots", description = "Item slot settings")
-    public static final int ITEM_SLOTS = 5;
-
-    @Category(name = "Text", description = "Text settings")
-    public static final int TEXT = 6;
+    @Category(name = "Appearance", description = "Colors and styling")
+    public static final int APPEARANCE = 2;
 
     @Category(name = "Armor HUD", description = "Armor HUD settings")
-    public static final int ARMOR_HUD = 7;
+    public static final int ARMOR_HUD = 3;
 
-    @ConfigOption(name = "Inventory HUD", description = "Enable inventory HUD", category = "General")
+    @ConfigOption(name = "Inventory HUD", description = "Toggle inventory HUD", category = "General")
     @Switch
     public boolean enabled = true;
 
-    @ConfigOption(name = "Round Corners", description = "Enable rounded corners", category = "General")
+    @ConfigOption(name = "Round Corners", description = "Rounded corners", category = "General")
     @Switch
     public boolean roundedCorners = true;
 
@@ -68,17 +59,7 @@ public class SchrumboHudConfig extends ManagedConfig {
     public Anchor armorAnchor = new Anchor();
     public Position armorPosition = new Position();
 
-    @ConfigOption(name = "Reset Position", description = "Reset HUD position to default", category = "Position")
-    @Button
-    public transient Runnable resetPosition = () -> {
-        position.x = 10;
-        position.y = 10;
-        anchor.horizontal = HorizontalAnchor.LEFT;
-        anchor.vertical = VerticalAnchor.TOP;
-        save();
-    };
-
-    @ConfigOption(name = "Change Position", description = "Open position editor", category = "Position")
+    @ConfigOption(name = "Edit Position", description = "Open position editor", category = "General")
     @Button
     public transient Runnable changePosition = () -> {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -122,35 +103,42 @@ public class SchrumboHudConfig extends ManagedConfig {
         save();
     };
 
-    @ConfigOption(name = "Background", description = "Enable background", category = "Background")
+    @ConfigOption(name = "Classic", description = "Load Classic theme", category = "Presets")
+    @Button
+    public transient Runnable classic = () -> {
+        loadClassic();
+        save();
+    };
+
+    @ConfigOption(name = "Background", description = "Show background", category = "Appearance")
     @Switch
     public boolean backgroundEnabled = true;
 
-    @ConfigOption(name = "Background Color", description = "Background color with transparency", category = "Background")
+    @ConfigOption(name = "Background Color", description = "Background color", category = "Appearance")
     @ColorPicker(allowAlpha = true)
     public int backgroundColor = 0xF21E1E2E;
 
-    @ConfigOption(name = "Outline", description = "Enable outline", category = "Outline")
+    @ConfigOption(name = "Outline", description = "Show outline", category = "Appearance")
     @Switch
     public boolean outlineEnabled = true;
 
-    @ConfigOption(name = "Outline Color", description = "Outline color with transparency", category = "Outline")
+    @ConfigOption(name = "Outline Color", description = "Outline color", category = "Appearance")
     @ColorPicker(allowAlpha = true)
     public int borderColor = 0xFF89B4FA;
 
-    @ConfigOption(name = "Slot Background", description = "Enable slot background", category = "Item Slots")
+    @ConfigOption(name = "Slot Background", description = "Show slot background", category = "Appearance")
     @Switch
     public boolean slotBackgroundEnabled = true;
 
-    @ConfigOption(name = "Slot Background Color", description = "Slot background color with transparency", category = "Item Slots")
+    @ConfigOption(name = "Slot Color", description = "Slot background color", category = "Appearance")
     @ColorPicker(allowAlpha = true)
     public int slotColor = 0xB3313244;
 
-    @ConfigOption(name = "Text Shadow", description = "Enable text shadow", category = "Text")
+    @ConfigOption(name = "Text Shadow", description = "Text shadow", category = "Appearance")
     @Switch
     public boolean textShadowEnabled = true;
 
-    @ConfigOption(name = "Text Color", description = "Text color", category = "Text")
+    @ConfigOption(name = "Text Color", description = "Text color", category = "Appearance")
     @ColorPicker(allowAlpha = true)
     public int textColor = 0xFFCDD6F4;
 
@@ -168,6 +156,7 @@ public class SchrumboHudConfig extends ManagedConfig {
 
     public boolean firstJoin = true;
     public float scale = 1.0f;
+    public float armorScale = 1.0f;
     public float configScale = 1.0f;
 
     public transient Colors colors = new Colors();
@@ -235,7 +224,7 @@ public class SchrumboHudConfig extends ManagedConfig {
         backgroundColor = 0xEB272822;
         borderColor = 0xFFF92672;
         textColor = 0xFFF8F8F2;
-        slotColor = 0xB449483E;
+        slotColor = 0xB349483E;
     }
 
     public void loadDracula() {
@@ -243,6 +232,13 @@ public class SchrumboHudConfig extends ManagedConfig {
         borderColor = 0xFFBD93F9;
         textColor = 0xFFF8F8F2;
         slotColor = 0xBF44475A;
+    }
+
+    public void loadClassic() {
+        backgroundColor = 0x80000000;
+        borderColor = 0x60000000;
+        textColor = 0xFFFFFFFF;
+        slotColor = 0x50000000;
     }
 
     public void toggle() {

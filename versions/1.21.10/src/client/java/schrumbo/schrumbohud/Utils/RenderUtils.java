@@ -7,9 +7,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 
+/**
+ * GUI drawing utilities — rounded rects, outlines, cut-corner shapes
+ */
 public class RenderUtils {
 
-
+    /**
+     * Filled rectangle with rounded corners
+     */
     public static void fillRoundedRect(DrawContext context, int x, int y, int width, int height, float radius, int color) {
         if (radius <= 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -37,6 +42,9 @@ public class RenderUtils {
     }
 
 
+    /**
+     * Rounded rectangle outline
+     */
     public static void drawRoundedRectWithOutline(DrawContext context, int x, int y, int width, int height, float radius, int thickness, int color) {
         if (radius <= 0) {
             drawBorder(context, x, y, width, height, color);
@@ -62,7 +70,7 @@ public class RenderUtils {
     }
 
     /**
-     * Fills a rounded corner
+     * Filled rounded corner
      * @param corner 1=topleft 2=topright 3=bottomright 4=bottomleft
      */
     private static void fillRoundedCorner(DrawContext context, int x, int y, int radius, int color, int corner) {
@@ -98,7 +106,7 @@ public class RenderUtils {
     }
 
     /**
-     * Draws a rounded corner outline
+     * Rounded corner outline
      * @param corner 1=topleft 2=topright 3=bottomright 4=bottomleft
      */
     private static void drawRoundedCornerOutline(DrawContext context, int x, int y, int radius, int thickness, int color, int corner) {
@@ -133,28 +141,29 @@ public class RenderUtils {
         }
     }
 
+    /**
+     * Filled rectangle with cut corners
+     */
     public static void drawRectWithCutCorners(DrawContext context, int x, int y, int width, int height, int thickness, int color) {
         drawOutlineWithCutCorners(context, x, y, width, height, thickness, color);
 
         context.fill(x + thickness, y + thickness, x + width - thickness, y + height - thickness, color);
     }
 
-    public static void drawOutlineWithCutCorners(DrawContext context, int x, int y, int width, int height, int thickness, int color){
-        //oben
+    /**
+     * Outline with cut corners
+     */
+    public static void drawOutlineWithCutCorners(DrawContext context, int x, int y, int width, int height, int thickness, int color) {
         context.fill(x + 1, y, x + width - 1, y + thickness, color);
-
-        //unten
         context.fill(x + 1, y + height - thickness, x + width - 1, y + height, color);
-
-        //links
         context.fill(x, y + 1, x + thickness, y + height - 1, color);
-
-        //rechts
         context.fill(x + width - thickness, y + 1, x + width, y + height - 1, color);
-
     }
 
-    public static void drawBorder(DrawContext context, int x, int y, int width, int height, int color){
+    /**
+     * 1px rectangle border
+     */
+    public static void drawBorder(DrawContext context, int x, int y, int width, int height, int color) {
         context.fill(x, y, x + width, y + 1, color);
         context.fill(x, y + height - 1, x + width, y + height, color);
         context.fill(x, y, x + 1, y + height, color);

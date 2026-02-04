@@ -4,6 +4,9 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.ChatUtils;
 
+/**
+ * First-join welcome message handler
+ */
 public class FirstJoin {
     public static void register(){
 
