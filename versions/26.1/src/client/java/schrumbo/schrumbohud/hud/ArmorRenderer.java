@@ -3,13 +3,13 @@ package schrumbo.schrumbohud.hud;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
@@ -22,12 +22,12 @@ import java.util.List;
  * Armor HUD overlay element
  */
 public class ArmorRenderer implements HudElement {
-    public static final Identifier ID = Identifier.of("schrumbomods", "armor_hud");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath("schrumbomods", "armor_hud");
 
     private static final int SLOT_SIZE = 18;
     private static final int PADDING = 4;
 
-    private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final Minecraft client = Minecraft.getInstance();
     private final List<ItemStack> armor = new ArrayList<>();
 
     int rows;
@@ -42,7 +42,7 @@ public class ArmorRenderer implements HudElement {
     }
 
     @Override
-    public void render(DrawContext drawContext, RenderTickCounter renderTickCounter) {
+    public void render(GuiGraphics drawContext, DeltaTracker renderTickCounter) {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.armorEnabled || client == null || client.player == null) return;
@@ -63,13 +63,13 @@ public class ArmorRenderer implements HudElement {
         int scaledWidth = Math.round(hudWidth * scale);
         int scaledHeight = Math.round(hudHeight * scale);
 
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
+        int screenWidth = client.getWindow().getGuiScaledWidth();
+        int screenHeight = client.getWindow().getGuiScaledHeight();
 
         int x = calcX(config, screenWidth, scaledWidth);
         int y = calcY(config, screenHeight, scaledHeight);
 
-        var matrices = drawContext.getMatrices();
+        var matrices = drawContext.pose();
         matrices.pushMatrix();
         matrices.translate(x, y);
         if (scale != 1.0f) {
@@ -81,14 +81,14 @@ public class ArmorRenderer implements HudElement {
 
         matrices.popMatrix();
 
-        ScreenRect scissor = drawContext.scissorStack.peekLast();
-        Matrix3x2f pose = new Matrix3x2f(drawContext.getMatrices());
+        ScreenRectangle scissor = drawContext.scissorStack.peek();
+        Matrix3x2f pose = new Matrix3x2f(drawContext.pose());
 
         ArmorHudRenderState renderState = new ArmorHudRenderState(
                 List.copyOf(armor), config, rows, rowSlots, pose, scissor,
                 x, y, x + scaledWidth, y + scaledHeight
         );
-        drawContext.state.addSpecialElement(renderState);
+        drawContext.guiRenderState.submitPicturesInPictureState(renderState);
 
         matrices.pushMatrix();
         matrices.translate(x, y);
@@ -104,10 +104,10 @@ public class ArmorRenderer implements HudElement {
     private void getArmor() {
         if (client.player == null) return;
         armor.clear();
-        armor.add(client.player.getEquippedStack(EquipmentSlot.HEAD));
-        armor.add(client.player.getEquippedStack(EquipmentSlot.CHEST));
-        armor.add(client.player.getEquippedStack(EquipmentSlot.LEGS));
-        armor.add(client.player.getEquippedStack(EquipmentSlot.FEET));
+        armor.add(client.player.getItemBySlot(EquipmentSlot.HEAD));
+        armor.add(client.player.getItemBySlot(EquipmentSlot.CHEST));
+        armor.add(client.player.getItemBySlot(EquipmentSlot.LEGS));
+        armor.add(client.player.getItemBySlot(EquipmentSlot.FEET));
     }
 
     private int calcX(SchrumboHudConfig config, int screenWidth, int hudWidth) {
@@ -129,7 +129,7 @@ public class ArmorRenderer implements HudElement {
         return (alpha << 24) | (color & 0x00FFFFFF);
     }
 
-    private void drawBackground(DrawContext context, int width, int height, SchrumboHudConfig config) {
+    private void drawBackground(GuiGraphics context, int width, int height, SchrumboHudConfig config) {
         float t = config.armorTransparency;
         if (config.backgroundEnabled) {
             int bgColor = applyArmorTransparency(config.colors.background(), t);
@@ -150,7 +150,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    private void renderSlotBackgrounds(DrawContext context, SchrumboHudConfig config) {
+    private void renderSlotBackgrounds(GuiGraphics context, SchrumboHudConfig config) {
         if (!config.slotBackgroundEnabled) return;
 
         int index = 0;
@@ -169,7 +169,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    private void renderOverlays(DrawContext context, SchrumboHudConfig config) {
+    private void renderOverlays(GuiGraphics context, SchrumboHudConfig config) {
         int index = 0;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < rowSlots; col++) {
@@ -188,9 +188,9 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y) {
+    private void renderDurabilityBar(GuiGraphics context, ItemStack stack, int x, int y) {
         int maxDurability = stack.getMaxDamage();
-        int currDurability = maxDurability - stack.getDamage();
+        int currDurability = maxDurability - stack.getDamageValue();
         float percentDurability = (float) currDurability / maxDurability;
 
         int barWidth = SLOT_SIZE - 6;

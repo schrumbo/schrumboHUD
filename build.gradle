@@ -1,7 +1,14 @@
 plugins {
-	id 'fabric-loom' version "${loom_version}"
+	id 'fabric-loom' version "${loom_version}" apply false
+	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
 	id 'maven-publish'
 	id 'com.modrinth.minotaur' version "2.+"
+}
+
+if (project.hasProperty('yarn_mappings')) {
+	apply plugin: 'fabric-loom'
+} else {
+	apply plugin: 'net.fabricmc.fabric-loom'
 }
 
 version = project.mod_version
@@ -36,16 +43,25 @@ loom {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "schrumbo.schlib:schlib:1.0.2+${project.minecraft_version}"
-	include "schrumbo.schlib:schlib:1.0.2+${project.minecraft_version}"
-	if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
-		modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+	if (project.hasProperty('yarn_mappings')) {
+		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+		modImplementation "schrumbo.schlib:schlib:1.0.2+${project.minecraft_version}"
+		include "schrumbo.schlib:schlib:1.0.2+${project.minecraft_version}"
+		if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
+			modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+		}
+	} else {
+		implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+		implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+		implementation "schrumbo.schlib:schlib:1.0.2+${project.minecraft_version}"
+		include "schrumbo.schlib:schlib:1.0.2+${project.minecraft_version}"
+		if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
+			implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+		}
 	}
-	if(project.hasProperty('devauth_version')){
+	if(project.hasProperty('devauth_version') && project.hasProperty('yarn_mappings')){
 		modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${devauth_version}")
 	}
 }
@@ -58,18 +74,17 @@ processResources {
 	}
 }
 
+def javaVersion = project.hasProperty('yarn_mappings') ? 21 : 25
+def javaLangVersion = JavaVersion.toVersion(javaVersion)
+
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
+	it.options.release = javaVersion
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = javaLangVersion
+	targetCompatibility = javaLangVersion
 }
 
 jar {
@@ -89,12 +104,7 @@ publishing {
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
 	}
 }
 
@@ -103,7 +113,7 @@ modrinth {
 	projectId = "u4K3P3A5"
 	versionNumber = "1.0.5"
 	versionType = "release"
-	uploadFile = remapJar
+	uploadFile = project.hasProperty('yarn_mappings') ? remapJar : jar
 	gameVersions = ["1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.10", "1.21.10", "1.21.11"]
 	loaders = ["fabric"]
 	syncBodyFrom = rootProject.file("CHANGELOG.md").text
@@ -113,7 +123,7 @@ modrinth {
 }
 javadoc {
 	source = sourceSets.main.allJava
-	source += sourceSets.client.allJava  // Client-Klassen einbeziehen
+	source += sourceSets.client.allJava
 
 	classpath = configurations.compileClasspath
 	classpath += sourceSets.client.compileClasspath
@@ -122,7 +132,6 @@ javadoc {
 	options.charSet = 'UTF-8'
 	options.memberLevel = JavadocMemberLevel.PRIVATE
 
-	// Fabric/Minecraft spezifische Warnungen unterdrücken
 	options.addStringOption('Xdoclint:none', '-quiet')
 
 	destinationDir = file("${buildDir}/docs/javadoc")
@@ -142,7 +151,7 @@ task generateAllDocs(type: Javadoc) {
 	destinationDir = file("${buildDir}/docs/all-javadoc")
 
 	doFirst {
-		println "Generiere Dokumentation für folgende Dateien:"
+		println "Generating docs for:"
 		source.files.each { println "  - ${it.name}" }
 	}
 }
