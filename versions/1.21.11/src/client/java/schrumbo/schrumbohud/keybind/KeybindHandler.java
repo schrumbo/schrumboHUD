@@ -12,6 +12,9 @@ import schrumbo.schlib.gui.theme.Theme;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.ChatUtils;
 
+/**
+ * HUD toggle and config screen keybindings
+ */
 public class KeybindHandler {
     private static KeyBinding toggleHudKey;
     private static KeyBinding configKey;

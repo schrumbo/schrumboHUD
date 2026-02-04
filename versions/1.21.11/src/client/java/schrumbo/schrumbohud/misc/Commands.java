@@ -9,8 +9,14 @@ import schrumbo.schrumbohud.SchrumboHUDClient;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
+/**
+ * Client-side chat commands
+ */
 public class Commands {
 
+    /**
+     * Register a client command bound to the given action
+     */
     public static void registerCommand(String name, Runnable action) {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(literal(name).executes(context -> {

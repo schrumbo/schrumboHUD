@@ -1,0 +1,13 @@
+accessWidener v2 named
+
+accessible field net/minecraft/client/render/item/ItemRenderState layers [Lnet/minecraft/client/render/item/ItemRenderState$LayerRenderState;
+accessible field net/minecraft/client/render/item/ItemRenderState layerCount I
+accessible field net/minecraft/client/render/item/ItemRenderState displayContext Lnet/minecraft/item/ItemDisplayContext;
+
+accessible field net/minecraft/client/render/item/ItemRenderState$LayerRenderState renderLayer Lnet/minecraft/client/render/RenderLayer;
+accessible field net/minecraft/client/render/item/ItemRenderState$LayerRenderState tints [I
+accessible field net/minecraft/client/render/item/ItemRenderState$LayerRenderState glint Lnet/minecraft/client/render/item/ItemRenderState$Glint;
+accessible field net/minecraft/client/render/item/ItemRenderState$LayerRenderState specialModelType Lnet/minecraft/client/render/item/model/special/SpecialModelRenderer;
+accessible field net/minecraft/client/render/item/ItemRenderState$LayerRenderState transform Lnet/minecraft/client/render/model/json/Transformation;
+
+accessible method net/minecraft/client/render/item/ItemRenderState$LayerRenderState render (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;III)V

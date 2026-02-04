@@ -5,15 +5,21 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.joml.Matrix3x2f;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.SchrumboHudConfig;
 
+/**
+ * Inventory HUD overlay element
+ */
 public class InventoryRenderer implements HudElement {
+
     public static final Identifier ID = Identifier.of("schrumbomods", "inventory_hud");
     private static final int SLOT_SIZE = 18;
     private static final int ROW_SLOTS = 9;
@@ -26,7 +32,6 @@ public class InventoryRenderer implements HudElement {
                 ID,
                 new InventoryRenderer()
         );
-
     }
 
     @Override
@@ -41,21 +46,44 @@ public class InventoryRenderer implements HudElement {
         int hudWidth = ROW_SLOTS * SLOT_SIZE + PADDING * 2;
         int hudHeight = ROWS * SLOT_SIZE + PADDING * 2;
 
+        float scale = config.scale;
+        int scaledWidth = (int) (hudWidth * scale);
+        int scaledHeight = (int) (hudHeight * scale);
 
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();
 
-
-
-        int x = calcX(config, screenWidth, hudWidth);
-        int y = calcY(config, screenHeight, hudHeight);
+        int x = calcX(config, screenWidth, scaledWidth);
+        int y = calcY(config, screenHeight, scaledHeight);
 
         var matrices = context.getMatrices();
         matrices.pushMatrix();
         matrices.translate(x, y);
+        if (scale != 1.0f) {
+            matrices.scale(scale, scale);
+        }
 
         drawBackground(context, hudWidth, hudHeight, config);
-        renderInventory(context, inventory, config);
+        renderSlotBackgrounds(context, config);
+
+        matrices.popMatrix();
+
+        ScreenRect scissor = context.scissorStack.peekLast();
+        Matrix3x2f pose = new Matrix3x2f(context.getMatrices());
+
+        InventoryHudRenderState renderState = new InventoryHudRenderState(
+                inventory, config, pose, scissor,
+                x, y, x + scaledWidth, y + scaledHeight
+        );
+        context.state.addSpecialElement(renderState);
+
+        matrices.pushMatrix();
+        matrices.translate(x, y);
+        if (scale != 1.0f) {
+            matrices.scale(scale, scale);
+        }
+
+        renderOverlays(context, inventory, config);
 
         matrices.popMatrix();
     }
@@ -94,57 +122,52 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    private void renderInventory(DrawContext context, PlayerInventory inventory, SchrumboHudConfig config) {
+    private void renderSlotBackgrounds(DrawContext context, SchrumboHudConfig config) {
+        if (!config.slotBackgroundEnabled) return;
+
+        int slotColor = config.colors.slots();
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
-                int slot = 9 + row * ROW_SLOTS + col;
-                ItemStack stack = inventory.getStack(slot);
-
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
-
-                if (config.slotBackgroundEnabled) {
-                    int slotColor = config.colors.slots();
-                    if (config.roundedCorners) {
-                        RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
-                    } else {
-                        context.fill(slotX, slotY, slotX + SLOT_SIZE - 2, slotY + SLOT_SIZE - 2, slotColor);
-                    }
+                if (config.roundedCorners) {
+                    RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
+                } else {
+                    context.fill(slotX, slotY, slotX + SLOT_SIZE - 2, slotY + SLOT_SIZE - 2, slotColor);
                 }
-                renderItem(context, stack, slotX, slotY, config);
             }
         }
     }
 
-    private void renderItem(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
-        if (stack.isEmpty()) return;
+    private void renderOverlays(DrawContext context, PlayerInventory inventory, SchrumboHudConfig config) {
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < ROW_SLOTS; col++) {
+                int slot = 9 + row * ROW_SLOTS + col;
+                ItemStack stack = inventory.getStack(slot);
+                if (stack.isEmpty()) continue;
 
+                int slotX = PADDING + col * SLOT_SIZE + 1;
+                int slotY = PADDING + row * SLOT_SIZE + 1;
 
-        context.drawItem(stack, x, y);
-
-        if (stack.getCount() > 1) {
-            renderStackCount(context, stack, x, y, config);
-        }
-        if (stack.isDamaged()) {
-            renderDurabilityBar(context, stack, x, y, config);
+                if (stack.getCount() > 1) {
+                    renderStackCount(context, stack, slotX, slotY, config);
+                }
+                if (stack.isDamaged()) {
+                    renderDurabilityBar(context, stack, slotX, slotY);
+                }
+            }
         }
     }
 
     private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         String count = String.valueOf(stack.getCount());
-
         var textRenderer = MinecraftClient.getInstance().textRenderer;
-        var matrices = context.getMatrices();
-        matrices.pushMatrix();
-
         context.drawText(textRenderer, count,
                 x + SLOT_SIZE - 2 - textRenderer.getWidth(count),
                 y + SLOT_SIZE - 9, config.colors.text(), config.textShadowEnabled);
-
-        matrices.popMatrix();
     }
 
-    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
+    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y) {
         int maxDurability = stack.getMaxDamage();
         int currDurability = maxDurability - stack.getDamage();
         float percentDurability = (float) currDurability / maxDurability;
@@ -153,13 +176,8 @@ public class InventoryRenderer implements HudElement {
         int filledWidth = (int) (barWidth * percentDurability);
         int barY = y + SLOT_SIZE - 4;
 
-        var matrices = context.getMatrices();
-        matrices.pushMatrix();
-
         context.fill(x + 2, barY, x + 2 + barWidth, barY + 1, 0xFF000000);
         context.fill(x + 2, barY, x + 2 + filledWidth, barY + 1, getDurabilityColor(percentDurability));
-
-        matrices.popMatrix();
     }
 
     private int getDurabilityColor(float percent) {

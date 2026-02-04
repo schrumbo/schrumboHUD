@@ -7,6 +7,9 @@ import schrumbo.schrumbohud.SchrumboHUDClient;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
+/**
+ * Prefixed chat message utilities
+ */
 public class ChatUtils {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
