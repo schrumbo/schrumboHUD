@@ -49,8 +49,10 @@ public class InventoryHudSpecialRenderer extends SpecialGuiElementRenderer<Inven
 
         int hudWidth = ROW_SLOTS * SLOT_SIZE + PADDING * 2;
         int hudHeight = ROWS * SLOT_SIZE + PADDING * 2;
-        float hudCenterX = hudWidth / 2.0f;
-        float hudCenterY = hudHeight / 2.0f;
+        float pps = client.getWindow().getScaleFactor() * state.config().scale;
+        float texCenterX = Math.round(hudWidth * state.config().scale) * client.getWindow().getScaleFactor() / 2.0f;
+        float texCenterY = Math.round(hudHeight * state.config().scale) * client.getWindow().getScaleFactor() / 2.0f;
+        float modelScale = pps * 16.0f;
 
         matrices.scale(1.0f, -1.0f, -1.0f);
 
@@ -58,43 +60,51 @@ public class InventoryHudSpecialRenderer extends SpecialGuiElementRenderer<Inven
         RenderDispatcher dispatcher = client.gameRenderer.getEntityRenderDispatcher();
         var queue = dispatcher.getQueue();
 
+        renderPass(client, inventory, matrices, lighting, queue, pps, texCenterX, texCenterY, modelScale, true);
+        this.vertexConsumers.draw();
+
+        renderPass(client, inventory, matrices, lighting, queue, pps, texCenterX, texCenterY, modelScale, false);
+        this.vertexConsumers.draw();
+
+        dispatcher.render();
+    }
+
+    /** Renders items matching the given sideLit value under the appropriate lighting. */
+    private void renderPass(MinecraftClient client, PlayerInventory inventory, MatrixStack matrices,
+                            DiffuseLighting lighting, net.minecraft.client.render.command.OrderedRenderCommandQueue queue,
+                            float pps, float texCenterX, float texCenterY,
+                            float modelScale, boolean sideLit) {
+        lighting.setShaderLights(sideLit ? DiffuseLighting.Type.ITEMS_3D : DiffuseLighting.Type.ITEMS_FLAT);
+
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
                 int slot = 9 + row * ROW_SLOTS + col;
                 ItemStack stack = inventory.getStack(slot);
                 if (stack.isEmpty()) continue;
 
-                int slotX = PADDING + col * SLOT_SIZE + 1;
-                int slotY = PADDING + row * SLOT_SIZE + 1;
-
                 client.getItemModelManager().updateForLivingEntity(
                         itemRenderState, stack, ItemDisplayContext.GUI,
                         client.player
                 );
 
-                if (itemRenderState.isSideLit()) {
-                    lighting.setShaderLights(DiffuseLighting.Type.ITEMS_FLAT);
-                } else {
-                    lighting.setShaderLights(DiffuseLighting.Type.ITEMS_3D);
-                }
+                if (itemRenderState.isSideLit() != sideLit) continue;
 
+                int slotX = PADDING + col * SLOT_SIZE + 1;
+                int slotY = PADDING + row * SLOT_SIZE + 1;
                 float itemCenterX = slotX + 8.0f;
                 float itemCenterY = slotY + 8.0f;
 
+                float snappedX = (Math.round(itemCenterX * pps) - texCenterX) / modelScale;
+                float snappedY = (texCenterY - Math.round(itemCenterY * pps)) / modelScale;
+
                 matrices.push();
-                matrices.translate(
-                        (itemCenterX - hudCenterX) / 16.0f,
-                        (hudCenterY - itemCenterY) / 16.0f,
-                        0.0f
-                );
+                matrices.translate(snappedX, snappedY, 0.0f);
 
                 renderItemLayers(itemRenderState, matrices, queue);
 
                 matrices.pop();
             }
         }
-
-        dispatcher.render();
     }
 
     /**

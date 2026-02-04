@@ -60,8 +60,8 @@ public class ArmorRenderer implements HudElement {
         int hudHeight = rows * SLOT_SIZE + PADDING * 2;
 
         float scale = config.armorScale;
-        int scaledWidth = (int) (hudWidth * scale);
-        int scaledHeight = (int) (hudHeight * scale);
+        int scaledWidth = Math.round(hudWidth * scale);
+        int scaledHeight = Math.round(hudHeight * scale);
 
         int screenWidth = client.getWindow().getScaledWidth();
         int screenHeight = client.getWindow().getScaledHeight();

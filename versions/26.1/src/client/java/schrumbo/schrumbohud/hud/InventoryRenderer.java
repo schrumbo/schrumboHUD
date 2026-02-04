@@ -3,13 +3,13 @@ package schrumbo.schrumbohud.hud;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
@@ -20,7 +20,7 @@ import schrumbo.schrumbohud.config.SchrumboHudConfig;
  */
 public class InventoryRenderer implements HudElement {
 
-    public static final Identifier ID = Identifier.of("schrumbomods", "inventory_hud");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath("schrumbomods", "inventory_hud");
     private static final int SLOT_SIZE = 18;
     private static final int ROW_SLOTS = 9;
     private static final int ROWS = 3;
@@ -35,13 +35,13 @@ public class InventoryRenderer implements HudElement {
     }
 
     @Override
-    public void render(DrawContext context, RenderTickCounter tickCounter) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public void render(GuiGraphics context, DeltaTracker tickCounter) {
+        Minecraft client = Minecraft.getInstance();
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.enabled || client == null || client.player == null) return;
 
-        PlayerInventory inventory = client.player.getInventory();
+        Inventory inventory = client.player.getInventory();
 
         int hudWidth = ROW_SLOTS * SLOT_SIZE + PADDING * 2;
         int hudHeight = ROWS * SLOT_SIZE + PADDING * 2;
@@ -50,13 +50,13 @@ public class InventoryRenderer implements HudElement {
         int scaledWidth = Math.round(hudWidth * scale);
         int scaledHeight = Math.round(hudHeight * scale);
 
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
+        int screenWidth = client.getWindow().getGuiScaledWidth();
+        int screenHeight = client.getWindow().getGuiScaledHeight();
 
         int x = calcX(config, screenWidth, scaledWidth);
         int y = calcY(config, screenHeight, scaledHeight);
 
-        var matrices = context.getMatrices();
+        var matrices = context.pose();
         matrices.pushMatrix();
         matrices.translate(x, y);
         if (scale != 1.0f) {
@@ -68,14 +68,14 @@ public class InventoryRenderer implements HudElement {
 
         matrices.popMatrix();
 
-        ScreenRect scissor = context.scissorStack.peekLast();
-        Matrix3x2f pose = new Matrix3x2f(context.getMatrices());
+        ScreenRectangle scissor = context.scissorStack.peek();
+        Matrix3x2f pose = new Matrix3x2f(context.pose());
 
         InventoryHudRenderState renderState = new InventoryHudRenderState(
                 inventory, config, pose, scissor,
                 x, y, x + scaledWidth, y + scaledHeight
         );
-        context.state.addSpecialElement(renderState);
+        context.guiRenderState.submitPicturesInPictureState(renderState);
 
         matrices.pushMatrix();
         matrices.translate(x, y);
@@ -102,7 +102,7 @@ public class InventoryRenderer implements HudElement {
         };
     }
 
-    private void drawBackground(DrawContext context, int width, int height, SchrumboHudConfig config) {
+    private void drawBackground(GuiGraphics context, int width, int height, SchrumboHudConfig config) {
         if (config.backgroundEnabled) {
             int bgColor = config.colors.background();
             if (config.roundedCorners) {
@@ -122,7 +122,7 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    private void renderSlotBackgrounds(DrawContext context, SchrumboHudConfig config) {
+    private void renderSlotBackgrounds(GuiGraphics context, SchrumboHudConfig config) {
         if (!config.slotBackgroundEnabled) return;
 
         int slotColor = config.colors.slots();
@@ -139,11 +139,11 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    private void renderOverlays(DrawContext context, PlayerInventory inventory, SchrumboHudConfig config) {
+    private void renderOverlays(GuiGraphics context, Inventory inventory, SchrumboHudConfig config) {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
                 int slot = 9 + row * ROW_SLOTS + col;
-                ItemStack stack = inventory.getStack(slot);
+                ItemStack stack = inventory.getItem(slot);
                 if (stack.isEmpty()) continue;
 
                 int slotX = PADDING + col * SLOT_SIZE + 1;
@@ -159,17 +159,17 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    private void renderStackCount(DrawContext context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
+    private void renderStackCount(GuiGraphics context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         String count = String.valueOf(stack.getCount());
-        var textRenderer = MinecraftClient.getInstance().textRenderer;
-        context.drawText(textRenderer, count,
-                x + SLOT_SIZE - 2 - textRenderer.getWidth(count),
+        var font = Minecraft.getInstance().font;
+        context.drawString(font, count,
+                x + SLOT_SIZE - 2 - font.width(count),
                 y + SLOT_SIZE - 9, config.colors.text(), config.textShadowEnabled);
     }
 
-    private void renderDurabilityBar(DrawContext context, ItemStack stack, int x, int y) {
+    private void renderDurabilityBar(GuiGraphics context, ItemStack stack, int x, int y) {
         int maxDurability = stack.getMaxDamage();
-        int currDurability = maxDurability - stack.getDamage();
+        int currDurability = maxDurability - stack.getDamageValue();
         float percentDurability = (float) currDurability / maxDurability;
 
         int barWidth = SLOT_SIZE - 6;

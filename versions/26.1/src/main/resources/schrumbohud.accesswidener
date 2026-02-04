@@ -1,0 +1,20 @@
+accessWidener v2 official
+
+# GuiGraphics - access to scissor stack and render state
+accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraft/client/gui/GuiGraphics$ScissorStack;
+accessible field net/minecraft/client/gui/GuiGraphics guiRenderState Lnet/minecraft/client/gui/render/state/GuiRenderState;
+
+# ItemStackRenderState - access to layers for custom rendering
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState layers [Lnet/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState;
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState activeLayerCount I
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState displayContext Lnet/minecraft/world/item/ItemDisplayContext;
+
+# LayerRenderState - access to layer properties
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState quads Ljava/util/List;
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState renderType Lnet/minecraft/client/renderer/rendertype/RenderType;
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState foilType Lnet/minecraft/client/renderer/item/ItemStackRenderState$FoilType;
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState tintLayers [I
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState transform Lnet/minecraft/client/renderer/block/model/ItemTransform;
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState specialRenderer Lnet/minecraft/client/renderer/special/SpecialModelRenderer;
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState argumentForSpecialRendering Ljava/lang/Object;
+accessible field net/minecraft/client/renderer/item/ItemStackRenderState$LayerRenderState usesBlockLight Z
