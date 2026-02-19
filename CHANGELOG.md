@@ -1,4 +1,4 @@
-# SchrumboHUD v1.3.0
+# SchrumboHUD v1.2.3
 - **added peek mode** - hold keybind to temporarily show HUD
 - **new keybinds:**
   - Open Config (default: RShift)
