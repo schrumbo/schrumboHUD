@@ -26,9 +26,12 @@ public class SchrumboHudConfig extends ManagedConfig {
     @Category(name = "Armor HUD", description = "Armor HUD settings")
     public static final int ARMOR_HUD = 3;
 
-    @ConfigOption(name = "Inventory HUD", description = "Toggle inventory HUD", category = "General")
+    @ConfigOption(name = "Show Always", description = "Disable for peek mode (hold keybind to show)", category = "General")
     @Switch
-    public boolean enabled = true;
+    public boolean showAlways = true;
+
+    /** Runtime visibility state for rendering */
+    public transient boolean visible = true;
 
     @ConfigOption(name = "Round Corners", description = "Rounded corners", category = "General")
     @Switch
@@ -241,12 +244,16 @@ public class SchrumboHudConfig extends ManagedConfig {
         slotColor = 0x50000000;
     }
 
+    /** Toggles showAlways setting */
     public void toggle() {
-        this.enabled = !this.enabled;
+        this.showAlways = !this.showAlways;
+        this.visible = this.showAlways;
     }
 
+    /** Sets showAlways and syncs visibility */
     public void enableHud(boolean value) {
-        this.enabled = value;
+        this.showAlways = value;
+        this.visible = value;
     }
 
     public void enableArmorHud(boolean value) {
