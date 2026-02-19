@@ -16,39 +16,49 @@ import schrumbo.schrumbohud.Utils.ChatUtils;
  * HUD toggle and config screen keybindings
  */
 public class KeybindHandler {
-    private static KeyMapping toggleHudKey;
     private static KeyMapping configKey;
+    private static KeyMapping toggleKey;
+    private static KeyMapping peekKey;
     private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.parse("schrumbohud:main"));
 
     public static void register(){
-        toggleHudKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "Toggle InventoryHUD",
+        configKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "Open Config",
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                CATEGORY
+        ));
+        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "Toggle Show Always",
                 GLFW.GLFW_KEY_L,
                 CATEGORY
         ));
-        configKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "ClickGUI",
-                GLFW.GLFW_KEY_RIGHT_SHIFT,
+        peekKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "Peek HUD",
+                GLFW.GLFW_KEY_UNKNOWN,
                 CATEGORY
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if(toggleHudKey.consumeClick()){
-                ChatUtils.modMessage("Toggled InventoryHUD");
-                SchrumboHUDClient.config.toggle();
-                SchrumboHUDClient.config.save();
+            if (SchrumboHUDClient.config.showAlways) {
+                SchrumboHUDClient.config.visible = true;
+            } else {
+                SchrumboHUDClient.config.visible = peekKey.isDown();
             }
 
-            if(configKey.consumeClick()){
+            if (toggleKey.consumeClick()) {
+                SchrumboHUDClient.config.toggle();
+                SchrumboHUDClient.config.save();
+                ChatUtils.modMessage(SchrumboHUDClient.config.showAlways ? "Show Always: ON" : "Show Always: OFF");
+            }
+
+            if (configKey.consumeClick()) {
                 client.setScreen(ConfigProcessor.createScreen(
                     SchrumboHUDClient.config,
                     Component.literal("SchrumboHUD Config"),
                     new Theme()
                 ));
             }
-            });
-
-
+        });
     }
 
 }

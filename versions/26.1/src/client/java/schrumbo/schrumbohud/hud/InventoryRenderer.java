@@ -39,7 +39,7 @@ public class InventoryRenderer implements HudElement {
         Minecraft client = Minecraft.getInstance();
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
-        if (!config.enabled || client == null || client.player == null) return;
+        if (!config.visible || client == null || client.player == null) return;
 
         Inventory inventory = client.player.getInventory();
 
