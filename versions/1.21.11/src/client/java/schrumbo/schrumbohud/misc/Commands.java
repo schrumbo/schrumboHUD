@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import schrumbo.schlib.config.ConfigProcessor;
-import schrumbo.schlib.gui.theme.Theme;
+
 import schrumbo.schrumbohud.SchrumboHUDClient;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
@@ -32,8 +32,7 @@ public class Commands {
             MinecraftClient.getInstance().send(() -> {
                 MinecraftClient.getInstance().setScreen(ConfigProcessor.createScreen(
                     SchrumboHUDClient.config,
-                    Text.literal("SchrumboHUD Config"),
-                    new Theme()
+                    Text.literal("SchrumboHUD Config")
                 ));
             });
         });
@@ -42,8 +41,7 @@ public class Commands {
             MinecraftClient.getInstance().send(() -> {
                 MinecraftClient.getInstance().setScreen(ConfigProcessor.createScreen(
                     SchrumboHUDClient.config,
-                    Text.literal("SchrumboHUD Config"),
-                    new Theme()
+                    Text.literal("SchrumboHUD Config")
                 ));
             });
         });

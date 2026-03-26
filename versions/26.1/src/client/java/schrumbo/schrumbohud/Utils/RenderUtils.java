@@ -3,7 +3,7 @@ package schrumbo.schrumbohud.Utils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 
@@ -15,7 +15,7 @@ public class RenderUtils {
     /**
      * Filled rectangle with rounded corners
      */
-    public static void fillRoundedRect(GuiGraphics context, int x, int y, int width, int height, float radius, int color) {
+    public static void fillRoundedRect(GuiGraphicsExtractor context, int x, int y, int width, int height, float radius, int color) {
         if (radius <= 0) {
             context.fill(x, y, x + width, y + height, color);
             return;
@@ -45,7 +45,7 @@ public class RenderUtils {
     /**
      * Rounded rectangle outline
      */
-    public static void drawRoundedRectWithOutline(GuiGraphics context, int x, int y, int width, int height, float radius, int thickness, int color) {
+    public static void drawRoundedRectWithOutline(GuiGraphicsExtractor context, int x, int y, int width, int height, float radius, int thickness, int color) {
         if (radius <= 0) {
             drawBorder(context, x, y, width, height, color);
             return;
@@ -73,7 +73,7 @@ public class RenderUtils {
      * Filled rounded corner
      * @param corner 1=topleft 2=topright 3=bottomright 4=bottomleft
      */
-    private static void fillRoundedCorner(GuiGraphics context, int x, int y, int radius, int color, int corner) {
+    private static void fillRoundedCorner(GuiGraphicsExtractor context, int x, int y, int radius, int color, int corner) {
         for (int dx = 0; dx < radius; dx++) {
             for (int dy = 0; dy < radius; dy++) {
                 int checkX = 0, checkY = 0;
@@ -109,7 +109,7 @@ public class RenderUtils {
      * Rounded corner outline
      * @param corner 1=topleft 2=topright 3=bottomright 4=bottomleft
      */
-    private static void drawRoundedCornerOutline(GuiGraphics context, int x, int y, int radius, int thickness, int color, int corner) {
+    private static void drawRoundedCornerOutline(GuiGraphicsExtractor context, int x, int y, int radius, int thickness, int color, int corner) {
         for (int dx = 0; dx < radius; dx++) {
             for (int dy = 0; dy < radius; dy++) {
                 int checkX = 0, checkY = 0;
@@ -144,7 +144,7 @@ public class RenderUtils {
     /**
      * Filled rectangle with cut corners
      */
-    public static void drawRectWithCutCorners(GuiGraphics context, int x, int y, int width, int height, int thickness, int color) {
+    public static void drawRectWithCutCorners(GuiGraphicsExtractor context, int x, int y, int width, int height, int thickness, int color) {
         drawOutlineWithCutCorners(context, x, y, width, height, thickness, color);
 
         context.fill(x + thickness, y + thickness, x + width - thickness, y + height - thickness, color);
@@ -153,7 +153,7 @@ public class RenderUtils {
     /**
      * Outline with cut corners
      */
-    public static void drawOutlineWithCutCorners(GuiGraphics context, int x, int y, int width, int height, int thickness, int color) {
+    public static void drawOutlineWithCutCorners(GuiGraphicsExtractor context, int x, int y, int width, int height, int thickness, int color) {
         context.fill(x + 1, y, x + width - 1, y + thickness, color);
         context.fill(x + 1, y + height - thickness, x + width - 1, y + height, color);
         context.fill(x, y + 1, x + thickness, y + height - 1, color);
@@ -163,7 +163,7 @@ public class RenderUtils {
     /**
      * 1px rectangle border
      */
-    public static void drawBorder(GuiGraphics context, int x, int y, int width, int height, int color) {
+    public static void drawBorder(GuiGraphicsExtractor context, int x, int y, int width, int height, int color) {
         context.fill(x, y, x + width, y + 1, color);
         context.fill(x, y + height - 1, x + width, y + height, color);
         context.fill(x, y, x + 1, y + height, color);

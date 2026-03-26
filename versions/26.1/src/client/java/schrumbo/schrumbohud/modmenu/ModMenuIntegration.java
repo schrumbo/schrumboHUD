@@ -4,7 +4,7 @@ import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.minecraft.network.chat.Component;
 import schrumbo.schlib.config.ConfigProcessor;
-import schrumbo.schlib.gui.theme.Theme;
+
 import schrumbo.schrumbohud.SchrumboHUDClient;
 
 /**
@@ -16,8 +16,7 @@ public class ModMenuIntegration implements ModMenuApi {
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return parent -> ConfigProcessor.createScreen(
             SchrumboHUDClient.config,
-            Component.literal("SchrumboHUD Config"),
-            new Theme()
+            Component.literal("SchrumboHUD Config")
         );
     }
 }

@@ -17,7 +17,7 @@ public class ChatUtils {
 
     public static void modMessage(String message){
         if(client.player == null)return;
-        client.player.displayClientMessage(PREFIX.copy().append(Component.literal("\u00A7f" + message)), false);
+        client.player.sendSystemMessage(PREFIX.copy().append(Component.literal("\u00A7f" + message)));
     }
 
 }

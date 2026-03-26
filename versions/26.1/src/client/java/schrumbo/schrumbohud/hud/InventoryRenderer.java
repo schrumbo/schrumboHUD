@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.world.entity.player.Inventory;
@@ -35,7 +35,7 @@ public class InventoryRenderer implements HudElement {
     }
 
     @Override
-    public void render(GuiGraphics context, DeltaTracker tickCounter) {
+    public void extractRenderState(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         Minecraft client = Minecraft.getInstance();
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
@@ -75,7 +75,7 @@ public class InventoryRenderer implements HudElement {
                 inventory, config, pose, scissor,
                 x, y, x + scaledWidth, y + scaledHeight
         );
-        context.guiRenderState.submitPicturesInPictureState(renderState);
+        context.guiRenderState.addPicturesInPictureState(renderState);
 
         matrices.pushMatrix();
         matrices.translate(x, y);
@@ -102,7 +102,7 @@ public class InventoryRenderer implements HudElement {
         };
     }
 
-    private void drawBackground(GuiGraphics context, int width, int height, SchrumboHudConfig config) {
+    private void drawBackground(GuiGraphicsExtractor context, int width, int height, SchrumboHudConfig config) {
         if (config.backgroundEnabled) {
             int bgColor = config.colors.background();
             if (config.roundedCorners) {
@@ -122,7 +122,7 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    private void renderSlotBackgrounds(GuiGraphics context, SchrumboHudConfig config) {
+    private void renderSlotBackgrounds(GuiGraphicsExtractor context, SchrumboHudConfig config) {
         if (!config.slotBackgroundEnabled) return;
 
         int slotColor = config.colors.slots();
@@ -139,7 +139,7 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    private void renderOverlays(GuiGraphics context, Inventory inventory, SchrumboHudConfig config) {
+    private void renderOverlays(GuiGraphicsExtractor context, Inventory inventory, SchrumboHudConfig config) {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
                 int slot = 9 + row * ROW_SLOTS + col;
@@ -159,15 +159,15 @@ public class InventoryRenderer implements HudElement {
         }
     }
 
-    private void renderStackCount(GuiGraphics context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
+    private void renderStackCount(GuiGraphicsExtractor context, ItemStack stack, int x, int y, SchrumboHudConfig config) {
         String count = String.valueOf(stack.getCount());
         var font = Minecraft.getInstance().font;
-        context.drawString(font, count,
+        context.text(font, count,
                 x + SLOT_SIZE - 2 - font.width(count),
                 y + SLOT_SIZE - 9, config.colors.text(), config.textShadowEnabled);
     }
 
-    private void renderDurabilityBar(GuiGraphics context, ItemStack stack, int x, int y) {
+    private void renderDurabilityBar(GuiGraphicsExtractor context, ItemStack stack, int x, int y) {
         int maxDurability = stack.getMaxDamage();
         int currDurability = maxDurability - stack.getDamageValue();
         float percentDurability = (float) currDurability / maxDurability;
