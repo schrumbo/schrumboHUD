@@ -1,7 +1,7 @@
 package schrumbo.schrumbohud.hud;
 
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HUD position editor — drag, snap, scale, auto-anchor
+ * HUD position editor — drag, nudge, scale, auto-anchor
  */
 public class HudEditorScreen extends Screen {
 
@@ -26,12 +26,14 @@ public class HudEditorScreen extends Screen {
     private static final int PADDING = 4;
     private static final int INV_WIDTH = INV_COLS * SLOT_SIZE + PADDING * 2;
     private static final int INV_HEIGHT = INV_ROWS * SLOT_SIZE + PADDING * 2;
+    private static final int HOTBAR_SLOTS = 9;
+    private static final int OFFHAND_GAP = 4;
+    private static final int OFFHAND_PANEL_WIDTH = SLOT_SIZE + PADDING * 2;
 
     private static final int OUTLINE_COLOR = 0xFF007ACC;
     private static final int OUTLINE_HOVER_COLOR = 0x80007ACC;
-    private static final int SNAP_LINE_COLOR = 0xAAFFFFFF;
-    private static final int SNAP_THRESHOLD = 5;
     private static final int HIT_PADDING = 4;
+    private static final int NUDGE_AMOUNT = 1;
 
     private static final float SCALE_STEP = 0.1f;
     private static final float SCALE_MIN = 0.5f;
@@ -45,19 +47,14 @@ public class HudEditorScreen extends Screen {
     private static final int LEGEND_PAD = 8;
     private static final int LEGEND_LINE_HEIGHT = 12;
 
-    private enum Element { INVENTORY, ARMOR }
+    private enum Element { INVENTORY, ARMOR, HOTBAR }
 
     private Element selected = null;
     private boolean dragging = false;
-    private boolean dragStarted = false;
     private int dragAbsoluteX = 0;
     private int dragAbsoluteY = 0;
     private int dragOffsetX = 0;
     private int dragOffsetY = 0;
-    private int dragOriginX = 0;
-    private int dragOriginY = 0;
-
-    private final List<int[]> snapLines = new ArrayList<>();
 
     public HudEditorScreen(Screen parent) {
         super(Component.literal("HUD Editor"));
@@ -65,35 +62,29 @@ public class HudEditorScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {}
+    public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         context.fill(0, 0, width, height, 0x80000000);
 
         drawLegend(context);
         renderPreview(context, mouseX, mouseY, Element.INVENTORY);
         renderPreview(context, mouseX, mouseY, Element.ARMOR);
-
-        for (int[] line : snapLines) {
-            if (line[0] == line[2]) {
-                context.fill(line[0], line[1], line[0] + 1, line[3], SNAP_LINE_COLOR);
-            } else {
-                context.fill(line[0], line[1], line[2], line[1] + 1, SNAP_LINE_COLOR);
-            }
-        }
+        renderPreview(context, mouseX, mouseY, Element.HOTBAR);
 
         if (selected != null) {
             drawAnchorIndicator(context, selected);
         }
 
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
-    private void renderPreview(GuiGraphics context, int mouseX, int mouseY, Element element) {
+    private void renderPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, Element element) {
         var config = SchrumboHUDClient.config;
 
         if (element == Element.ARMOR && !config.armorEnabled) return;
+        if (element == Element.HOTBAR && !config.hotbarEnabled) return;
 
         int w = getElementWidth(element, config);
         int h = getElementHeight(element, config);
@@ -113,7 +104,7 @@ public class HudEditorScreen extends Screen {
         int unscaledH = getUnscaledHeight(element, config);
 
         int bgColor = config.colors.background();
-        float radius = element == Element.INVENTORY ? 0.2f : 0.5f;
+        float radius = element == Element.ARMOR ? 0.5f : 0.2f;
         if (config.roundedCorners) {
             RenderUtils.fillRoundedRect(context, 0, 0, unscaledW, unscaledH, radius, bgColor);
         } else {
@@ -137,9 +128,9 @@ public class HudEditorScreen extends Screen {
                     x - HIT_PADDING, y - HIT_PADDING,
                     w + HIT_PADDING * 2, h + HIT_PADDING * 2,
                     OUTLINE_COLOR);
-            String name = element == Element.INVENTORY ? "Inventory HUD" : "Armor HUD";
+            String name = getElementName(element);
             int nameWidth = font.width(name);
-            context.drawString(font, name,
+            context.text(font, name,
                     x + (w - nameWidth) / 2, y - HIT_PADDING - 12,
                     OUTLINE_COLOR, true);
         } else if (isHovered) {
@@ -150,20 +141,19 @@ public class HudEditorScreen extends Screen {
         }
     }
 
-    private void drawLegend(GuiGraphics context) {
+    private void drawLegend(GuiGraphicsExtractor context) {
         List<String> lines = new ArrayList<>();
         lines.add("HUD Editor");
         lines.add("");
         if (selected != null) {
-            String name = selected == Element.INVENTORY ? "Inventory HUD" : "Armor HUD";
             SchrumboHudConfig.Anchor anchor = getAnchor(selected);
-            lines.add("Selected: " + name);
+            lines.add("Selected: " + getElementName(selected));
             lines.add("Anchor: " + anchor.vertical.name() + "-" + anchor.horizontal.name());
-            float displayScale = selected == Element.INVENTORY
-                    ? SchrumboHUDClient.config.scale : SchrumboHUDClient.config.armorScale;
+            float displayScale = getElementScale(selected, SchrumboHUDClient.config);
             lines.add("Scale: " + String.format("%.0f%%", displayScale * 100));
             lines.add("");
             lines.add("Drag to move");
+            lines.add("Arrow keys to nudge");
             lines.add("Scroll to resize");
             lines.add("R - Reset position");
         } else {
@@ -196,83 +186,22 @@ public class HudEditorScreen extends Screen {
             }
             int color = (i == 0) ? OUTLINE_COLOR : LEGEND_TEXT;
             if (line.startsWith("R - ") || line.startsWith("Esc - ") || line.startsWith("Drag ")
-                    || line.startsWith("Click ") || line.startsWith("Scroll ")) {
+                    || line.startsWith("Click ") || line.startsWith("Scroll ")
+                    || line.startsWith("Arrow ")) {
                 color = LEGEND_MUTED;
             }
-            context.drawString(font, line, textX, textY, color, false);
+            context.text(font, line, textX, textY, color, false);
             textY += LEGEND_LINE_HEIGHT;
         }
     }
 
-    private void drawAnchorIndicator(GuiGraphics context, Element element) {
+    private void drawAnchorIndicator(GuiGraphicsExtractor context, Element element) {
         SchrumboHudConfig.Anchor anchor = getAnchor(element);
         int dotSize = 6;
         int anchorX = anchor.horizontal == SchrumboHudConfig.HorizontalAnchor.LEFT ? 0 : width;
         int anchorY = anchor.vertical == SchrumboHudConfig.VerticalAnchor.TOP ? 0 : height;
         context.fill(anchorX - dotSize / 2, anchorY - dotSize / 2,
                 anchorX + dotSize / 2, anchorY + dotSize / 2, 0xFF5DADE2);
-    }
-
-    private void applySnapping() {
-        snapLines.clear();
-        if (selected == null) return;
-
-        var config = SchrumboHUDClient.config;
-        int sw = getElementWidth(selected, config);
-        int sh = getElementHeight(selected, config);
-
-        Element other = selected == Element.INVENTORY ? Element.ARMOR : Element.INVENTORY;
-        if (other == Element.ARMOR && !config.armorEnabled) return;
-
-        int ow = getElementWidth(other, config);
-        int oh = getElementHeight(other, config);
-        int oLeft = getElementX(other, config, ow);
-        int oTop = getElementY(other, config, oh);
-
-        int[] sEdgesX = {dragAbsoluteX, dragAbsoluteX + sw, dragAbsoluteX + sw / 2};
-        int[] oEdgesX = {oLeft, oLeft + ow, oLeft + ow / 2};
-        int[] sEdgesY = {dragAbsoluteY, dragAbsoluteY + sh, dragAbsoluteY + sh / 2};
-        int[] oEdgesY = {oTop, oTop + oh, oTop + oh / 2};
-
-        int bestDist = SNAP_THRESHOLD + 1;
-        int bestSnapX = dragAbsoluteX;
-        int bestLineX = -1;
-
-        for (int se : sEdgesX) {
-            for (int oe : oEdgesX) {
-                int dist = Math.abs(se - oe);
-                if (dist > 0 && dist < bestDist) {
-                    bestDist = dist;
-                    bestSnapX = dragAbsoluteX + (oe - se);
-                    bestLineX = oe;
-                }
-            }
-        }
-
-        if (bestDist <= SNAP_THRESHOLD) {
-            dragAbsoluteX = Math.max(0, Math.min(bestSnapX, width - sw));
-            snapLines.add(new int[]{bestLineX, 0, bestLineX, height});
-        }
-
-        bestDist = SNAP_THRESHOLD + 1;
-        int bestSnapY = dragAbsoluteY;
-        int bestLineY = -1;
-
-        for (int se : sEdgesY) {
-            for (int oe : oEdgesY) {
-                int dist = Math.abs(se - oe);
-                if (dist > 0 && dist < bestDist) {
-                    bestDist = dist;
-                    bestSnapY = dragAbsoluteY + (oe - se);
-                    bestLineY = oe;
-                }
-            }
-        }
-
-        if (bestDist <= SNAP_THRESHOLD) {
-            dragAbsoluteY = Math.max(0, Math.min(bestSnapY, height - sh));
-            snapLines.add(new int[]{0, bestLineY, width, bestLineY});
-        }
     }
 
     private void applyAutoAnchor(Element element, int absX, int absY) {
@@ -314,8 +243,34 @@ public class HudEditorScreen extends Screen {
         position.y = offsetY;
     }
 
+    private void nudgeSelected(int dx, int dy) {
+        if (selected == null) return;
+
+        var config = SchrumboHUDClient.config;
+        int w = getElementWidth(selected, config);
+        int h = getElementHeight(selected, config);
+        int absX = getElementX(selected, config, w) + dx;
+        int absY = getElementY(selected, config, h) + dy;
+
+        absX = Math.max(0, Math.min(absX, width - w));
+        absY = Math.max(0, Math.min(absY, height - h));
+
+        applyAutoAnchor(selected, absX, absY);
+        config.save();
+    }
+
     private Element elementAt(double mouseX, double mouseY) {
         var config = SchrumboHUDClient.config;
+
+        if (config.hotbarEnabled) {
+            int hw = getElementWidth(Element.HOTBAR, config);
+            int hh = getElementHeight(Element.HOTBAR, config);
+            int hx = getElementX(Element.HOTBAR, config, hw);
+            int hy = getElementY(Element.HOTBAR, config, hh);
+            if (isInside(mouseX, mouseY, hx, hy, hw, hh)) {
+                return Element.HOTBAR;
+            }
+        }
 
         if (config.armorEnabled) {
             int aw = getElementWidth(Element.ARMOR, config);
@@ -361,9 +316,6 @@ public class HudEditorScreen extends Screen {
                 dragOffsetY = (int) click.y() - ey;
                 dragAbsoluteX = ex;
                 dragAbsoluteY = ey;
-                dragOriginX = ex;
-                dragOriginY = ey;
-                dragStarted = false;
                 return true;
             } else {
                 selected = null;
@@ -380,18 +332,6 @@ public class HudEditorScreen extends Screen {
             int sh = getElementHeight(selected, config);
             dragAbsoluteX = Math.max(0, Math.min((int) click.x() - dragOffsetX, width - sw));
             dragAbsoluteY = Math.max(0, Math.min((int) click.y() - dragOffsetY, height - sh));
-
-            if (!dragStarted) {
-                int movedX = Math.abs(dragAbsoluteX - dragOriginX);
-                int movedY = Math.abs(dragAbsoluteY - dragOriginY);
-                if (movedX > SNAP_THRESHOLD || movedY > SNAP_THRESHOLD) {
-                    dragStarted = true;
-                }
-            }
-
-            if (dragStarted) {
-                applySnapping();
-            }
             return true;
         }
         return super.mouseDragged(click, deltaX, deltaY);
@@ -401,7 +341,6 @@ public class HudEditorScreen extends Screen {
     public boolean mouseReleased(MouseButtonEvent click) {
         if (click.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && dragging && selected != null) {
             dragging = false;
-            snapLines.clear();
             applyAutoAnchor(selected, dragAbsoluteX, dragAbsoluteY);
             SchrumboHUDClient.config.save();
             return true;
@@ -413,14 +352,14 @@ public class HudEditorScreen extends Screen {
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (selected != null) {
             var config = SchrumboHUDClient.config;
-            float current = selected == Element.INVENTORY ? config.scale : config.armorScale;
+            float current = getElementScale(selected, config);
             float newScale = current + (float) verticalAmount * SCALE_STEP;
             newScale = Math.round(newScale * 10f) / 10f;
             newScale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, newScale));
-            if (selected == Element.INVENTORY) {
-                config.scale = newScale;
-            } else {
-                config.armorScale = newScale;
+            switch (selected) {
+                case INVENTORY -> config.scale = newScale;
+                case ARMOR -> config.armorScale = newScale;
+                case HOTBAR -> config.hotbarScale = newScale;
             }
             config.save();
             return true;
@@ -430,21 +369,17 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent input) {
-        if (selected != null && input.key() == GLFW.GLFW_KEY_R) {
-            var config = SchrumboHUDClient.config;
-            SchrumboHudConfig.Anchor anchor = getAnchor(selected);
-            SchrumboHudConfig.Position position = getPosition(selected);
-            anchor.horizontal = SchrumboHudConfig.HorizontalAnchor.LEFT;
-            anchor.vertical = SchrumboHudConfig.VerticalAnchor.TOP;
-            position.x = 10;
-            position.y = 10;
-            if (selected == Element.INVENTORY) {
-                config.scale = 1.0f;
-            } else {
-                config.armorScale = 1.0f;
+        if (selected != null) {
+            switch (input.key()) {
+                case GLFW.GLFW_KEY_R -> {
+                    resetElement(selected);
+                    return true;
+                }
+                case GLFW.GLFW_KEY_UP -> { nudgeSelected(0, -NUDGE_AMOUNT); return true; }
+                case GLFW.GLFW_KEY_DOWN -> { nudgeSelected(0, NUDGE_AMOUNT); return true; }
+                case GLFW.GLFW_KEY_LEFT -> { nudgeSelected(-NUDGE_AMOUNT, 0); return true; }
+                case GLFW.GLFW_KEY_RIGHT -> { nudgeSelected(NUDGE_AMOUNT, 0); return true; }
             }
-            config.save();
-            return true;
         }
 
         if (input.key() == GLFW.GLFW_KEY_ESCAPE) {
@@ -454,6 +389,30 @@ public class HudEditorScreen extends Screen {
         }
 
         return super.keyPressed(input);
+    }
+
+    private void resetElement(Element element) {
+        var config = SchrumboHUDClient.config;
+        SchrumboHudConfig.Anchor anchor = getAnchor(element);
+        SchrumboHudConfig.Position position = getPosition(element);
+        if (element == Element.HOTBAR) {
+            anchor.horizontal = SchrumboHudConfig.HorizontalAnchor.LEFT;
+            anchor.vertical = SchrumboHudConfig.VerticalAnchor.BOTTOM;
+            position.x = -1;
+            position.y = 2;
+            config.hotbarScale = 1.0f;
+        } else {
+            anchor.horizontal = SchrumboHudConfig.HorizontalAnchor.LEFT;
+            anchor.vertical = SchrumboHudConfig.VerticalAnchor.TOP;
+            position.x = 10;
+            position.y = 10;
+            if (element == Element.INVENTORY) {
+                config.scale = 1.0f;
+            } else {
+                config.armorScale = 1.0f;
+            }
+        }
+        config.save();
     }
 
     @Override
@@ -469,30 +428,74 @@ public class HudEditorScreen extends Screen {
         return false;
     }
 
+    private String getElementName(Element element) {
+        return switch (element) {
+            case INVENTORY -> "Inventory HUD";
+            case ARMOR -> "Armor HUD";
+            case HOTBAR -> "Hotbar";
+        };
+    }
+
     private SchrumboHudConfig.Anchor getAnchor(Element element) {
         var config = SchrumboHUDClient.config;
-        return element == Element.INVENTORY ? config.anchor : config.armorAnchor;
+        return switch (element) {
+            case INVENTORY -> config.anchor;
+            case ARMOR -> config.armorAnchor;
+            case HOTBAR -> config.hotbarAnchor;
+        };
     }
 
     private SchrumboHudConfig.Position getPosition(Element element) {
         var config = SchrumboHUDClient.config;
-        return element == Element.INVENTORY ? config.position : config.armorPosition;
+        return switch (element) {
+            case INVENTORY -> config.position;
+            case ARMOR -> config.armorPosition;
+            case HOTBAR -> config.hotbarPosition;
+        };
     }
 
     private int getUnscaledWidth(Element element, SchrumboHudConfig config) {
-        if (element == Element.INVENTORY) return INV_WIDTH;
-        int cols = config.armorVertical ? 1 : 4;
-        return cols * SLOT_SIZE + PADDING * 2;
+        return switch (element) {
+            case INVENTORY -> INV_WIDTH;
+            case ARMOR -> {
+                int cols = config.armorVertical ? 1 : 4;
+                yield cols * SLOT_SIZE + PADDING * 2;
+            }
+            case HOTBAR -> {
+                int cols = config.hotbarVertical ? 1 : HOTBAR_SLOTS;
+                int mainWidth = cols * SLOT_SIZE + PADDING * 2;
+                if (config.hotbarShowOffhand && !config.hotbarVertical) {
+                    yield mainWidth + OFFHAND_GAP + OFFHAND_PANEL_WIDTH;
+                }
+                yield mainWidth;
+            }
+        };
     }
 
     private int getUnscaledHeight(Element element, SchrumboHudConfig config) {
-        if (element == Element.INVENTORY) return INV_HEIGHT;
-        int rows = config.armorVertical ? 4 : 1;
-        return rows * SLOT_SIZE + PADDING * 2;
+        return switch (element) {
+            case INVENTORY -> INV_HEIGHT;
+            case ARMOR -> {
+                int rows = config.armorVertical ? 4 : 1;
+                yield rows * SLOT_SIZE + PADDING * 2;
+            }
+            case HOTBAR -> {
+                int rows = config.hotbarVertical ? HOTBAR_SLOTS : 1;
+                int mainHeight = rows * SLOT_SIZE + PADDING * 2;
+                if (config.hotbarShowOffhand && config.hotbarVertical) {
+                    yield mainHeight + OFFHAND_GAP + OFFHAND_PANEL_WIDTH;
+                }
+                yield mainHeight;
+            }
+        };
     }
 
     private float getElementScale(Element element, SchrumboHudConfig config) {
-        return element == Element.INVENTORY ? config.scale : config.armorScale;
+        return switch (element) {
+            case INVENTORY -> config.scale;
+            case ARMOR -> config.armorScale;
+            case HOTBAR -> config.hotbarScale;
+        };
     }
 
     private int getElementWidth(Element element, SchrumboHudConfig config) {

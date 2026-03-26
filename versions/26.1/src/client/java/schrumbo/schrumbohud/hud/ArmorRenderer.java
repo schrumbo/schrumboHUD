@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -42,7 +42,7 @@ public class ArmorRenderer implements HudElement {
     }
 
     @Override
-    public void render(GuiGraphics drawContext, DeltaTracker renderTickCounter) {
+    public void extractRenderState(GuiGraphicsExtractor drawContext, DeltaTracker renderTickCounter) {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.armorEnabled || client == null || client.player == null) return;
@@ -88,7 +88,7 @@ public class ArmorRenderer implements HudElement {
                 List.copyOf(armor), config, rows, rowSlots, pose, scissor,
                 x, y, x + scaledWidth, y + scaledHeight
         );
-        drawContext.guiRenderState.submitPicturesInPictureState(renderState);
+        drawContext.guiRenderState.addPicturesInPictureState(renderState);
 
         matrices.pushMatrix();
         matrices.translate(x, y);
@@ -129,7 +129,7 @@ public class ArmorRenderer implements HudElement {
         return (alpha << 24) | (color & 0x00FFFFFF);
     }
 
-    private void drawBackground(GuiGraphics context, int width, int height, SchrumboHudConfig config) {
+    private void drawBackground(GuiGraphicsExtractor context, int width, int height, SchrumboHudConfig config) {
         float t = config.armorTransparency;
         if (config.backgroundEnabled) {
             int bgColor = applyArmorTransparency(config.colors.background(), t);
@@ -150,7 +150,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    private void renderSlotBackgrounds(GuiGraphics context, SchrumboHudConfig config) {
+    private void renderSlotBackgrounds(GuiGraphicsExtractor context, SchrumboHudConfig config) {
         if (!config.slotBackgroundEnabled) return;
 
         int index = 0;
@@ -169,7 +169,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    private void renderOverlays(GuiGraphics context, SchrumboHudConfig config) {
+    private void renderOverlays(GuiGraphicsExtractor context, SchrumboHudConfig config) {
         int index = 0;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < rowSlots; col++) {
@@ -188,7 +188,7 @@ public class ArmorRenderer implements HudElement {
         }
     }
 
-    private void renderDurabilityBar(GuiGraphics context, ItemStack stack, int x, int y) {
+    private void renderDurabilityBar(GuiGraphicsExtractor context, ItemStack stack, int x, int y) {
         int maxDurability = stack.getMaxDamage();
         int currDurability = maxDurability - stack.getDamageValue();
         float percentDurability = (float) currDurability / maxDurability;

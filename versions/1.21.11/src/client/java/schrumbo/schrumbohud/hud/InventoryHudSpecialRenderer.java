@@ -69,7 +69,6 @@ public class InventoryHudSpecialRenderer extends SpecialGuiElementRenderer<Inven
         dispatcher.render();
     }
 
-    /** Renders items matching the given sideLit value under the appropriate lighting. */
     private void renderPass(MinecraftClient client, PlayerInventory inventory, MatrixStack matrices,
                             DiffuseLighting lighting, net.minecraft.client.render.command.OrderedRenderCommandQueue queue,
                             float pps, float texCenterX, float texCenterY,
@@ -107,9 +106,6 @@ public class InventoryHudSpecialRenderer extends SpecialGuiElementRenderer<Inven
         }
     }
 
-    /**
-     * Per-layer item rendering — regular layers via vertex consumers, special models via dispatcher
-     */
     private void renderItemLayers(KeyedItemRenderState itemState, MatrixStack matrices,
                                    net.minecraft.client.render.command.OrderedRenderCommandQueue queue) {
         for (int i = 0; i < itemState.layerCount; i++) {

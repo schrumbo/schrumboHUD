@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import schrumbo.schlib.config.ConfigProcessor;
-import schrumbo.schlib.gui.theme.Theme;
+
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.ChatUtils;
 
@@ -54,8 +54,7 @@ public class KeybindHandler {
             if (configKey.consumeClick()) {
                 client.setScreen(ConfigProcessor.createScreen(
                     SchrumboHUDClient.config,
-                    Component.literal("SchrumboHUD Config"),
-                    new Theme()
+                    Component.literal("SchrumboHUD Config")
                 ));
             }
         });

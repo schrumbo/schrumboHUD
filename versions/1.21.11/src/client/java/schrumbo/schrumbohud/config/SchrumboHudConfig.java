@@ -26,6 +26,9 @@ public class SchrumboHudConfig extends ManagedConfig {
     @Category(name = "Armor HUD", description = "Armor HUD settings")
     public static final int ARMOR_HUD = 3;
 
+    @Category(name = "Hotbar", description = "Hotbar replacement settings")
+    public static final int HOTBAR = 4;
+
     @ConfigOption(name = "Show Always", description = "Disable for peek mode (hold keybind to show)", category = "General")
     @Switch
     public boolean showAlways = true;
@@ -157,6 +160,40 @@ public class SchrumboHudConfig extends ManagedConfig {
     @Slider(min = 0.0f, max = 1.0f, step = 0.05f)
     public float armorTransparency = 1.0f;
 
+    @ConfigOption(name = "Replace Hotbar", description = "Replace vanilla hotbar with custom", category = "Hotbar")
+    @Switch
+    public boolean hotbarEnabled = false;
+
+    @ConfigOption(name = "Vertical", description = "Vertical hotbar layout", category = "Hotbar")
+    @Switch
+    public boolean hotbarVertical = false;
+
+    @ConfigOption(name = "Show Offhand", description = "Show offhand slot", category = "Hotbar")
+    @Switch
+    public boolean hotbarShowOffhand = true;
+
+    @ConfigOption(name = "Active Slot Outline", description = "Outline active slot instead of filling", category = "Hotbar")
+    @Switch
+    public boolean hotbarActiveSlotOutline = false;
+
+    @ConfigOption(name = "Active Slot Color", description = "Active slot highlight color", category = "Hotbar")
+    @ColorPicker(allowAlpha = true)
+    public int hotbarActiveSlotColor = 0xFF89B4FA;
+
+    @ConfigOption(name = "Transparency", description = "Hotbar transparency", category = "Hotbar")
+    @Slider(min = 0.0f, max = 1.0f, step = 0.05f)
+    public float hotbarTransparency = 1.0f;
+
+    public Anchor hotbarAnchor = new Anchor();
+    public Position hotbarPosition;
+    public float hotbarScale = 1.0f;
+
+    {
+        hotbarPosition = new Position();
+        hotbarPosition.x = -1;
+        hotbarPosition.y = 2;
+    }
+
     public boolean firstJoin = true;
     public float scale = 1.0f;
     public float armorScale = 1.0f;
@@ -207,6 +244,7 @@ public class SchrumboHudConfig extends ManagedConfig {
         borderColor = 0xFF434343;
         textColor = 0xFFfddbbf;
         slotColor = 0xFF282828;
+        hotbarActiveSlotColor = borderColor;
     }
 
     public void loadCatppuccinMocha() {
@@ -214,6 +252,7 @@ public class SchrumboHudConfig extends ManagedConfig {
         borderColor = 0xFF89B4FA;
         textColor = 0xFFCDD6F4;
         slotColor = 0xB3313244;
+        hotbarActiveSlotColor = borderColor;
     }
 
     public void loadGruvbox() {
@@ -221,6 +260,7 @@ public class SchrumboHudConfig extends ManagedConfig {
         borderColor = 0xFFFE8019;
         textColor = 0xFFEBDBB2;
         slotColor = 0xA63C3836;
+        hotbarActiveSlotColor = borderColor;
     }
 
     public void loadMonokai() {
@@ -228,6 +268,7 @@ public class SchrumboHudConfig extends ManagedConfig {
         borderColor = 0xFFF92672;
         textColor = 0xFFF8F8F2;
         slotColor = 0xB349483E;
+        hotbarActiveSlotColor = borderColor;
     }
 
     public void loadDracula() {
@@ -235,6 +276,7 @@ public class SchrumboHudConfig extends ManagedConfig {
         borderColor = 0xFFBD93F9;
         textColor = 0xFFF8F8F2;
         slotColor = 0xBF44475A;
+        hotbarActiveSlotColor = borderColor;
     }
 
     public void loadClassic() {
@@ -242,6 +284,7 @@ public class SchrumboHudConfig extends ManagedConfig {
         borderColor = 0x60000000;
         textColor = 0xFFFFFFFF;
         slotColor = 0x50000000;
+        hotbarActiveSlotColor = borderColor;
     }
 
     /** Toggles showAlways setting */
@@ -306,5 +349,17 @@ public class SchrumboHudConfig extends ManagedConfig {
 
     public float getArmorOpacity() {
         return armorTransparency;
+    }
+
+    public void enableHotbar(boolean value) {
+        this.hotbarEnabled = value;
+    }
+
+    public void setHotbarTransparency(float value) {
+        this.hotbarTransparency = value;
+    }
+
+    public float getHotbarTransparency() {
+        return hotbarTransparency;
     }
 }

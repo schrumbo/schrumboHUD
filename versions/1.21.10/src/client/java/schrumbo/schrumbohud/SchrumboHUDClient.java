@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import schrumbo.schrumbohud.config.SchrumboHudConfig;
 import schrumbo.schrumbohud.hud.ArmorRenderer;
 import schrumbo.schrumbohud.hud.ArmorHudSpecialRenderer;
+import schrumbo.schrumbohud.hud.HotbarHudSpecialRenderer;
+import schrumbo.schrumbohud.hud.HotbarRenderer;
 import schrumbo.schrumbohud.hud.InventoryHudSpecialRenderer;
 import schrumbo.schrumbohud.hud.InventoryRenderer;
 import schrumbo.schrumbohud.keybind.KeybindHandler;
@@ -35,10 +37,14 @@ public class SchrumboHUDClient implements ClientModInitializer {
 		SpecialGuiElementRegistry.register(ctx ->
 				new ArmorHudSpecialRenderer(ctx.vertexConsumers())
 		);
+		SpecialGuiElementRegistry.register(ctx ->
+				new HotbarHudSpecialRenderer(ctx.vertexConsumers())
+		);
 
 		KeybindHandler.register();
 		InventoryRenderer.register();
 		ArmorRenderer.register();
+		HotbarRenderer.register();
 		FirstJoin.register();
 		Commands.register();
 
