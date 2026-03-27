@@ -232,8 +232,8 @@ public class HudEditorScreen extends Screen {
             offsetY = height - absY - ph;
         }
 
-        offsetX = Math.max(0, offsetX);
-        offsetY = Math.max(0, offsetY);
+        offsetX = Math.max(-pw / 2, offsetX);
+        offsetY = Math.max(-ph / 2, offsetY);
 
         SchrumboHudConfig.Anchor anchor = getAnchor(element);
         SchrumboHudConfig.Position position = getPosition(element);
@@ -253,8 +253,8 @@ public class HudEditorScreen extends Screen {
         int absX = getElementX(selected, config, w) + dx;
         int absY = getElementY(selected, config, h) + dy;
 
-        absX = Math.max(0, Math.min(absX, width - w));
-        absY = Math.max(0, Math.min(absY, height - h));
+        absX = Math.max(-w / 2, Math.min(absX, width - w / 2));
+        absY = Math.max(-h / 2, Math.min(absY, height - h / 2));
 
         applyAutoAnchor(selected, absX, absY);
         config.save();
@@ -331,8 +331,8 @@ public class HudEditorScreen extends Screen {
             var config = SchrumboHUDClient.config;
             int sw = getElementWidth(selected, config);
             int sh = getElementHeight(selected, config);
-            dragAbsoluteX = Math.max(0, Math.min((int) click.x() - dragOffsetX, width - sw));
-            dragAbsoluteY = Math.max(0, Math.min((int) click.y() - dragOffsetY, height - sh));
+            dragAbsoluteX = Math.max(-sw / 2, Math.min((int) click.x() - dragOffsetX, width - sw / 2));
+            dragAbsoluteY = Math.max(-sh / 2, Math.min((int) click.y() - dragOffsetY, height - sh / 2));
             return true;
         }
         return super.mouseDragged(click, deltaX, deltaY);
