@@ -4,6 +4,7 @@ SchrumboHUD is a highly customizable Minecraft mod that permanently displays the
 ## Mod Features
 - **Inventory HUD**
 - **Armor HUD**
+- **Hotbar HUD**
 - **Peek Mode** - hold keybind to temporarily show HUD
 
 You can either use one of the color presets or change the colors yourself.
