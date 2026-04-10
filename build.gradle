@@ -24,7 +24,6 @@ repositories {
 		name = "Terraformers"
 		url = "https://maven.terraformersmc.com/"
 	}
-	maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
 }
 
 
@@ -60,9 +59,6 @@ dependencies {
 		if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
 			implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 		}
-	}
-	if(project.hasProperty('devauth_version') && project.hasProperty('yarn_mappings')){
-		modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${devauth_version}")
 	}
 }
 
