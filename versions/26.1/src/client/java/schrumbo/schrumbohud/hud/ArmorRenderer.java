@@ -46,6 +46,7 @@ public class ArmorRenderer implements HudElement {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.armorEnabled || !config.visible || client == null || client.player == null) return;
+        if (config.hideInScreens && client.screen != null) return;
 
         if (!config.armorVertical) {
             rows = 1;
