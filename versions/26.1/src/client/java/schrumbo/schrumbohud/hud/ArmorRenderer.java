@@ -45,7 +45,7 @@ public class ArmorRenderer implements HudElement {
     public void extractRenderState(GuiGraphicsExtractor drawContext, DeltaTracker renderTickCounter) {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
-        if (!config.armorEnabled || client == null || client.player == null) return;
+        if (!config.armorEnabled || !config.visible || client == null || client.player == null) return;
 
         if (!config.armorVertical) {
             rows = 1;

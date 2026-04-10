@@ -29,7 +29,11 @@ public class SchrumboHudConfig extends ManagedConfig {
     @Category(name = "Hotbar", description = "Hotbar replacement settings")
     public static final int HOTBAR = 4;
 
-    @ConfigOption(name = "Show Always", description = "Disable for peek mode (hold keybind to show)", category = "General")
+    @ConfigOption(name = "Inventory HUD", description = "Enable inventory HUD", category = "General")
+    @Switch
+    public boolean inventoryEnabled = true;
+
+    @ConfigOption(name = "Show Always", description = "Show all enabled HUDs always. Disable for peek mode (hold keybind to show)", category = "General")
     @Switch
     public boolean showAlways = true;
 
