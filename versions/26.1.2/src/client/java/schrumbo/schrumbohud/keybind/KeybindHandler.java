@@ -48,7 +48,7 @@ public class KeybindHandler {
             if (toggleKey.consumeClick()) {
                 SchrumboHUDClient.config.toggle();
                 SchrumboHUDClient.config.save();
-                ChatUtils.modMessage(SchrumboHUDClient.config.showAlways ? "Show Always: ON" : "Show Always: OFF");
+                ChatUtils.modMessage(SchrumboHUDClient.config.showAlways ? "ON" : "OFF");
             }
 
             if (configKey.consumeClick()) {
