@@ -40,6 +40,7 @@ public class InventoryRenderer implements HudElement {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.inventoryEnabled || !config.visible || client == null || client.player == null) return;
+        if (config.hideInScreens && client.currentScreen != null) return;
 
         PlayerInventory inventory = client.player.getInventory();
 

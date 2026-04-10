@@ -40,6 +40,10 @@ public class SchrumboHudConfig extends ManagedConfig {
     /** Runtime visibility state for rendering */
     public transient boolean visible = true;
 
+    @ConfigOption(name = "Hide in Screens", description = "Hide all HUDs while any screen is open", category = "General")
+    @Switch
+    public boolean hideInScreens = true;
+
     @ConfigOption(name = "Round Corners", description = "Rounded corners", category = "General")
     @Switch
     public boolean roundedCorners = true;
