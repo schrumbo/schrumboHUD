@@ -28,7 +28,7 @@ public class InventoryRenderer implements HudElement {
 
     public static void register() {
         HudElementRegistry.attachElementBefore(
-                VanillaHudElements.MISC_OVERLAYS,
+                VanillaHudElements.SUBTITLES,
                 ID,
                 new InventoryRenderer()
         );
