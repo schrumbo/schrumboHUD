@@ -13,7 +13,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 public class ChatUtils {
     private static final Minecraft client = Minecraft.getInstance();
 
-    private static final Component PREFIX = Component.literal("§8[").append(Component.literal("InventoryHUD").withColor(SchrumboHUDClient.config.borderColor)).append(Component.literal("§8] "));
+    private static final Component PREFIX = Component.literal("§8[").append(Component.literal("InventoryHUD").withColor(SchrumboHUDClient.config.appearance.borderColor)).append(Component.literal("§8] "));
 
     public static void modMessage(String message){
         if(client.player == null)return;

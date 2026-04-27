@@ -41,12 +41,12 @@ public class HotbarRenderer implements HudElement {
         Minecraft client = Minecraft.getInstance();
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
-        if (!config.hotbarEnabled || client == null || client.player == null || client.player.isSpectator()) {
+        if (!config.hotbar.hotbarEnabled || client == null || client.player == null || client.player.isSpectator()) {
             original.extractRenderState(context, tickCounter);
             return;
         }
 
-        boolean vertical = config.hotbarVertical;
+        boolean vertical = config.hotbar.hotbarVertical;
         int rows = vertical ? HOTBAR_SLOTS : 1;
         int cols = vertical ? 1 : HOTBAR_SLOTS;
         int mainW = cols * SLOT_SIZE + PADDING * 2;
@@ -54,7 +54,7 @@ public class HotbarRenderer implements HudElement {
 
         Inventory inventory = client.player.getInventory();
         int selectedSlot = inventory.getSelectedSlot();
-        boolean showOffhand = config.hotbarShowOffhand;
+        boolean showOffhand = config.hotbar.hotbarShowOffhand;
         boolean offhandOnLeft = client.player.getMainArm() == HumanoidArm.RIGHT;
 
         int totalW, totalH, mainOffX, mainOffY, ohOffX, ohOffY;
@@ -146,18 +146,18 @@ public class HotbarRenderer implements HudElement {
     }
 
     private void drawPanel(GuiGraphicsExtractor context, int ox, int oy, int w, int h, SchrumboHudConfig config) {
-        float t = config.hotbarTransparency;
-        if (config.backgroundEnabled) {
+        float t = config.hotbar.hotbarTransparency;
+        if (config.appearance.backgroundEnabled) {
             int bgColor = applyTransparency(config.colors.background(), t);
-            if (config.roundedCorners) {
+            if (config.general.roundedCorners) {
                 RenderUtils.fillRoundedRect(context, ox, oy, w, h, 0.5f, bgColor);
             } else {
                 context.fill(ox, oy, ox + w, oy + h, bgColor);
             }
         }
-        if (config.outlineEnabled) {
+        if (config.appearance.outlineEnabled) {
             int borderColor = applyTransparency(config.colors.border(), t);
-            if (config.roundedCorners) {
+            if (config.general.roundedCorners) {
                 RenderUtils.drawRoundedRectWithOutline(context, ox, oy, w, h, 0.5f, 1, borderColor);
             } else {
                 RenderUtils.drawBorder(context, ox, oy, w, h, borderColor);
@@ -166,9 +166,9 @@ public class HotbarRenderer implements HudElement {
     }
 
     private void renderSlotBackgrounds(GuiGraphicsExtractor context, int rows, int cols, int mainOffX, int mainOffY, int selectedSlot, SchrumboHudConfig config) {
-        float t = config.hotbarTransparency;
+        float t = config.hotbar.hotbarTransparency;
         int slotColor = applyTransparency(config.colors.slots(), t);
-        int activeColor = applyTransparency(config.hotbarActiveSlotColor, t);
+        int activeColor = applyTransparency(config.hotbar.hotbarActiveSlotColor, t);
         int slotW = SLOT_SIZE - 2;
         int slotH = SLOT_SIZE - 2;
 
@@ -179,21 +179,21 @@ public class HotbarRenderer implements HudElement {
                 int slotY = mainOffY + PADDING + row * SLOT_SIZE + 1;
                 boolean active = index == selectedSlot;
 
-                if (config.slotBackgroundEnabled) {
-                    if (active && !config.hotbarActiveSlotOutline) {
-                        if (config.roundedCorners) {
+                if (config.appearance.slotBackgroundEnabled) {
+                    if (active && !config.hotbar.hotbarActiveSlotOutline) {
+                        if (config.general.roundedCorners) {
                             RenderUtils.drawRectWithCutCorners(context, slotX, slotY, slotW, slotH, 1, activeColor);
                         } else {
                             context.fill(slotX, slotY, slotX + slotW, slotY + slotH, activeColor);
                         }
-                    } else if (active && config.hotbarActiveSlotOutline && config.roundedCorners) {
+                    } else if (active && config.hotbar.hotbarActiveSlotOutline && config.general.roundedCorners) {
                         RenderUtils.drawRectWithCutCorners(context, slotX, slotY, slotW, slotH, 1, slotColor);
                         context.fill(slotX, slotY, slotX + 1, slotY + 1, activeColor);
                         context.fill(slotX + slotW - 1, slotY, slotX + slotW, slotY + 1, activeColor);
                         context.fill(slotX, slotY + slotH - 1, slotX + 1, slotY + slotH, activeColor);
                         context.fill(slotX + slotW - 1, slotY + slotH - 1, slotX + slotW, slotY + slotH, activeColor);
                     } else {
-                        if (config.roundedCorners) {
+                        if (config.general.roundedCorners) {
                             RenderUtils.drawRectWithCutCorners(context, slotX, slotY, slotW, slotH, 1, slotColor);
                         } else {
                             context.fill(slotX, slotY, slotX + slotW, slotY + slotH, slotColor);
@@ -201,8 +201,8 @@ public class HotbarRenderer implements HudElement {
                     }
                 }
 
-                if (active && config.hotbarActiveSlotOutline) {
-                    if (config.roundedCorners) {
+                if (active && config.hotbar.hotbarActiveSlotOutline) {
+                    if (config.general.roundedCorners) {
                         RenderUtils.drawRoundedRectWithOutline(context, slotX - 1, slotY - 1, slotW + 2, slotH + 2, 0.5f, 1, activeColor);
                     } else {
                         RenderUtils.drawBorder(context, slotX - 1, slotY - 1, slotW + 2, slotH + 2, activeColor);
@@ -215,13 +215,13 @@ public class HotbarRenderer implements HudElement {
     }
 
     private void renderSingleSlotBg(GuiGraphicsExtractor context, int panelX, int panelY, int rawColor, SchrumboHudConfig config) {
-        if (!config.slotBackgroundEnabled) return;
+        if (!config.appearance.slotBackgroundEnabled) return;
 
-        float t = config.hotbarTransparency;
+        float t = config.hotbar.hotbarTransparency;
         int slotColor = applyTransparency(rawColor, t);
         int slotX = panelX + PADDING + 1;
         int slotY = panelY + PADDING + 1;
-        if (config.roundedCorners) {
+        if (config.general.roundedCorners) {
             RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
         } else {
             context.fill(slotX, slotY, slotX + SLOT_SIZE - 2, slotY + SLOT_SIZE - 2, slotColor);
@@ -261,7 +261,7 @@ public class HotbarRenderer implements HudElement {
         var font = Minecraft.getInstance().font;
         context.text(font, count,
                 x + SLOT_SIZE - 2 - font.width(count),
-                y + SLOT_SIZE - 9, config.colors.text(), config.textShadowEnabled);
+                y + SLOT_SIZE - 9, config.colors.text(), config.appearance.textShadowEnabled);
     }
 
     private void renderDurabilityBar(GuiGraphicsExtractor context, ItemStack stack, int x, int y) {

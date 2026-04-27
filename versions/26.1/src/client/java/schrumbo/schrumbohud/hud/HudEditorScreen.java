@@ -83,8 +83,8 @@ public class HudEditorScreen extends Screen {
     private void renderPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, Element element) {
         var config = SchrumboHUDClient.config;
 
-        if (element == Element.ARMOR && !config.armorEnabled) return;
-        if (element == Element.HOTBAR && !config.hotbarEnabled) return;
+        if (element == Element.ARMOR && !config.armorHud.armorEnabled) return;
+        if (element == Element.HOTBAR && !config.hotbar.hotbarEnabled) return;
 
         int w = getElementWidth(element, config);
         int h = getElementHeight(element, config);
@@ -105,14 +105,14 @@ public class HudEditorScreen extends Screen {
 
         int bgColor = config.colors.background();
         float radius = element == Element.ARMOR ? 0.5f : 0.2f;
-        if (config.roundedCorners) {
+        if (config.general.roundedCorners) {
             RenderUtils.fillRoundedRect(context, 0, 0, unscaledW, unscaledH, radius, bgColor);
         } else {
             context.fill(0, 0, unscaledW, unscaledH, bgColor);
         }
 
         int borderColor = config.colors.border();
-        if (config.roundedCorners) {
+        if (config.general.roundedCorners) {
             RenderUtils.drawRoundedRectWithOutline(context, 0, 0, unscaledW, unscaledH, radius, 1, borderColor);
         } else {
             RenderUtils.drawBorder(context, 0, 0, unscaledW, unscaledH, borderColor);
@@ -262,7 +262,7 @@ public class HudEditorScreen extends Screen {
     private Element elementAt(double mouseX, double mouseY) {
         var config = SchrumboHUDClient.config;
 
-        if (config.hotbarEnabled) {
+        if (config.hotbar.hotbarEnabled) {
             int hw = getElementWidth(Element.HOTBAR, config);
             int hh = getElementHeight(Element.HOTBAR, config);
             int hx = getElementX(Element.HOTBAR, config, hw);
@@ -272,7 +272,7 @@ public class HudEditorScreen extends Screen {
             }
         }
 
-        if (config.armorEnabled) {
+        if (config.armorHud.armorEnabled) {
             int aw = getElementWidth(Element.ARMOR, config);
             int ah = getElementHeight(Element.ARMOR, config);
             int ax = getElementX(Element.ARMOR, config, aw);
@@ -458,13 +458,13 @@ public class HudEditorScreen extends Screen {
         return switch (element) {
             case INVENTORY -> INV_WIDTH;
             case ARMOR -> {
-                int cols = config.armorVertical ? 1 : 4;
+                int cols = config.armorHud.armorVertical ? 1 : 4;
                 yield cols * SLOT_SIZE + PADDING * 2;
             }
             case HOTBAR -> {
-                int cols = config.hotbarVertical ? 1 : HOTBAR_SLOTS;
+                int cols = config.hotbar.hotbarVertical ? 1 : HOTBAR_SLOTS;
                 int mainWidth = cols * SLOT_SIZE + PADDING * 2;
-                if (config.hotbarShowOffhand && !config.hotbarVertical) {
+                if (config.hotbar.hotbarShowOffhand && !config.hotbar.hotbarVertical) {
                     yield mainWidth + OFFHAND_GAP + OFFHAND_PANEL_WIDTH;
                 }
                 yield mainWidth;
@@ -476,13 +476,13 @@ public class HudEditorScreen extends Screen {
         return switch (element) {
             case INVENTORY -> INV_HEIGHT;
             case ARMOR -> {
-                int rows = config.armorVertical ? 4 : 1;
+                int rows = config.armorHud.armorVertical ? 4 : 1;
                 yield rows * SLOT_SIZE + PADDING * 2;
             }
             case HOTBAR -> {
-                int rows = config.hotbarVertical ? HOTBAR_SLOTS : 1;
+                int rows = config.hotbar.hotbarVertical ? HOTBAR_SLOTS : 1;
                 int mainHeight = rows * SLOT_SIZE + PADDING * 2;
-                if (config.hotbarShowOffhand && config.hotbarVertical) {
+                if (config.hotbar.hotbarShowOffhand && config.hotbar.hotbarVertical) {
                     yield mainHeight + OFFHAND_GAP + OFFHAND_PANEL_WIDTH;
                 }
                 yield mainHeight;

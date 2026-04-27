@@ -39,8 +39,8 @@ public class InventoryRenderer implements HudElement {
         Minecraft client = Minecraft.getInstance();
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
-        if (!config.inventoryEnabled || !config.visible || client == null || client.player == null) return;
-        if (config.hideInScreens && client.screen != null) return;
+        if (!config.general.inventoryEnabled || !config.visible || client == null || client.player == null) return;
+        if (config.general.hideInScreens && client.screen != null) return;
 
         Inventory inventory = client.player.getInventory();
 
@@ -104,18 +104,18 @@ public class InventoryRenderer implements HudElement {
     }
 
     private void drawBackground(GuiGraphicsExtractor context, int width, int height, SchrumboHudConfig config) {
-        if (config.backgroundEnabled) {
+        if (config.appearance.backgroundEnabled) {
             int bgColor = config.colors.background();
-            if (config.roundedCorners) {
+            if (config.general.roundedCorners) {
                 RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.2f, bgColor);
             } else {
                 context.fill(0, 0, width, height, bgColor);
             }
         }
 
-        if (config.outlineEnabled) {
+        if (config.appearance.outlineEnabled) {
             int borderColor = config.colors.border();
-            if (config.roundedCorners) {
+            if (config.general.roundedCorners) {
                 RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.2f, 1, borderColor);
             } else {
                 RenderUtils.drawBorder(context, 0, 0, width, height, borderColor);
@@ -124,14 +124,14 @@ public class InventoryRenderer implements HudElement {
     }
 
     private void renderSlotBackgrounds(GuiGraphicsExtractor context, SchrumboHudConfig config) {
-        if (!config.slotBackgroundEnabled) return;
+        if (!config.appearance.slotBackgroundEnabled) return;
 
         int slotColor = config.colors.slots();
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
-                if (config.roundedCorners) {
+                if (config.general.roundedCorners) {
                     RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
                 } else {
                     context.fill(slotX, slotY, slotX + SLOT_SIZE - 2, slotY + SLOT_SIZE - 2, slotColor);
@@ -165,7 +165,7 @@ public class InventoryRenderer implements HudElement {
         var font = Minecraft.getInstance().font;
         context.text(font, count,
                 x + SLOT_SIZE - 2 - font.width(count),
-                y + SLOT_SIZE - 9, config.colors.text(), config.textShadowEnabled);
+                y + SLOT_SIZE - 9, config.colors.text(), config.appearance.textShadowEnabled);
     }
 
     private void renderDurabilityBar(GuiGraphicsExtractor context, ItemStack stack, int x, int y) {

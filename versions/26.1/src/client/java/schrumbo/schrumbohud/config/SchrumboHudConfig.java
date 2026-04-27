@@ -14,39 +14,175 @@ public class SchrumboHudConfig extends ManagedConfig {
         super("schrumbohud");
     }
 
-    @Category(name = "General", description = "General settings")
-    public static final int GENERAL = 0;
+    public General general = new General();
+    public Presets presets = new Presets();
+    public Appearance appearance = new Appearance();
+    public ArmorHud armorHud = new ArmorHud();
+    public Hotbar hotbar = new Hotbar();
 
-    @Category(name = "Presets", description = "Theme presets")
-    public static final int PRESETS = 1;
 
-    @Category(name = "Appearance", description = "Colors and styling")
-    public static final int APPEARANCE = 2;
+    @Category(name = "General", description = "General settings", searchTags = {"general", "settings", "toggle", "visibility"})
+    public class General {
 
-    @Category(name = "Armor HUD", description = "Armor HUD settings")
-    public static final int ARMOR_HUD = 3;
+        @ConfigOption(name = "Inventory HUD", description = "Enable inventory HUD", searchTags = {"inventory", "hud", "enable", "toggle"})
+        @Switch
+        public boolean inventoryEnabled = true;
 
-    @Category(name = "Hotbar", description = "Hotbar replacement settings")
-    public static final int HOTBAR = 4;
+        @ConfigOption(name = "Show Always", description = "Show all enabled HUDs always. Disable for peek mode (hold keybind to show)", searchTags = {"show", "always", "peek", "toggle", "keybind"})
+        @Switch
+        public boolean showAlways = true;
 
-    @ConfigOption(name = "Inventory HUD", description = "Enable inventory HUD", category = "General")
-    @Switch
-    public boolean inventoryEnabled = true;
+        @ConfigOption(name = "Hide in Screens", description = "Hide all HUDs while any screen is open", searchTags = {"hide", "screen", "gui", "menu"})
+        @Switch
+        public boolean hideInScreens = true;
 
-    @ConfigOption(name = "Show Always", description = "Show all enabled HUDs always. Disable for peek mode (hold keybind to show)", category = "General")
-    @Switch
-    public boolean showAlways = true;
+        @ConfigOption(name = "Round Corners", description = "Rounded corners", searchTags = {"round", "corners", "style"})
+        @Switch
+        public boolean roundedCorners = true;
+
+        @ConfigOption(name = "Edit Position", description = "Open position editor", searchTags = {"position", "editor", "move", "drag"})
+        @Button
+        public transient Runnable changePosition = () -> {
+            Minecraft client = Minecraft.getInstance();
+            if (client != null) {
+                client.execute(() -> client.setScreen(new HudEditorScreen(client.screen)));
+            }
+        };
+    }
+
+
+    @Category(name = "Presets", description = "Theme presets", searchTags = {"preset", "theme", "color", "catppuccin", "dracula", "gruvbox", "monokai"})
+    public class Presets {
+
+        @ConfigOption(name = "Catppuccin Mocha", description = "Load Catppuccin Mocha theme", searchTags = {"catppuccin", "mocha", "theme", "preset"})
+        @Button
+        public transient Runnable catppuccinMocha = () -> {
+            loadCatppuccinMocha();
+            save();
+        };
+
+        @ConfigOption(name = "Dark", description = "Load Dark theme", searchTags = {"dark", "theme", "preset"})
+        @Button
+        public transient Runnable dark = () -> {
+            loadDarkMode();
+            save();
+        };
+
+        @ConfigOption(name = "Gruvbox", description = "Load Gruvbox theme", searchTags = {"gruvbox", "theme", "preset"})
+        @Button
+        public transient Runnable gruvbox = () -> {
+            loadGruvbox();
+            save();
+        };
+
+        @ConfigOption(name = "Monokai", description = "Load Monokai theme", searchTags = {"monokai", "theme", "preset"})
+        @Button
+        public transient Runnable monokai = () -> {
+            loadMonokai();
+            save();
+        };
+
+        @ConfigOption(name = "Dracula", description = "Load Dracula theme", searchTags = {"dracula", "theme", "preset"})
+        @Button
+        public transient Runnable dracula = () -> {
+            loadDracula();
+            save();
+        };
+
+        @ConfigOption(name = "Classic", description = "Load Classic theme", searchTags = {"classic", "theme", "preset"})
+        @Button
+        public transient Runnable classic = () -> {
+            loadClassic();
+            save();
+        };
+    }
+
+
+    @Category(name = "Appearance", description = "Colors and styling", searchTags = {"appearance", "color", "style", "background", "outline", "text", "slot"})
+    public class Appearance {
+
+        @ConfigOption(name = "Background", description = "Show background", searchTags = {"background", "enable", "toggle"})
+        @Switch
+        public boolean backgroundEnabled = true;
+
+        @ConfigOption(name = "Background Color", description = "Background color", searchTags = {"background", "color", "opacity"})
+        @ColorPicker(allowAlpha = true)
+        public int backgroundColor = 0xF21E1E2E;
+
+        @ConfigOption(name = "Outline", description = "Show outline", searchTags = {"outline", "border", "enable", "toggle"})
+        @Switch
+        public boolean outlineEnabled = true;
+
+        @ConfigOption(name = "Outline Color", description = "Outline color", searchTags = {"outline", "border", "color"})
+        @ColorPicker(allowAlpha = true)
+        public int borderColor = 0xFF89B4FA;
+
+        @ConfigOption(name = "Slot Background", description = "Show slot background", searchTags = {"slot", "background", "enable", "toggle"})
+        @Switch
+        public boolean slotBackgroundEnabled = true;
+
+        @ConfigOption(name = "Slot Color", description = "Slot background color", searchTags = {"slot", "color", "opacity"})
+        @ColorPicker(allowAlpha = true)
+        public int slotColor = 0xB3313244;
+
+        @ConfigOption(name = "Text Shadow", description = "Text shadow", searchTags = {"text", "shadow", "enable"})
+        @Switch
+        public boolean textShadowEnabled = true;
+
+        @ConfigOption(name = "Text Color", description = "Text color", searchTags = {"text", "color", "font"})
+        @ColorPicker(allowAlpha = true)
+        public int textColor = 0xFFCDD6F4;
+    }
+
+
+    @Category(name = "Armor HUD", description = "Armor HUD settings", searchTags = {"armor", "hud", "display", "equipment"})
+    public class ArmorHud {
+
+        @ConfigOption(name = "Armor HUD", description = "Enable armor HUD", searchTags = {"armor", "hud", "enable", "toggle"})
+        @Switch
+        public boolean armorEnabled = false;
+
+        @ConfigOption(name = "Vertical", description = "Vertical armor layout", searchTags = {"vertical", "layout", "orientation"})
+        @Switch
+        public boolean armorVertical = false;
+
+        @ConfigOption(name = "Transparency", description = "Armor transparency", searchTags = {"armor", "transparency", "opacity", "alpha"})
+        @Slider(min = 0.0f, max = 1.0f, step = 0.05f)
+        public float armorTransparency = 1.0f;
+    }
+
+
+    @Category(name = "Hotbar", description = "Hotbar replacement settings", searchTags = {"hotbar", "replace", "custom", "offhand", "slot"})
+    public class Hotbar {
+
+        @ConfigOption(name = "Replace Hotbar", description = "Replace vanilla hotbar with custom", searchTags = {"hotbar", "replace", "custom", "enable"})
+        @Switch
+        public boolean hotbarEnabled = false;
+
+        @ConfigOption(name = "Vertical", description = "Vertical hotbar layout", searchTags = {"vertical", "layout", "orientation"})
+        @Switch
+        public boolean hotbarVertical = false;
+
+        @ConfigOption(name = "Show Offhand", description = "Show offhand slot", searchTags = {"offhand", "slot", "show"})
+        @Switch
+        public boolean hotbarShowOffhand = true;
+
+        @ConfigOption(name = "Active Slot Outline", description = "Outline active slot instead of filling", searchTags = {"active", "slot", "outline", "highlight"})
+        @Switch
+        public boolean hotbarActiveSlotOutline = false;
+
+        @ConfigOption(name = "Active Slot Color", description = "Active slot highlight color", searchTags = {"active", "slot", "color", "highlight"})
+        @ColorPicker(allowAlpha = true)
+        public int hotbarActiveSlotColor = 0xFF89B4FA;
+
+        @ConfigOption(name = "Transparency", description = "Hotbar transparency", searchTags = {"hotbar", "transparency", "opacity", "alpha"})
+        @Slider(min = 0.0f, max = 1.0f, step = 0.05f)
+        public float hotbarTransparency = 1.0f;
+    }
+
 
     /** Runtime visibility state for rendering */
     public transient boolean visible = true;
-
-    @ConfigOption(name = "Hide in Screens", description = "Hide all HUDs while any screen is open", category = "General")
-    @Switch
-    public boolean hideInScreens = true;
-
-    @ConfigOption(name = "Round Corners", description = "Rounded corners", category = "General")
-    @Switch
-    public boolean roundedCorners = true;
 
     public static class Anchor {
         public HorizontalAnchor horizontal = HorizontalAnchor.LEFT;
@@ -73,125 +209,6 @@ public class SchrumboHudConfig extends ManagedConfig {
     public Anchor armorAnchor = new Anchor();
     public Position armorPosition = new Position();
 
-    @ConfigOption(name = "Edit Position", description = "Open position editor", category = "General")
-    @Button
-    public transient Runnable changePosition = () -> {
-        Minecraft client = Minecraft.getInstance();
-        if (client != null) {
-            client.execute(() -> client.setScreen(new HudEditorScreen(client.screen)));
-        }
-    };
-
-    @ConfigOption(name = "Catppuccin Mocha", description = "Load Catppuccin Mocha theme", category = "Presets")
-    @Button
-    public transient Runnable catppuccinMocha = () -> {
-        loadCatppuccinMocha();
-        save();
-    };
-
-    @ConfigOption(name = "Dark", description = "Load Dark theme", category = "Presets")
-    @Button
-    public transient Runnable dark = () -> {
-        loadDarkMode();
-        save();
-    };
-
-    @ConfigOption(name = "Gruvbox", description = "Load Gruvbox theme", category = "Presets")
-    @Button
-    public transient Runnable gruvbox = () -> {
-        loadGruvbox();
-        save();
-    };
-
-    @ConfigOption(name = "Monokai", description = "Load Monokai theme", category = "Presets")
-    @Button
-    public transient Runnable monokai = () -> {
-        loadMonokai();
-        save();
-    };
-
-    @ConfigOption(name = "Dracula", description = "Load Dracula theme", category = "Presets")
-    @Button
-    public transient Runnable dracula = () -> {
-        loadDracula();
-        save();
-    };
-
-    @ConfigOption(name = "Classic", description = "Load Classic theme", category = "Presets")
-    @Button
-    public transient Runnable classic = () -> {
-        loadClassic();
-        save();
-    };
-
-    @ConfigOption(name = "Background", description = "Show background", category = "Appearance")
-    @Switch
-    public boolean backgroundEnabled = true;
-
-    @ConfigOption(name = "Background Color", description = "Background color", category = "Appearance")
-    @ColorPicker(allowAlpha = true)
-    public int backgroundColor = 0xF21E1E2E;
-
-    @ConfigOption(name = "Outline", description = "Show outline", category = "Appearance")
-    @Switch
-    public boolean outlineEnabled = true;
-
-    @ConfigOption(name = "Outline Color", description = "Outline color", category = "Appearance")
-    @ColorPicker(allowAlpha = true)
-    public int borderColor = 0xFF89B4FA;
-
-    @ConfigOption(name = "Slot Background", description = "Show slot background", category = "Appearance")
-    @Switch
-    public boolean slotBackgroundEnabled = true;
-
-    @ConfigOption(name = "Slot Color", description = "Slot background color", category = "Appearance")
-    @ColorPicker(allowAlpha = true)
-    public int slotColor = 0xB3313244;
-
-    @ConfigOption(name = "Text Shadow", description = "Text shadow", category = "Appearance")
-    @Switch
-    public boolean textShadowEnabled = true;
-
-    @ConfigOption(name = "Text Color", description = "Text color", category = "Appearance")
-    @ColorPicker(allowAlpha = true)
-    public int textColor = 0xFFCDD6F4;
-
-    @ConfigOption(name = "Armor HUD", description = "Enable armor HUD", category = "Armor HUD")
-    @Switch
-    public boolean armorEnabled = false;
-
-    @ConfigOption(name = "vertical", description = "Vertical armor layout", category = "Armor HUD")
-    @Switch
-    public boolean armorVertical = false;
-
-    @ConfigOption(name = "Transparency", description = "Armor transparency", category = "Armor HUD")
-    @Slider(min = 0.0f, max = 1.0f, step = 0.05f)
-    public float armorTransparency = 1.0f;
-
-    @ConfigOption(name = "Replace Hotbar", description = "Replace vanilla hotbar with custom", category = "Hotbar")
-    @Switch
-    public boolean hotbarEnabled = false;
-
-    @ConfigOption(name = "Vertical", description = "Vertical hotbar layout", category = "Hotbar")
-    @Switch
-    public boolean hotbarVertical = false;
-
-    @ConfigOption(name = "Show Offhand", description = "Show offhand slot", category = "Hotbar")
-    @Switch
-    public boolean hotbarShowOffhand = true;
-
-    @ConfigOption(name = "Active Slot Outline", description = "Outline active slot instead of filling", category = "Hotbar")
-    @Switch
-    public boolean hotbarActiveSlotOutline = false;
-
-    @ConfigOption(name = "Active Slot Color", description = "Active slot highlight color", category = "Hotbar")
-    @ColorPicker(allowAlpha = true)
-    public int hotbarActiveSlotColor = 0xFF89B4FA;
-
-    @ConfigOption(name = "Transparency", description = "Hotbar transparency", category = "Hotbar")
-    @Slider(min = 0.0f, max = 1.0f, step = 0.05f)
-    public float hotbarTransparency = 1.0f;
-
     public Anchor hotbarAnchor = new Anchor();
     public Position hotbarPosition;
     public float hotbarScale = 1.0f;
@@ -210,10 +227,10 @@ public class SchrumboHudConfig extends ManagedConfig {
     public transient Colors colors = new Colors();
 
     public class Colors {
-        public int background() { return backgroundColor; }
-        public int border() { return borderColor; }
-        public int text() { return textColor; }
-        public int slots() { return slotColor; }
+        public int background() { return appearance.backgroundColor; }
+        public int border() { return appearance.borderColor; }
+        public int text() { return appearance.textColor; }
+        public int slots() { return appearance.slotColor; }
     }
 
     @Override
@@ -234,10 +251,10 @@ public class SchrumboHudConfig extends ManagedConfig {
     }
 
     private void migrateColors() {
-        backgroundColor = ensureAlpha(backgroundColor, 0xF2);
-        borderColor = ensureAlpha(borderColor, 0xFF);
-        slotColor = ensureAlpha(slotColor, 0xB3);
-        textColor = ensureAlpha(textColor, 0xFF);
+        appearance.backgroundColor = ensureAlpha(appearance.backgroundColor, 0xF2);
+        appearance.borderColor = ensureAlpha(appearance.borderColor, 0xFF);
+        appearance.slotColor = ensureAlpha(appearance.slotColor, 0xB3);
+        appearance.textColor = ensureAlpha(appearance.textColor, 0xFF);
     }
 
     private int ensureAlpha(int color, int defaultAlpha) {
@@ -248,126 +265,126 @@ public class SchrumboHudConfig extends ManagedConfig {
     }
 
     public void loadDarkMode() {
-        backgroundColor = 0xFF1c1c1c;
-        borderColor = 0xFF434343;
-        textColor = 0xFFfddbbf;
-        slotColor = 0xFF282828;
-        hotbarActiveSlotColor = borderColor;
+        appearance.backgroundColor = 0xFF1c1c1c;
+        appearance.borderColor = 0xFF434343;
+        appearance.textColor = 0xFFfddbbf;
+        appearance.slotColor = 0xFF282828;
+        hotbar.hotbarActiveSlotColor = appearance.borderColor;
     }
 
     public void loadCatppuccinMocha() {
-        backgroundColor = 0xF21E1E2E;
-        borderColor = 0xFF89B4FA;
-        textColor = 0xFFCDD6F4;
-        slotColor = 0xB3313244;
-        hotbarActiveSlotColor = borderColor;
+        appearance.backgroundColor = 0xF21E1E2E;
+        appearance.borderColor = 0xFF89B4FA;
+        appearance.textColor = 0xFFCDD6F4;
+        appearance.slotColor = 0xB3313244;
+        hotbar.hotbarActiveSlotColor = appearance.borderColor;
     }
 
     public void loadGruvbox() {
-        backgroundColor = 0xE6282828;
-        borderColor = 0xFFFE8019;
-        textColor = 0xFFEBDBB2;
-        slotColor = 0xA63C3836;
-        hotbarActiveSlotColor = borderColor;
+        appearance.backgroundColor = 0xE6282828;
+        appearance.borderColor = 0xFFFE8019;
+        appearance.textColor = 0xFFEBDBB2;
+        appearance.slotColor = 0xA63C3836;
+        hotbar.hotbarActiveSlotColor = appearance.borderColor;
     }
 
     public void loadMonokai() {
-        backgroundColor = 0xEB272822;
-        borderColor = 0xFFF92672;
-        textColor = 0xFFF8F8F2;
-        slotColor = 0xB349483E;
-        hotbarActiveSlotColor = borderColor;
+        appearance.backgroundColor = 0xEB272822;
+        appearance.borderColor = 0xFFF92672;
+        appearance.textColor = 0xFFF8F8F2;
+        appearance.slotColor = 0xB349483E;
+        hotbar.hotbarActiveSlotColor = appearance.borderColor;
     }
 
     public void loadDracula() {
-        backgroundColor = 0xF2282A36;
-        borderColor = 0xFFBD93F9;
-        textColor = 0xFFF8F8F2;
-        slotColor = 0xBF44475A;
-        hotbarActiveSlotColor = borderColor;
+        appearance.backgroundColor = 0xF2282A36;
+        appearance.borderColor = 0xFFBD93F9;
+        appearance.textColor = 0xFFF8F8F2;
+        appearance.slotColor = 0xBF44475A;
+        hotbar.hotbarActiveSlotColor = appearance.borderColor;
     }
 
     public void loadClassic() {
-        backgroundColor = 0x80000000;
-        borderColor = 0x60000000;
-        textColor = 0xFFFFFFFF;
-        slotColor = 0x50000000;
-        hotbarActiveSlotColor = borderColor;
+        appearance.backgroundColor = 0x80000000;
+        appearance.borderColor = 0x60000000;
+        appearance.textColor = 0xFFFFFFFF;
+        appearance.slotColor = 0x50000000;
+        hotbar.hotbarActiveSlotColor = appearance.borderColor;
     }
 
     /** Toggles showAlways setting */
     public void toggle() {
-        this.showAlways = !this.showAlways;
-        this.visible = this.showAlways;
+        this.general.showAlways = !this.general.showAlways;
+        this.visible = this.general.showAlways;
     }
 
     /** Sets showAlways and syncs visibility */
     public void enableHud(boolean value) {
-        this.showAlways = value;
+        this.general.showAlways = value;
         this.visible = value;
     }
 
     public void enableArmorHud(boolean value) {
-        this.armorEnabled = value;
+        this.armorHud.armorEnabled = value;
     }
 
     public void enableVerticalMode(boolean value) {
-        this.armorVertical = value;
+        this.armorHud.armorVertical = value;
     }
 
     public void enableBackground(boolean value) {
-        this.backgroundEnabled = value;
+        this.appearance.backgroundEnabled = value;
     }
 
     public void enableBorder(boolean value) {
-        this.outlineEnabled = value;
+        this.appearance.outlineEnabled = value;
     }
 
     public void enableSlotBackground(boolean value) {
-        this.slotBackgroundEnabled = value;
+        this.appearance.slotBackgroundEnabled = value;
     }
 
     public void enableTextShadow(boolean value) {
-        this.textShadowEnabled = value;
+        this.appearance.textShadowEnabled = value;
     }
 
     public void enableRoundedCorners(boolean value) {
-        this.roundedCorners = value;
+        this.general.roundedCorners = value;
     }
 
     public void setBackgroundColor(int color) {
-        backgroundColor = color;
+        appearance.backgroundColor = color;
     }
 
     public void setBorderColor(int color) {
-        borderColor = color;
+        appearance.borderColor = color;
     }
 
     public void setTextColor(int color) {
-        textColor = color;
+        appearance.textColor = color;
     }
 
     public void setSlotColor(int color) {
-        slotColor = color;
+        appearance.slotColor = color;
     }
 
     public void setArmorOpacity(float opacity) {
-        armorTransparency = opacity;
+        armorHud.armorTransparency = opacity;
     }
 
     public float getArmorOpacity() {
-        return armorTransparency;
+        return armorHud.armorTransparency;
     }
 
     public void enableHotbar(boolean value) {
-        this.hotbarEnabled = value;
+        this.hotbar.hotbarEnabled = value;
     }
 
     public void setHotbarTransparency(float value) {
-        this.hotbarTransparency = value;
+        this.hotbar.hotbarTransparency = value;
     }
 
     public float getHotbarTransparency() {
-        return hotbarTransparency;
+        return hotbar.hotbarTransparency;
     }
 }

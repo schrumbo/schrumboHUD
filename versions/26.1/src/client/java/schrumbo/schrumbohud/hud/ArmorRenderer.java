@@ -45,10 +45,10 @@ public class ArmorRenderer implements HudElement {
     public void extractRenderState(GuiGraphicsExtractor drawContext, DeltaTracker renderTickCounter) {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
-        if (!config.armorEnabled || !config.visible || client == null || client.player == null) return;
-        if (config.hideInScreens && client.screen != null) return;
+        if (!config.armorHud.armorEnabled || !config.visible || client == null || client.player == null) return;
+        if (config.general.hideInScreens && client.screen != null) return;
 
-        if (!config.armorVertical) {
+        if (!config.armorHud.armorVertical) {
             rows = 1;
             rowSlots = 4;
         } else {
@@ -131,19 +131,19 @@ public class ArmorRenderer implements HudElement {
     }
 
     private void drawBackground(GuiGraphicsExtractor context, int width, int height, SchrumboHudConfig config) {
-        float t = config.armorTransparency;
-        if (config.backgroundEnabled) {
+        float t = config.armorHud.armorTransparency;
+        if (config.appearance.backgroundEnabled) {
             int bgColor = applyArmorTransparency(config.colors.background(), t);
-            if (config.roundedCorners) {
+            if (config.general.roundedCorners) {
                 RenderUtils.fillRoundedRect(context, 0, 0, width, height, 0.5f, bgColor);
             } else {
                 context.fill(0, 0, width, height, bgColor);
             }
         }
 
-        if (config.outlineEnabled) {
+        if (config.appearance.outlineEnabled) {
             int borderColor = applyArmorTransparency(config.colors.border(), t);
-            if (config.roundedCorners) {
+            if (config.general.roundedCorners) {
                 RenderUtils.drawRoundedRectWithOutline(context, 0, 0, width, height, 0.5f, 1, borderColor);
             } else {
                 RenderUtils.drawBorder(context, 0, 0, width, height, borderColor);
@@ -152,15 +152,15 @@ public class ArmorRenderer implements HudElement {
     }
 
     private void renderSlotBackgrounds(GuiGraphicsExtractor context, SchrumboHudConfig config) {
-        if (!config.slotBackgroundEnabled) return;
+        if (!config.appearance.slotBackgroundEnabled) return;
 
         int index = 0;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < rowSlots; col++) {
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
-                int slotColor = applyArmorTransparency(config.colors.slots(), config.armorTransparency);
-                if (config.roundedCorners) {
+                int slotColor = applyArmorTransparency(config.colors.slots(), config.armorHud.armorTransparency);
+                if (config.general.roundedCorners) {
                     RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
                 } else {
                     context.fill(slotX, slotY, slotX + SLOT_SIZE - 2, slotY + SLOT_SIZE - 2, slotColor);

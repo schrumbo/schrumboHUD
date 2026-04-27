@@ -39,7 +39,7 @@ public class KeybindHandler {
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (SchrumboHUDClient.config.showAlways) {
+            if (SchrumboHUDClient.config.general.showAlways) {
                 SchrumboHUDClient.config.visible = true;
             } else {
                 SchrumboHUDClient.config.visible = peekKey.isDown();
@@ -48,7 +48,7 @@ public class KeybindHandler {
             if (toggleKey.consumeClick()) {
                 SchrumboHUDClient.config.toggle();
                 SchrumboHUDClient.config.save();
-                ChatUtils.modMessage(SchrumboHUDClient.config.showAlways ? "ON" : "OFF");
+                ChatUtils.modMessage(SchrumboHUDClient.config.general.showAlways ? "ON" : "OFF");
             }
 
             if (configKey.consumeClick()) {
