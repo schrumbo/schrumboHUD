@@ -147,6 +147,7 @@ public class HotbarRenderer implements HudElement {
 
     private void drawPanel(GuiGraphicsExtractor context, int ox, int oy, int w, int h, SchrumboHudConfig config) {
         float t = config.hotbar.hotbarTransparency;
+
         if (config.appearance.backgroundEnabled) {
             int bgColor = applyTransparency(config.colors.background(), t);
             if (config.general.roundedCorners) {
@@ -221,10 +222,12 @@ public class HotbarRenderer implements HudElement {
         int slotColor = applyTransparency(rawColor, t);
         int slotX = panelX + PADDING + 1;
         int slotY = panelY + PADDING + 1;
+        int slotW = SLOT_SIZE - 2;
+        int slotH = SLOT_SIZE - 2;
         if (config.general.roundedCorners) {
-            RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
+            RenderUtils.drawRectWithCutCorners(context, slotX, slotY, slotW, slotH, 1, slotColor);
         } else {
-            context.fill(slotX, slotY, slotX + SLOT_SIZE - 2, slotY + SLOT_SIZE - 2, slotColor);
+            context.fill(slotX, slotY, slotX + slotW, slotY + slotH, slotColor);
         }
     }
 

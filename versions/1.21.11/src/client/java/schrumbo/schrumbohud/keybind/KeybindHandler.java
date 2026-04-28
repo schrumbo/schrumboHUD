@@ -23,17 +23,17 @@ public class KeybindHandler {
 
     public static void register(){
         configKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "Open Config",
+                "key.schrumbohud.open_config",
                 GLFW.GLFW_KEY_RIGHT_SHIFT,
                 CATEGORY
         ));
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "Toggle Show Always",
+                "key.schrumbohud.toggle_show_always",
                 GLFW.GLFW_KEY_L,
                 CATEGORY
         ));
         peekKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "Peek HUD",
+                "key.schrumbohud.peek_hud",
                 GLFW.GLFW_KEY_UNKNOWN,
                 CATEGORY
         ));

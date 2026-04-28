@@ -23,17 +23,17 @@ public class KeybindHandler {
 
     public static void register(){
         configKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "Open Config",
+                "key.schrumbohud.open_config",
                 GLFW.GLFW_KEY_RIGHT_SHIFT,
                 CATEGORY
         ));
         toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "Toggle Show Always",
+                "key.schrumbohud.toggle_show_always",
                 GLFW.GLFW_KEY_L,
                 CATEGORY
         ));
         peekKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "Peek HUD",
+                "key.schrumbohud.peek_hud",
                 GLFW.GLFW_KEY_UNKNOWN,
                 CATEGORY
         ));

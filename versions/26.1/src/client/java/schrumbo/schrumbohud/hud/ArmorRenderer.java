@@ -132,6 +132,7 @@ public class ArmorRenderer implements HudElement {
 
     private void drawBackground(GuiGraphicsExtractor context, int width, int height, SchrumboHudConfig config) {
         float t = config.armorHud.armorTransparency;
+
         if (config.appearance.backgroundEnabled) {
             int bgColor = applyArmorTransparency(config.colors.background(), t);
             if (config.general.roundedCorners) {
@@ -159,11 +160,13 @@ public class ArmorRenderer implements HudElement {
             for (int col = 0; col < rowSlots; col++) {
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
+                int slotW = SLOT_SIZE - 2;
+                int slotH = SLOT_SIZE - 2;
                 int slotColor = applyArmorTransparency(config.colors.slots(), config.armorHud.armorTransparency);
                 if (config.general.roundedCorners) {
-                    RenderUtils.drawRectWithCutCorners(context, slotX, slotY, SLOT_SIZE - 2, SLOT_SIZE - 2, 1, slotColor);
+                    RenderUtils.drawRectWithCutCorners(context, slotX, slotY, slotW, slotH, 1, slotColor);
                 } else {
-                    context.fill(slotX, slotY, slotX + SLOT_SIZE - 2, slotY + SLOT_SIZE - 2, slotColor);
+                    context.fill(slotX, slotY, slotX + slotW, slotY + slotH, slotColor);
                 }
                 index++;
             }
