@@ -1,3 +1,6 @@
 {
-  "key.category.schrumbohud.main": "SchrumboHUD"
+  "key.category.schrumbohud.main": "SchrumboHUD",
+  "key.schrumbohud.open_config": "Open Config",
+  "key.schrumbohud.toggle_show_always": "Toggle Show Always",
+  "key.schrumbohud.peek_hud": "Peek HUD"
 }

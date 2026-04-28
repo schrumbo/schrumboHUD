@@ -104,8 +104,8 @@ public class HudEditorScreen extends Screen {
         int unscaledH = getUnscaledHeight(element, config);
 
         int bgColor = config.colors.background();
-        float radius = element == Element.ARMOR ? 0.5f : 0.2f;
         if (config.general.roundedCorners) {
+            float radius = element == Element.ARMOR ? 0.5f : 0.2f;
             RenderUtils.fillRoundedRect(context, 0, 0, unscaledW, unscaledH, radius, bgColor);
         } else {
             context.fill(0, 0, unscaledW, unscaledH, bgColor);
@@ -113,6 +113,7 @@ public class HudEditorScreen extends Screen {
 
         int borderColor = config.colors.border();
         if (config.general.roundedCorners) {
+            float radius = element == Element.ARMOR ? 0.5f : 0.2f;
             RenderUtils.drawRoundedRectWithOutline(context, 0, 0, unscaledW, unscaledH, radius, 1, borderColor);
         } else {
             RenderUtils.drawBorder(context, 0, 0, unscaledW, unscaledH, borderColor);

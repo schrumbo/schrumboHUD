@@ -1,11 +1,6 @@
 package schrumbo.schrumbohud.Utils;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 
 /**
  * GUI drawing utilities — rounded rects, outlines, cut-corner shapes
@@ -169,7 +164,4 @@ public class RenderUtils {
         context.fill(x, y, x + 1, y + height, color);
         context.fill(x + width - 1, y, x + width, y + height, color);
     }
-
-
-
 }
