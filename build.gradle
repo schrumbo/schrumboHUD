@@ -46,16 +46,16 @@ dependencies {
 		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-		modImplementation "schrumbo.schlib:schlib:1.2.1+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
-		include "schrumbo.schlib:schlib:1.2.1+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
+		modImplementation "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
+		include "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
 		if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
 			modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 		}
 	} else {
 		implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 		implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-		implementation "schrumbo.schlib:schlib:1.2.1+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
-		include "schrumbo.schlib:schlib:1.2.1+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
+		implementation "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
+		include "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
 		if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
 			implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 		}
