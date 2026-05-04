@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "schrumbohud",
+  "version": "1.3.4+26.2",
+  "name": "schrumboHUD",
+  "description": "Customizable Inventory HUD!",
+  "authors": [
+    "schrumbo"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/schrumbohud",
+    "sources": "https://github.com/schrumbo/schrumboHUD",
+    "issues": "https://github.com/schrumbo/schrumboHUD/issues"
+  },
+  "license": "AGPL-3.0",
+  "icon": "assets/schrumbohud/HUD.png",
+  "accessWidener": "schrumbohud.accesswidener",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "schrumbo.schrumbohud.SchrumboHUDClient"
+    ]
+  },
+  "mixins": [
+    "schrumbohud.mixins.json",
+    {
+      "config": "schrumbohud.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": "\u003e\u003d0.18.5",
+    "minecraft": "\u003e\u003d26.1",
+    "java": "\u003e\u003d25",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "\u003e\u003d18.0.0-alpha.5"
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/schimgui-1.0.0+26.2.jar"
+    }
+  ]
+}

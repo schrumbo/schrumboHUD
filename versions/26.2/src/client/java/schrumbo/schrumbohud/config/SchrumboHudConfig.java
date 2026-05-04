@@ -1,14 +1,14 @@
 package schrumbo.schrumbohud.config;
 
 import net.minecraft.client.Minecraft;
-import schrumbo.schlib.annotations.*;
-import schrumbo.schlib.config.ManagedConfig;
+import schrumbo.schimgui.annotations.*;
+import schrumbo.schimgui.config.ImGuiConfig;
 import schrumbo.schrumbohud.hud.HudEditorScreen;
 
 /**
- * SchrumboHUD configuration — colors, layout, and theme presets
+ * SchrumboHUD configuration
  */
-public class SchrumboHudConfig extends ManagedConfig {
+public class SchrumboHudConfig extends ImGuiConfig {
 
     public SchrumboHudConfig() {
         super("schrumbohud");
@@ -19,7 +19,6 @@ public class SchrumboHudConfig extends ManagedConfig {
     public Appearance appearance = new Appearance();
     public ArmorHud armorHud = new ArmorHud();
     public Hotbar hotbar = new Hotbar();
-
 
     @Category(name = "General", description = "General settings", searchTags = {"general", "settings", "toggle", "visibility"})
     public class General {
@@ -50,53 +49,33 @@ public class SchrumboHudConfig extends ManagedConfig {
         };
     }
 
-
     @Category(name = "Presets", description = "Theme presets", searchTags = {"preset", "theme", "color", "catppuccin", "dracula", "gruvbox", "monokai"})
     public class Presets {
 
         @ConfigOption(name = "Catppuccin Mocha", description = "Load Catppuccin Mocha theme", searchTags = {"catppuccin", "mocha", "theme", "preset"})
         @Button
-        public transient Runnable catppuccinMocha = () -> {
-            loadCatppuccinMocha();
-            save();
-        };
+        public transient Runnable catppuccinMocha = () -> { loadCatppuccinMocha(); save(); };
 
         @ConfigOption(name = "Dark", description = "Load Dark theme", searchTags = {"dark", "theme", "preset"})
         @Button
-        public transient Runnable dark = () -> {
-            loadDarkMode();
-            save();
-        };
+        public transient Runnable dark = () -> { loadDarkMode(); save(); };
 
         @ConfigOption(name = "Gruvbox", description = "Load Gruvbox theme", searchTags = {"gruvbox", "theme", "preset"})
         @Button
-        public transient Runnable gruvbox = () -> {
-            loadGruvbox();
-            save();
-        };
+        public transient Runnable gruvbox = () -> { loadGruvbox(); save(); };
 
         @ConfigOption(name = "Monokai", description = "Load Monokai theme", searchTags = {"monokai", "theme", "preset"})
         @Button
-        public transient Runnable monokai = () -> {
-            loadMonokai();
-            save();
-        };
+        public transient Runnable monokai = () -> { loadMonokai(); save(); };
 
         @ConfigOption(name = "Dracula", description = "Load Dracula theme", searchTags = {"dracula", "theme", "preset"})
         @Button
-        public transient Runnable dracula = () -> {
-            loadDracula();
-            save();
-        };
+        public transient Runnable dracula = () -> { loadDracula(); save(); };
 
         @ConfigOption(name = "Classic", description = "Load Classic theme", searchTags = {"classic", "theme", "preset"})
         @Button
-        public transient Runnable classic = () -> {
-            loadClassic();
-            save();
-        };
+        public transient Runnable classic = () -> { loadClassic(); save(); };
     }
-
 
     @Category(name = "Appearance", description = "Colors and styling", searchTags = {"appearance", "color", "style", "background", "outline", "text", "slot"})
     public class Appearance {
@@ -134,7 +113,6 @@ public class SchrumboHudConfig extends ManagedConfig {
         public int textColor = 0xFFCDD6F4;
     }
 
-
     @Category(name = "Armor HUD", description = "Armor HUD settings", searchTags = {"armor", "hud", "display", "equipment"})
     public class ArmorHud {
 
@@ -150,7 +128,6 @@ public class SchrumboHudConfig extends ManagedConfig {
         @Slider(min = 0.0f, max = 1.0f, step = 0.05f)
         public float armorTransparency = 1.0f;
     }
-
 
     @Category(name = "Hotbar", description = "Hotbar replacement settings", searchTags = {"hotbar", "replace", "custom", "offhand", "slot"})
     public class Hotbar {
@@ -180,8 +157,8 @@ public class SchrumboHudConfig extends ManagedConfig {
         public float hotbarTransparency = 1.0f;
     }
 
+    // --- Runtime state (not persisted) ---
 
-    /** Runtime visibility state for rendering */
     public transient boolean visible = true;
 
     public static class Anchor {
@@ -194,15 +171,8 @@ public class SchrumboHudConfig extends ManagedConfig {
         public int y = 10;
     }
 
-    public enum HorizontalAnchor {
-        LEFT,
-        RIGHT
-    }
-
-    public enum VerticalAnchor {
-        TOP,
-        BOTTOM
-    }
+    public enum HorizontalAnchor { LEFT, RIGHT }
+    public enum VerticalAnchor { TOP, BOTTOM }
 
     public Anchor anchor = new Anchor();
     public Position position = new Position();
@@ -226,6 +196,7 @@ public class SchrumboHudConfig extends ManagedConfig {
 
     public transient Colors colors = new Colors();
 
+    /** Accessor for themed ARGB colors */
     public class Colors {
         public int background() { return appearance.backgroundColor; }
         public int border() { return appearance.borderColor; }
@@ -233,18 +204,14 @@ public class SchrumboHudConfig extends ManagedConfig {
         public int slots() { return appearance.slotColor; }
     }
 
-    @Override
-    public SchrumboHudConfig load() {
-        super.load();
-        presets = new Presets();
+    /**
+     * Load config from disk, run migrations, initialize runtime state
+     */
+    public SchrumboHudConfig loadConfig() {
+        load();
         migrateColors();
         initColors();
         return this;
-    }
-
-    @Override
-    public ManagedConfig save() {
-        return super.save();
     }
 
     public void initColors() {
@@ -264,6 +231,8 @@ public class SchrumboHudConfig extends ManagedConfig {
         }
         return color;
     }
+
+    // --- Theme presets ---
 
     public void loadDarkMode() {
         appearance.backgroundColor = 0xFF1c1c1c;
@@ -313,79 +282,35 @@ public class SchrumboHudConfig extends ManagedConfig {
         hotbar.hotbarActiveSlotColor = appearance.borderColor;
     }
 
-    /** Toggles showAlways setting */
+    // --- Convenience accessors ---
+
     public void toggle() {
         this.general.showAlways = !this.general.showAlways;
         this.visible = this.general.showAlways;
     }
 
-    /** Sets showAlways and syncs visibility */
     public void enableHud(boolean value) {
         this.general.showAlways = value;
         this.visible = value;
     }
 
-    public void enableArmorHud(boolean value) {
-        this.armorHud.armorEnabled = value;
-    }
+    public void enableArmorHud(boolean value) { this.armorHud.armorEnabled = value; }
+    public void enableVerticalMode(boolean value) { this.armorHud.armorVertical = value; }
+    public void enableBackground(boolean value) { this.appearance.backgroundEnabled = value; }
+    public void enableBorder(boolean value) { this.appearance.outlineEnabled = value; }
+    public void enableSlotBackground(boolean value) { this.appearance.slotBackgroundEnabled = value; }
+    public void enableTextShadow(boolean value) { this.appearance.textShadowEnabled = value; }
+    public void enableRoundedCorners(boolean value) { this.general.roundedCorners = value; }
 
-    public void enableVerticalMode(boolean value) {
-        this.armorHud.armorVertical = value;
-    }
+    public void setBackgroundColor(int color) { appearance.backgroundColor = color; }
+    public void setBorderColor(int color) { appearance.borderColor = color; }
+    public void setTextColor(int color) { appearance.textColor = color; }
+    public void setSlotColor(int color) { appearance.slotColor = color; }
 
-    public void enableBackground(boolean value) {
-        this.appearance.backgroundEnabled = value;
-    }
+    public void setArmorOpacity(float opacity) { armorHud.armorTransparency = opacity; }
+    public float getArmorOpacity() { return armorHud.armorTransparency; }
 
-    public void enableBorder(boolean value) {
-        this.appearance.outlineEnabled = value;
-    }
-
-    public void enableSlotBackground(boolean value) {
-        this.appearance.slotBackgroundEnabled = value;
-    }
-
-    public void enableTextShadow(boolean value) {
-        this.appearance.textShadowEnabled = value;
-    }
-
-    public void enableRoundedCorners(boolean value) {
-        this.general.roundedCorners = value;
-    }
-
-    public void setBackgroundColor(int color) {
-        appearance.backgroundColor = color;
-    }
-
-    public void setBorderColor(int color) {
-        appearance.borderColor = color;
-    }
-
-    public void setTextColor(int color) {
-        appearance.textColor = color;
-    }
-
-    public void setSlotColor(int color) {
-        appearance.slotColor = color;
-    }
-
-    public void setArmorOpacity(float opacity) {
-        armorHud.armorTransparency = opacity;
-    }
-
-    public float getArmorOpacity() {
-        return armorHud.armorTransparency;
-    }
-
-    public void enableHotbar(boolean value) {
-        this.hotbar.hotbarEnabled = value;
-    }
-
-    public void setHotbarTransparency(float value) {
-        this.hotbar.hotbarTransparency = value;
-    }
-
-    public float getHotbarTransparency() {
-        return hotbar.hotbarTransparency;
-    }
+    public void enableHotbar(boolean value) { this.hotbar.hotbarEnabled = value; }
+    public void setHotbarTransparency(float value) { this.hotbar.hotbarTransparency = value; }
+    public float getHotbarTransparency() { return hotbar.hotbarTransparency; }
 }

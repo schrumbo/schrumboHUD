@@ -42,3 +42,4 @@ replay_*.log
 # decompiled classes
 
 /net/
+META-INF/jars/fabric-rendering-v1-25.0.0+11e1c9a3f9.jar

@@ -3,13 +3,16 @@ package schrumbo.schrumbohud.hud;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.Lighting;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Off-screen texture renderer for inventory items
@@ -21,7 +24,7 @@ public class InventoryHudSpecialRenderer extends PictureInPictureRenderer<Invent
     private static final int ROWS = 3;
     private static final int PADDING = 4;
 
-    private final TrackingItemStackRenderState itemRenderState = new TrackingItemStackRenderState();
+    private final List<ItemStackRenderState> renderStatePool = new ArrayList<>();
 
     public InventoryHudSpecialRenderer() {
         super();
@@ -51,32 +54,37 @@ public class InventoryHudSpecialRenderer extends PictureInPictureRenderer<Invent
         float texCenterY = Math.round(hudHeight * state.config().scale) * client.getWindow().getGuiScale() / 2.0f;
         float modelScale = pps * 16.0f;
 
+        int totalSlots = ROWS * ROW_SLOTS;
+        ensurePoolSize(totalSlots);
+        for (int i = 0; i < totalSlots; i++) {
+            int slot = 9 + i;
+            ItemStack stack = inventory.getItem(slot);
+            ItemStackRenderState rs = renderStatePool.get(i);
+            rs.clear();
+            if (!stack.isEmpty()) {
+                client.getItemModelResolver().updateForLiving(rs, stack, ItemDisplayContext.GUI, client.player);
+            }
+        }
+
         matrices.scale(1.0f, -1.0f, -1.0f);
 
         Lighting lighting = client.gameRenderer.lighting();
 
-        renderPass(client, inventory, matrices, lighting, collector, pps, texCenterX, texCenterY, modelScale, true);
-        renderPass(client, inventory, matrices, lighting, collector, pps, texCenterX, texCenterY, modelScale, false);
+        renderPass(matrices, lighting, collector, pps, texCenterX, texCenterY, modelScale, true);
+        renderPass(matrices, lighting, collector, pps, texCenterX, texCenterY, modelScale, false);
     }
 
-    private void renderPass(Minecraft client, Inventory inventory, PoseStack matrices,
-                            Lighting lighting, SubmitNodeCollector collector,
+    private void renderPass(PoseStack matrices, Lighting lighting, SubmitNodeCollector collector,
                             float pps, float texCenterX, float texCenterY,
                             float modelScale, boolean blockLight) {
         lighting.setupFor(blockLight ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT);
 
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < ROW_SLOTS; col++) {
-                int slot = 9 + row * ROW_SLOTS + col;
-                ItemStack stack = inventory.getItem(slot);
-                if (stack.isEmpty()) continue;
-
-                client.getItemModelResolver().updateForLiving(
-                        itemRenderState, stack, ItemDisplayContext.GUI,
-                        client.player
-                );
-
-                if (itemRenderState.usesBlockLight() != blockLight) continue;
+                int index = row * ROW_SLOTS + col;
+                ItemStackRenderState rs = renderStatePool.get(index);
+                if (rs.isEmpty()) continue;
+                if (rs.usesBlockLight() != blockLight) continue;
 
                 int slotX = PADDING + col * SLOT_SIZE + 1;
                 int slotY = PADDING + row * SLOT_SIZE + 1;
@@ -89,11 +97,16 @@ public class InventoryHudSpecialRenderer extends PictureInPictureRenderer<Invent
                 matrices.pushPose();
                 matrices.translate(snappedX, snappedY, 0.0f);
 
-                itemRenderState.submit(matrices, collector,
-                        15728880, OverlayTexture.NO_OVERLAY, 0);
+                rs.submit(matrices, collector, 15728880, OverlayTexture.NO_OVERLAY, 0);
 
                 matrices.popPose();
             }
+        }
+    }
+
+    private void ensurePoolSize(int size) {
+        while (renderStatePool.size() < size) {
+            renderStatePool.add(new ItemStackRenderState());
         }
     }
 
