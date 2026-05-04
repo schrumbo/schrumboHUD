@@ -54,8 +54,13 @@ dependencies {
 	} else {
 		implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 		implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-		implementation "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
-		include "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
+		if (project.hasProperty('use_schimgui') && project.use_schimgui == 'true') {
+			implementation "schrumbo.schimgui:schimgui:${project.schimgui_version}+${project.version_label}"
+			include "schrumbo.schimgui:schimgui:${project.schimgui_version}+${project.version_label}"
+		} else {
+			implementation "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
+			include "schrumbo.schlib:schlib:${project.schlib_version}+${project.hasProperty('version_label') ? project.version_label : project.minecraft_version}"
+		}
 		if (project.hasProperty('modmenu_version') && project.modmenu_version != '') {
 			implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 		}

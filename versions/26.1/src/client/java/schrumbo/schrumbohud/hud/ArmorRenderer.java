@@ -11,6 +11,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
+import schrumbo.schimgui.config.ImGuiConfigScreen;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.SchrumboHudConfig;
@@ -46,7 +47,7 @@ public class ArmorRenderer implements HudElement {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.armorHud.armorEnabled || !config.visible || client == null || client.player == null) return;
-        if (config.general.hideInScreens && client.screen != null) return;
+        if (config.general.hideInScreens && client.screen != null && !(client.screen instanceof ImGuiConfigScreen)) return;
 
         if (!config.armorHud.armorVertical) {
             rows = 1;

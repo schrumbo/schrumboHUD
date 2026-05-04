@@ -29,7 +29,7 @@ public class SchrumboHUDClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		initTime = Util.getMillis();
 		LOGGER.info("initializing SchrumboHUD");
-		config = new SchrumboHudConfig().load();
+		config = new SchrumboHudConfig().loadConfig();
 
 		PictureInPictureRendererRegistry.register(ctx ->
 				new InventoryHudSpecialRenderer(ctx.bufferSource())

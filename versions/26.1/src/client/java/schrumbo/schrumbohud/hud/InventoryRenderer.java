@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
+import schrumbo.schimgui.config.ImGuiConfigScreen;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
 import schrumbo.schrumbohud.config.SchrumboHudConfig;
@@ -40,7 +41,7 @@ public class InventoryRenderer implements HudElement {
         SchrumboHudConfig config = SchrumboHUDClient.config;
 
         if (!config.general.inventoryEnabled || !config.visible || client == null || client.player == null) return;
-        if (config.general.hideInScreens && client.screen != null) return;
+        if (config.general.hideInScreens && client.screen != null && !(client.screen instanceof ImGuiConfigScreen)) return;
 
         Inventory inventory = client.player.getInventory();
 
