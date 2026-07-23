@@ -13,6 +13,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import org.joml.Matrix3x2f;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
+import schrumbo.schrumbohud.Utils.SkyblockerItemBackgrounds;
 import schrumbo.schrumbohud.config.SchrumboHudConfig;
 
 /**
@@ -102,6 +103,7 @@ public class HotbarRenderer implements HudElement {
         if (showOffhand) drawPanel(context, ohOffX, ohOffY, OFFHAND_PANEL, OFFHAND_PANEL, config);
         renderSlotBackgrounds(context, rows, cols, mainOffX, mainOffY, selectedSlot, config);
         if (showOffhand) renderSingleSlotBg(context, ohOffX, ohOffY, config.colors.slots(), config);
+        renderRarityBackgrounds(context, inventory, rows, cols, mainOffX, mainOffY, showOffhand, ohOffX, ohOffY);
 
         matrices.popMatrix();
 
@@ -228,6 +230,31 @@ public class HotbarRenderer implements HudElement {
             RenderUtils.drawRectWithCutCorners(context, slotX, slotY, slotW, slotH, 1, slotColor);
         } else {
             context.fill(slotX, slotY, slotX + slotW, slotY + slotH, slotColor);
+        }
+    }
+
+    private void renderRarityBackgrounds(GuiGraphicsExtractor context, Inventory inventory, int rows, int cols,
+                                         int mainOffX, int mainOffY, boolean showOffhand, int ohOffX, int ohOffY) {
+        if (!SkyblockerItemBackgrounds.available()) return;
+
+        int index = 0;
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                ItemStack stack = inventory.getItem(index);
+                index++;
+                if (stack.isEmpty()) continue;
+
+                int slotX = mainOffX + PADDING + col * SLOT_SIZE + 1;
+                int slotY = mainOffY + PADDING + row * SLOT_SIZE + 1;
+                SkyblockerItemBackgrounds.draw(stack, context, slotX, slotY);
+            }
+        }
+
+        if (showOffhand) {
+            ItemStack offhand = inventory.getItem(Inventory.SLOT_OFFHAND);
+            if (!offhand.isEmpty()) {
+                SkyblockerItemBackgrounds.draw(offhand, context, ohOffX + PADDING + 1, ohOffY + PADDING + 1);
+            }
         }
     }
 

@@ -3,7 +3,7 @@ package schrumbo.schrumbohud.hud;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.Lighting;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +19,7 @@ public class HotbarHudSpecialRenderer extends PictureInPictureRenderer<HotbarHud
     private static final int SLOT_SIZE = 18;
     private static final int PADDING = 4;
 
-    private final TrackingItemStackRenderState itemRenderState = new TrackingItemStackRenderState();
+    private final ItemStackRenderState itemRenderState = new ItemStackRenderState();
 
     public HotbarHudSpecialRenderer(MultiBufferSource.BufferSource bufferSource) {
         super(bufferSource);

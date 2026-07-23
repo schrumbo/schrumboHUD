@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
 import schrumbo.schrumbohud.SchrumboHUDClient;
 import schrumbo.schrumbohud.Utils.RenderUtils;
+import schrumbo.schrumbohud.Utils.SkyblockerItemBackgrounds;
 import schrumbo.schrumbohud.config.SchrumboHudConfig;
 
 import java.util.ArrayList;
@@ -79,6 +80,7 @@ public class ArmorRenderer implements HudElement {
 
         drawBackground(drawContext, hudWidth, hudHeight, config);
         renderSlotBackgrounds(drawContext, config);
+        renderRarityBackgrounds(drawContext);
 
         matrices.popMatrix();
 
@@ -169,6 +171,23 @@ public class ArmorRenderer implements HudElement {
                     context.fill(slotX, slotY, slotX + slotW, slotY + slotH, slotColor);
                 }
                 index++;
+            }
+        }
+    }
+
+    private void renderRarityBackgrounds(GuiGraphicsExtractor context) {
+        if (!SkyblockerItemBackgrounds.available()) return;
+
+        int index = 0;
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < rowSlots; col++) {
+                ItemStack stack = armor.get(index);
+                index++;
+                if (stack.isEmpty()) continue;
+
+                int slotX = PADDING + col * SLOT_SIZE + 1;
+                int slotY = PADDING + row * SLOT_SIZE + 1;
+                SkyblockerItemBackgrounds.draw(stack, context, slotX, slotY);
             }
         }
     }
