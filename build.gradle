@@ -117,7 +117,7 @@ modrinth {
 	uploadFile = project.hasProperty('yarn_mappings') ? remapJar : jar
 	gameVersions = ["1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.10", "1.21.10", "1.21.11"]
 	loaders = ["fabric"]
-	syncBodyFrom = rootProject.file("CHANGELOG.md").text
+	syncBodyFrom = rootProject.file("CHANGELOG.md").exists() ? rootProject.file("CHANGELOG.md").text : ""
 	dependencies {
 		required.project "fabric-api"
 	}
