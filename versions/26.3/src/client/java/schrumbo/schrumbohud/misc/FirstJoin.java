@@ -16,7 +16,7 @@ public class FirstJoin {
                     if (client.player != null) {
                         ChatUtils.modMessage("Thanks for using my mod!");
                         ChatUtils.modMessage("Toggle the HUD with L");
-                        ChatUtils.modMessage("Open the Settings with RShift");
+                        ChatUtils.modMessage("Open the settings with /shud");
                     }
                 });
                 SchrumboHUDClient.config.firstJoin = false;
